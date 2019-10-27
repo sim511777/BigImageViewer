@@ -225,6 +225,27 @@ namespace BigImageViewer {
             }
         }
 
+        // 휠 줌
+        private void WheelZoom(MouseEventArgs e) {
+            var ptImg = DispToImg(e.Location);
+
+            var zoomLevelOld = ZoomLevel;
+            zoomIndex = (e.Delta > 0) ? zoomIndex + 1 : zoomIndex - 1;
+            if (zoomIndex < 0)
+                zoomIndex = 0;
+            if (zoomIndex >= zoomLevels.Length)
+                zoomIndex = zoomLevels.Length - 1;
+
+            ptPanning.X += (int)Math.Floor(ptImg.X * (zoomLevelOld - ZoomLevel));
+            ptPanning.Y += (int)Math.Floor(ptImg.Y * (zoomLevelOld - ZoomLevel));
+        }
+
+        // 휠 스크롤
+        private void WheelScroll(MouseEventArgs e) {
+            int scroll = 128;
+            ptPanning.Y += (e.Delta > 0) ? scroll : -scroll;
+        }
+
         private void btnAlloc_Click(object sender, EventArgs e) {
             Log("Alloc Buffer");
             FreeImgBuf();
@@ -272,18 +293,11 @@ namespace BigImageViewer {
         }
 
         private void PbxDraw_MouseWheel(object sender, MouseEventArgs e) {
-            var ptImg = DispToImg(e.Location);
-
-            var zoomLevelOld = ZoomLevel;
-            zoomIndex = (e.Delta > 0) ? zoomIndex + 1 : zoomIndex - 1;
-            if (zoomIndex < 0)
-                zoomIndex = 0;
-            if (zoomIndex >= zoomLevels.Length)
-                zoomIndex = zoomLevels.Length-1;
-
-            ptPanning.X += (int)Math.Floor(ptImg.X * (zoomLevelOld - ZoomLevel));
-            ptPanning.Y += (int)Math.Floor(ptImg.Y * (zoomLevelOld - ZoomLevel));
-
+            if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
+                WheelScroll(e);
+            } else {
+                WheelZoom(e);
+            }
             RedrawImage();
         }
 
