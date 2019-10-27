@@ -14,6 +14,7 @@ namespace BigImageViewer {
     public partial class FormMain : Form {
         public FormMain() {
             InitializeComponent();
+            cbxBmpLoader.SelectedIndex = 0;
             this.pbxDraw.MouseWheel += this.PbxDraw_MouseWheel;
 
             AllocDispBuf();
@@ -89,21 +90,36 @@ namespace BigImageViewer {
             MsvcrtDll.memset(imgBuf, 0, (ulong)((long)ImgBW * ImgBH));
         }
 
+        enum BitmapLoader { C, OpenCV, DotNet_Bitmap }
+
         // 포워드 이미지 로드
         private void LoadFwdImg() {
             long frmSize = imgFW * imgFH;
             string dir = tbxFwdDir.Text;
             int succNum = 0;
+
+            var bmpLoader = (BitmapLoader)cbxBmpLoader.SelectedIndex;
+            Log($"Load Fwd Image (Loader:{bmpLoader})");
+
             for (int i = 0; i < numFrm; i++) {
                 string filePath = $"{dir}\\Frame_{i:000}.BMP";
                 IntPtr buf = (IntPtr)(imgBuf.ToInt64() + frmSize * i);
-                var r = NativeDll.Load8bitBmp(buf, imgFW, imgFH, filePath);
+                
+                var r = false;
+                if (bmpLoader == BitmapLoader.C)
+                    r = NativeDll.Load8bitBmp(buf, imgFW, imgFH, filePath);
+                else if (bmpLoader == BitmapLoader.OpenCV)
+                    r = OpenCv.Load8bitBmp(buf, imgFW, imgFH, filePath);
+                else
+                    r = Alg.Load8bitBmp(buf, imgFW, imgFH, filePath);
+                
                 if (r) {
                     succNum++;
                 } else {
                     MsvcrtDll.memset(buf, 0, (ulong)frmSize);
                 }
             }
+            Log($"End Load Fwd Image");
             Log($"이미지 {numFrm}개 중 {succNum}개 이미지 로드 성공");
         }
 
@@ -225,9 +241,7 @@ namespace BigImageViewer {
         }
 
         private void btnLoadFwd_Click(object sender, EventArgs e) {
-            Log("Load Fwd image");
             LoadFwdImg();
-            Log("End Load Fwd image");
             RedrawImage();
         }
 

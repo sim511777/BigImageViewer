@@ -25,6 +25,9 @@
         private void InitializeComponent() {
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.chkDrawInfo = new System.Windows.Forms.CheckBox();
+            this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
+            this.chkDrawFrame = new System.Windows.Forms.CheckBox();
             this.btnAlloc = new System.Windows.Forms.Button();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.tbxFwdDir = new System.Windows.Forms.TextBox();
@@ -39,9 +42,7 @@
             this.pbxDraw = new System.Windows.Forms.PictureBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.dlgFolder = new System.Windows.Forms.FolderBrowserDialog();
-            this.chkDrawFrame = new System.Windows.Forms.CheckBox();
-            this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
-            this.chkDrawInfo = new System.Windows.Forms.CheckBox();
+            this.cbxBmpLoader = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFNum)).BeginInit();
@@ -63,6 +64,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.cbxBmpLoader);
             this.panel2.Controls.Add(this.chkDrawInfo);
             this.panel2.Controls.Add(this.chkDrawPixelValue);
             this.panel2.Controls.Add(this.chkDrawFrame);
@@ -80,6 +82,45 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(435, 411);
             this.panel2.TabIndex = 5;
+            // 
+            // chkDrawInfo
+            // 
+            this.chkDrawInfo.AutoSize = true;
+            this.chkDrawInfo.Checked = true;
+            this.chkDrawInfo.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDrawInfo.Location = new System.Drawing.Point(6, 166);
+            this.chkDrawInfo.Name = "chkDrawInfo";
+            this.chkDrawInfo.Size = new System.Drawing.Size(77, 16);
+            this.chkDrawInfo.TabIndex = 5;
+            this.chkDrawInfo.Text = "Draw Info";
+            this.chkDrawInfo.UseVisualStyleBackColor = true;
+            this.chkDrawInfo.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // chkDrawPixelValue
+            // 
+            this.chkDrawPixelValue.AutoSize = true;
+            this.chkDrawPixelValue.Checked = true;
+            this.chkDrawPixelValue.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDrawPixelValue.Location = new System.Drawing.Point(6, 144);
+            this.chkDrawPixelValue.Name = "chkDrawPixelValue";
+            this.chkDrawPixelValue.Size = new System.Drawing.Size(121, 16);
+            this.chkDrawPixelValue.TabIndex = 5;
+            this.chkDrawPixelValue.Text = "Draw Pixel Value";
+            this.chkDrawPixelValue.UseVisualStyleBackColor = true;
+            this.chkDrawPixelValue.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // chkDrawFrame
+            // 
+            this.chkDrawFrame.AutoSize = true;
+            this.chkDrawFrame.Checked = true;
+            this.chkDrawFrame.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDrawFrame.Location = new System.Drawing.Point(6, 122);
+            this.chkDrawFrame.Name = "chkDrawFrame";
+            this.chkDrawFrame.Size = new System.Drawing.Size(93, 16);
+            this.chkDrawFrame.TabIndex = 5;
+            this.chkDrawFrame.Text = "Draw Frame";
+            this.chkDrawFrame.UseVisualStyleBackColor = true;
+            this.chkDrawFrame.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
             // btnAlloc
             // 
@@ -235,44 +276,18 @@
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
-            // chkDrawFrame
+            // cbxBmpLoader
             // 
-            this.chkDrawFrame.AutoSize = true;
-            this.chkDrawFrame.Checked = true;
-            this.chkDrawFrame.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawFrame.Location = new System.Drawing.Point(6, 122);
-            this.chkDrawFrame.Name = "chkDrawFrame";
-            this.chkDrawFrame.Size = new System.Drawing.Size(93, 16);
-            this.chkDrawFrame.TabIndex = 5;
-            this.chkDrawFrame.Text = "Draw Frame";
-            this.chkDrawFrame.UseVisualStyleBackColor = true;
-            this.chkDrawFrame.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
-            // 
-            // chkDrawPixelValue
-            // 
-            this.chkDrawPixelValue.AutoSize = true;
-            this.chkDrawPixelValue.Checked = true;
-            this.chkDrawPixelValue.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawPixelValue.Location = new System.Drawing.Point(6, 144);
-            this.chkDrawPixelValue.Name = "chkDrawPixelValue";
-            this.chkDrawPixelValue.Size = new System.Drawing.Size(121, 16);
-            this.chkDrawPixelValue.TabIndex = 5;
-            this.chkDrawPixelValue.Text = "Draw Pixel Value";
-            this.chkDrawPixelValue.UseVisualStyleBackColor = true;
-            this.chkDrawPixelValue.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
-            // 
-            // chkDrawInfo
-            // 
-            this.chkDrawInfo.AutoSize = true;
-            this.chkDrawInfo.Checked = true;
-            this.chkDrawInfo.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawInfo.Location = new System.Drawing.Point(6, 166);
-            this.chkDrawInfo.Name = "chkDrawInfo";
-            this.chkDrawInfo.Size = new System.Drawing.Size(77, 16);
-            this.chkDrawInfo.TabIndex = 5;
-            this.chkDrawInfo.Text = "Draw Info";
-            this.chkDrawInfo.UseVisualStyleBackColor = true;
-            this.chkDrawInfo.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            this.cbxBmpLoader.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxBmpLoader.FormattingEnabled = true;
+            this.cbxBmpLoader.Items.AddRange(new object[] {
+            "C",
+            "OpenCV",
+            ".NET Bitmap"});
+            this.cbxBmpLoader.Location = new System.Drawing.Point(103, 66);
+            this.cbxBmpLoader.Name = "cbxBmpLoader";
+            this.cbxBmpLoader.Size = new System.Drawing.Size(121, 20);
+            this.cbxBmpLoader.TabIndex = 6;
             // 
             // FormMain
             // 
@@ -317,6 +332,7 @@
         private System.Windows.Forms.CheckBox chkDrawInfo;
         private System.Windows.Forms.CheckBox chkDrawPixelValue;
         private System.Windows.Forms.CheckBox chkDrawFrame;
+        private System.Windows.Forms.ComboBox cbxBmpLoader;
     }
 }
 
