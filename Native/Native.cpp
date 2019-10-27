@@ -40,7 +40,7 @@ NATIVE_API BOOL Load8bitBmp(BYTE* buf, int bw, int bh, char* filePath) {
 
     // bmp파일은 파일 저장시 라인당 4byte padding을 한다.
     // bw가 4로 나눠 떨어지지 않을경우 padding처리 해야 함
-    // int stride = (bw+3)/3*3;
+    // int stride = (bw+3)/4*4;
 
     // bmp파일은 위아래가 뒤집혀 있으므로 파일에서 읽어서 버퍼 아래라인 부터 쓴다
     for (int y = bh - 1; y >= 0; y--) {
@@ -102,7 +102,7 @@ NATIVE_API BOOL Save8bitBmp(BYTE *buf, int bw, int bh, char *filePath) {
 
     // bmp파일은 파일 저장시 라인당 4byte padding을 한다.
     // bw가 4로 나눠 떨어지지 않을경우 padding처리 해야 함
-    // int stride = (bw+3)/3*3;
+    // int stride = (bw+3)/4*4;
 
     // bmp파일은 위아래가 뒤집혀 있으므로 버퍼 아래라인 부터 읽어서 파일에 쓴다
     for (int y = bh - 1; y >= 0; y--) {
