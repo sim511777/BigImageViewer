@@ -5,3 +5,4 @@ ok DrawFrame
 ok DrawPixel
 ok GDI 표시 옵션 처리
 이미지 로드 bw bh안맞아도 로드 되게
+라이브러리 화
