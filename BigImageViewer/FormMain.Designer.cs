@@ -25,6 +25,7 @@
         private void InitializeComponent() {
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.cbxBmpLoader = new System.Windows.Forms.ComboBox();
             this.chkDrawInfo = new System.Windows.Forms.CheckBox();
             this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
             this.chkDrawFrame = new System.Windows.Forms.CheckBox();
@@ -42,13 +43,17 @@
             this.pbxDraw = new System.Windows.Forms.PictureBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.dlgFolder = new System.Windows.Forms.FolderBrowserDialog();
-            this.cbxBmpLoader = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cbxImageBufferDrawer = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFH)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -64,10 +69,9 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.groupBox1);
+            this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.cbxBmpLoader);
-            this.panel2.Controls.Add(this.chkDrawInfo);
-            this.panel2.Controls.Add(this.chkDrawPixelValue);
-            this.panel2.Controls.Add(this.chkDrawFrame);
             this.panel2.Controls.Add(this.btnAlloc);
             this.panel2.Controls.Add(this.btnClearLog);
             this.panel2.Controls.Add(this.tbxFwdDir);
@@ -83,12 +87,25 @@
             this.panel2.Size = new System.Drawing.Size(435, 411);
             this.panel2.TabIndex = 5;
             // 
+            // cbxBmpLoader
+            // 
+            this.cbxBmpLoader.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxBmpLoader.FormattingEnabled = true;
+            this.cbxBmpLoader.Items.AddRange(new object[] {
+            "C",
+            "OpenCV",
+            ".NET Bitmap"});
+            this.cbxBmpLoader.Location = new System.Drawing.Point(186, 147);
+            this.cbxBmpLoader.Name = "cbxBmpLoader";
+            this.cbxBmpLoader.Size = new System.Drawing.Size(121, 20);
+            this.cbxBmpLoader.TabIndex = 6;
+            // 
             // chkDrawInfo
             // 
             this.chkDrawInfo.AutoSize = true;
             this.chkDrawInfo.Checked = true;
             this.chkDrawInfo.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawInfo.Location = new System.Drawing.Point(6, 166);
+            this.chkDrawInfo.Location = new System.Drawing.Point(232, 20);
             this.chkDrawInfo.Name = "chkDrawInfo";
             this.chkDrawInfo.Size = new System.Drawing.Size(77, 16);
             this.chkDrawInfo.TabIndex = 5;
@@ -101,7 +118,7 @@
             this.chkDrawPixelValue.AutoSize = true;
             this.chkDrawPixelValue.Checked = true;
             this.chkDrawPixelValue.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawPixelValue.Location = new System.Drawing.Point(6, 144);
+            this.chkDrawPixelValue.Location = new System.Drawing.Point(105, 20);
             this.chkDrawPixelValue.Name = "chkDrawPixelValue";
             this.chkDrawPixelValue.Size = new System.Drawing.Size(121, 16);
             this.chkDrawPixelValue.TabIndex = 5;
@@ -114,7 +131,7 @@
             this.chkDrawFrame.AutoSize = true;
             this.chkDrawFrame.Checked = true;
             this.chkDrawFrame.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawFrame.Location = new System.Drawing.Point(6, 122);
+            this.chkDrawFrame.Location = new System.Drawing.Point(6, 20);
             this.chkDrawFrame.Name = "chkDrawFrame";
             this.chkDrawFrame.Size = new System.Drawing.Size(93, 16);
             this.chkDrawFrame.TabIndex = 5;
@@ -124,7 +141,7 @@
             // 
             // btnAlloc
             // 
-            this.btnAlloc.Location = new System.Drawing.Point(6, 6);
+            this.btnAlloc.Location = new System.Drawing.Point(8, 87);
             this.btnAlloc.Name = "btnAlloc";
             this.btnAlloc.Size = new System.Drawing.Size(91, 23);
             this.btnAlloc.TabIndex = 1;
@@ -145,7 +162,7 @@
             // 
             // tbxFwdDir
             // 
-            this.tbxFwdDir.Location = new System.Drawing.Point(103, 37);
+            this.tbxFwdDir.Location = new System.Drawing.Point(105, 118);
             this.tbxFwdDir.Name = "tbxFwdDir";
             this.tbxFwdDir.Size = new System.Drawing.Size(326, 21);
             this.tbxFwdDir.TabIndex = 4;
@@ -153,7 +170,7 @@
             // 
             // btnResetZoom
             // 
-            this.btnResetZoom.Location = new System.Drawing.Point(6, 93);
+            this.btnResetZoom.Location = new System.Drawing.Point(8, 174);
             this.btnResetZoom.Name = "btnResetZoom";
             this.btnResetZoom.Size = new System.Drawing.Size(91, 23);
             this.btnResetZoom.TabIndex = 1;
@@ -163,7 +180,7 @@
             // 
             // numFNum
             // 
-            this.numFNum.Location = new System.Drawing.Point(249, 9);
+            this.numFNum.Location = new System.Drawing.Point(251, 90);
             this.numFNum.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -180,7 +197,7 @@
             // 
             // btnFwdDir
             // 
-            this.btnFwdDir.Location = new System.Drawing.Point(6, 35);
+            this.btnFwdDir.Location = new System.Drawing.Point(8, 116);
             this.btnFwdDir.Name = "btnFwdDir";
             this.btnFwdDir.Size = new System.Drawing.Size(91, 23);
             this.btnFwdDir.TabIndex = 1;
@@ -190,7 +207,7 @@
             // 
             // btnLoadFwd
             // 
-            this.btnLoadFwd.Location = new System.Drawing.Point(6, 64);
+            this.btnLoadFwd.Location = new System.Drawing.Point(8, 145);
             this.btnLoadFwd.Name = "btnLoadFwd";
             this.btnLoadFwd.Size = new System.Drawing.Size(91, 23);
             this.btnLoadFwd.TabIndex = 2;
@@ -200,7 +217,7 @@
             // 
             // numFH
             // 
-            this.numFH.Location = new System.Drawing.Point(176, 9);
+            this.numFH.Location = new System.Drawing.Point(178, 90);
             this.numFH.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -217,7 +234,7 @@
             // 
             // numFW
             // 
-            this.numFW.Location = new System.Drawing.Point(103, 9);
+            this.numFW.Location = new System.Drawing.Point(105, 90);
             this.numFW.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -276,18 +293,51 @@
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
-            // cbxBmpLoader
+            // label1
             // 
-            this.cbxBmpLoader.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbxBmpLoader.FormattingEnabled = true;
-            this.cbxBmpLoader.Items.AddRange(new object[] {
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(105, 150);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(75, 12);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "BMP Loader";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.chkDrawFrame);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.chkDrawPixelValue);
+            this.groupBox1.Controls.Add(this.cbxImageBufferDrawer);
+            this.groupBox1.Controls.Add(this.chkDrawInfo);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(435, 70);
+            this.groupBox1.TabIndex = 8;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Draw Option";
+            // 
+            // cbxImageBufferDrawer
+            // 
+            this.cbxImageBufferDrawer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxImageBufferDrawer.FormattingEnabled = true;
+            this.cbxImageBufferDrawer.Items.AddRange(new object[] {
             "C",
-            "OpenCV",
-            ".NET Bitmap"});
-            this.cbxBmpLoader.Location = new System.Drawing.Point(103, 66);
-            this.cbxBmpLoader.Name = "cbxBmpLoader";
-            this.cbxBmpLoader.Size = new System.Drawing.Size(121, 20);
-            this.cbxBmpLoader.TabIndex = 6;
+            ".NET Unsafe",
+            ".NET Marshal"});
+            this.cbxImageBufferDrawer.Location = new System.Drawing.Point(132, 42);
+            this.cbxImageBufferDrawer.Name = "cbxImageBufferDrawer";
+            this.cbxImageBufferDrawer.Size = new System.Drawing.Size(121, 20);
+            this.cbxImageBufferDrawer.TabIndex = 6;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(120, 12);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Image Buffer Drawer";
             // 
             // FormMain
             // 
@@ -307,6 +357,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numFH)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -333,6 +385,10 @@
         private System.Windows.Forms.CheckBox chkDrawPixelValue;
         private System.Windows.Forms.CheckBox chkDrawFrame;
         private System.Windows.Forms.ComboBox cbxBmpLoader;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox cbxImageBufferDrawer;
+        private System.Windows.Forms.Label label1;
     }
 }
 

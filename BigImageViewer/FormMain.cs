@@ -14,6 +14,7 @@ namespace BigImageViewer {
     public partial class FormMain : Form {
         public FormMain() {
             InitializeComponent();
+            cbxImageBufferDrawer.SelectedIndex = 0;
             cbxBmpLoader.SelectedIndex = 0;
             this.pbxDraw.MouseWheel += this.PbxDraw_MouseWheel;
 
@@ -90,9 +91,8 @@ namespace BigImageViewer {
             MsvcrtDll.memset(imgBuf, 0, (ulong)((long)ImgBW * ImgBH));
         }
 
-        enum BitmapLoader { C, OpenCV, DotNet_Bitmap }
-
         // 포워드 이미지 로드
+        enum BitmapLoader { C, OpenCV, Dotnet_Bitmap }
         private void LoadFwdImg() {
             long frmSize = imgFW * imgFH;
             string dir = tbxFwdDir.Text;
@@ -124,8 +124,15 @@ namespace BigImageViewer {
         }
 
         // 이미지 버퍼를 표시 버퍼로 복사
+        enum ImageBufferDrawer { C, Dotnet_Unsafe, Dotnet_Marshal}
         private void RedrawImage() {
-            NativeDll.CopyImageBuf(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
+            var drawer = (ImageBufferDrawer)cbxImageBufferDrawer.SelectedIndex;
+            if (drawer == ImageBufferDrawer.C)
+                NativeDll.CopyImageBuf(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
+            else if (drawer == ImageBufferDrawer.Dotnet_Unsafe)
+                Alg.CopyImageBufUnsafe(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
+            else
+                Alg.CopyImageBufMarshal(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
             pbxDraw.Invalidate();
         }
 
