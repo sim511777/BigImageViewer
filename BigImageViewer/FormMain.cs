@@ -253,6 +253,63 @@ namespace BigImageViewer {
             ptPanning.Y += (e.Delta > 0) ? scroll : -scroll;
         }
 
+        int holeW;
+        int holeH;
+        Hole[] holes;
+
+        private void InitHoles() {
+            holeW = (int)numHoleW.Value;            
+            holeH = (int)numHoleH.Value;
+            float pitchX = (float)numHolePitchX.Value;
+            float pitchY = (float)numHolePitchY.Value;
+            float dx = 18;
+            float dy = 18;
+            holes = new Hole[holeW * holeH];
+            for (int iy = 0; iy < holeH; iy++) {
+                for (int ix = 0; ix < holeW; ix++) {
+                    float x = 3340 + ix * pitchX;
+                    float y = 7280 + iy * pitchY;
+                    holes[holeW * iy + ix] = new Hole(x, y, dx, dy, true);
+                }
+            }
+        }
+
+        private void DrawHoles(Graphics g) {
+            if (holes == null)
+                return;
+
+            var ptDisp1 = Point.Empty;
+            var ptDisp2 = (Point)pbxDraw.ClientSize;
+            var ptImg1 = DispToImg(ptDisp1);
+            var ptImg2 = DispToImg(ptDisp2);
+            float imgX1 = (float)Math.Floor(ptImg1.X);
+            float imgY1 = (float)Math.Floor(ptImg1.Y);
+            float imgX2 = (float)Math.Floor(ptImg2.X);
+            float imgY2 = (float)Math.Floor(ptImg2.Y);
+            
+            float zoomLevel = ZoomLevel;
+            float panX = ptPanning.X;
+            float panY = ptPanning.Y;
+            Pen pen = Pens.Red;
+            for (int iy = 0; iy < holeH; iy++) {
+                for (int ix = 0; ix < holeW; ix++) {
+                    var hole = holes[holeW * iy + ix];
+                    if (hole.x < imgX1 || hole.x > imgX2 || hole.y < imgY1 || hole.y > imgY2)
+                        continue;
+                    DrawHole(g, pen, hole, zoomLevel, panX, panY);
+                }
+            }
+        }
+
+        private void DrawHole(Graphics g, Pen pen, Hole hole, float zoomLevel, float panX, float panY) {
+            float x = (hole.x-hole.w/2f) * zoomLevel + panX;
+            float y = (hole.y-hole.h/2f) * zoomLevel + panY;
+            float width = hole.w * zoomLevel;
+            float height = hole.h * zoomLevel;
+            g.DrawEllipse(pen, x, y, width, height);
+        }
+
+        //=============================================================
         private void btnAlloc_Click(object sender, EventArgs e) {
             Log("Alloc Buffer");
             FreeImgBuf();
@@ -287,6 +344,8 @@ namespace BigImageViewer {
                 DrawFrame(g);
             if (chkDrawInfo.Checked)
                 DrawInfo(g);
+            if (chkDrawHoles.Checked)
+                DrawHoles(g);
         }
 
         private void chkDrawFrame_CheckedChanged(object sender, EventArgs e) {
@@ -333,6 +392,11 @@ namespace BigImageViewer {
                 return;
 
             mouseDown = false;
+        }
+
+        private void btnInitHoles_Click(object sender, EventArgs e) {
+            InitHoles();
+            pbxDraw.Invalidate();
         }
     }
 }

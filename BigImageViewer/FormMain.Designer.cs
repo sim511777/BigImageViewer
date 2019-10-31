@@ -25,10 +25,14 @@
         private void InitializeComponent() {
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.cbxBmpLoader = new System.Windows.Forms.ComboBox();
-            this.chkDrawInfo = new System.Windows.Forms.CheckBox();
-            this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.chkDrawFrame = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
+            this.cbxImageBufferDrawer = new System.Windows.Forms.ComboBox();
+            this.chkDrawInfo = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cbxBmpLoader = new System.Windows.Forms.ComboBox();
             this.btnAlloc = new System.Windows.Forms.Button();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.tbxFwdDir = new System.Windows.Forms.TextBox();
@@ -43,17 +47,23 @@
             this.pbxDraw = new System.Windows.Forms.PictureBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.dlgFolder = new System.Windows.Forms.FolderBrowserDialog();
-            this.label1 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cbxImageBufferDrawer = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.chkDrawHoles = new System.Windows.Forms.CheckBox();
+            this.btnInitHoles = new System.Windows.Forms.Button();
+            this.numHolePitchX = new System.Windows.Forms.NumericUpDown();
+            this.numHolePitchY = new System.Windows.Forms.NumericUpDown();
+            this.numHoleW = new System.Windows.Forms.NumericUpDown();
+            this.numHoleH = new System.Windows.Forms.NumericUpDown();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFH)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numHolePitchX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHolePitchY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleW)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleH)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -72,6 +82,7 @@
             this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.cbxBmpLoader);
+            this.panel2.Controls.Add(this.btnInitHoles);
             this.panel2.Controls.Add(this.btnAlloc);
             this.panel2.Controls.Add(this.btnClearLog);
             this.panel2.Controls.Add(this.tbxFwdDir);
@@ -79,7 +90,11 @@
             this.panel2.Controls.Add(this.numFNum);
             this.panel2.Controls.Add(this.btnFwdDir);
             this.panel2.Controls.Add(this.btnLoadFwd);
+            this.panel2.Controls.Add(this.numHoleH);
+            this.panel2.Controls.Add(this.numHolePitchY);
             this.panel2.Controls.Add(this.numFH);
+            this.panel2.Controls.Add(this.numHoleW);
+            this.panel2.Controls.Add(this.numHolePitchX);
             this.panel2.Controls.Add(this.numFW);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
@@ -87,31 +102,43 @@
             this.panel2.Size = new System.Drawing.Size(435, 411);
             this.panel2.TabIndex = 5;
             // 
-            // cbxBmpLoader
+            // groupBox1
             // 
-            this.cbxBmpLoader.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbxBmpLoader.FormattingEnabled = true;
-            this.cbxBmpLoader.Items.AddRange(new object[] {
-            "C",
-            "OpenCV",
-            ".NET Bitmap"});
-            this.cbxBmpLoader.Location = new System.Drawing.Point(186, 147);
-            this.cbxBmpLoader.Name = "cbxBmpLoader";
-            this.cbxBmpLoader.Size = new System.Drawing.Size(121, 20);
-            this.cbxBmpLoader.TabIndex = 6;
+            this.groupBox1.Controls.Add(this.chkDrawFrame);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.chkDrawPixelValue);
+            this.groupBox1.Controls.Add(this.cbxImageBufferDrawer);
+            this.groupBox1.Controls.Add(this.chkDrawHoles);
+            this.groupBox1.Controls.Add(this.chkDrawInfo);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(435, 70);
+            this.groupBox1.TabIndex = 8;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Draw Option";
             // 
-            // chkDrawInfo
+            // chkDrawFrame
             // 
-            this.chkDrawInfo.AutoSize = true;
-            this.chkDrawInfo.Checked = true;
-            this.chkDrawInfo.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawInfo.Location = new System.Drawing.Point(232, 20);
-            this.chkDrawInfo.Name = "chkDrawInfo";
-            this.chkDrawInfo.Size = new System.Drawing.Size(77, 16);
-            this.chkDrawInfo.TabIndex = 5;
-            this.chkDrawInfo.Text = "Draw Info";
-            this.chkDrawInfo.UseVisualStyleBackColor = true;
-            this.chkDrawInfo.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            this.chkDrawFrame.AutoSize = true;
+            this.chkDrawFrame.Checked = true;
+            this.chkDrawFrame.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDrawFrame.Location = new System.Drawing.Point(6, 20);
+            this.chkDrawFrame.Name = "chkDrawFrame";
+            this.chkDrawFrame.Size = new System.Drawing.Size(93, 16);
+            this.chkDrawFrame.TabIndex = 5;
+            this.chkDrawFrame.Text = "Draw Frame";
+            this.chkDrawFrame.UseVisualStyleBackColor = true;
+            this.chkDrawFrame.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(120, 12);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Image Buffer Drawer";
             // 
             // chkDrawPixelValue
             // 
@@ -126,18 +153,53 @@
             this.chkDrawPixelValue.UseVisualStyleBackColor = true;
             this.chkDrawPixelValue.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
-            // chkDrawFrame
+            // cbxImageBufferDrawer
             // 
-            this.chkDrawFrame.AutoSize = true;
-            this.chkDrawFrame.Checked = true;
-            this.chkDrawFrame.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawFrame.Location = new System.Drawing.Point(6, 20);
-            this.chkDrawFrame.Name = "chkDrawFrame";
-            this.chkDrawFrame.Size = new System.Drawing.Size(93, 16);
-            this.chkDrawFrame.TabIndex = 5;
-            this.chkDrawFrame.Text = "Draw Frame";
-            this.chkDrawFrame.UseVisualStyleBackColor = true;
-            this.chkDrawFrame.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            this.cbxImageBufferDrawer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxImageBufferDrawer.FormattingEnabled = true;
+            this.cbxImageBufferDrawer.Items.AddRange(new object[] {
+            "C",
+            ".NET Unsafe",
+            ".NET Marshal"});
+            this.cbxImageBufferDrawer.Location = new System.Drawing.Point(132, 42);
+            this.cbxImageBufferDrawer.Name = "cbxImageBufferDrawer";
+            this.cbxImageBufferDrawer.Size = new System.Drawing.Size(121, 20);
+            this.cbxImageBufferDrawer.TabIndex = 6;
+            // 
+            // chkDrawInfo
+            // 
+            this.chkDrawInfo.AutoSize = true;
+            this.chkDrawInfo.Checked = true;
+            this.chkDrawInfo.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDrawInfo.Location = new System.Drawing.Point(232, 20);
+            this.chkDrawInfo.Name = "chkDrawInfo";
+            this.chkDrawInfo.Size = new System.Drawing.Size(77, 16);
+            this.chkDrawInfo.TabIndex = 5;
+            this.chkDrawInfo.Text = "Draw Info";
+            this.chkDrawInfo.UseVisualStyleBackColor = true;
+            this.chkDrawInfo.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(105, 150);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(75, 12);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "BMP Loader";
+            // 
+            // cbxBmpLoader
+            // 
+            this.cbxBmpLoader.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxBmpLoader.FormattingEnabled = true;
+            this.cbxBmpLoader.Items.AddRange(new object[] {
+            "C",
+            "OpenCV",
+            ".NET Bitmap"});
+            this.cbxBmpLoader.Location = new System.Drawing.Point(186, 147);
+            this.cbxBmpLoader.Name = "cbxBmpLoader";
+            this.cbxBmpLoader.Size = new System.Drawing.Size(121, 20);
+            this.cbxBmpLoader.TabIndex = 6;
             // 
             // btnAlloc
             // 
@@ -166,7 +228,7 @@
             this.tbxFwdDir.Name = "tbxFwdDir";
             this.tbxFwdDir.Size = new System.Drawing.Size(326, 21);
             this.tbxFwdDir.TabIndex = 4;
-            this.tbxFwdDir.Text = "E:\\반출\\2019.07.17\\대외비_이영철_190712_Rib\\Fwd0";
+            this.tbxFwdDir.Text = "C:\\test\\대외비_이영철_190712_Rib\\Fwd0";
             // 
             // btnResetZoom
             // 
@@ -293,51 +355,98 @@
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
-            // label1
+            // chkDrawHoles
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(105, 150);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 12);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "BMP Loader";
+            this.chkDrawHoles.AutoSize = true;
+            this.chkDrawHoles.Checked = true;
+            this.chkDrawHoles.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDrawHoles.Location = new System.Drawing.Point(315, 20);
+            this.chkDrawHoles.Name = "chkDrawHoles";
+            this.chkDrawHoles.Size = new System.Drawing.Size(89, 16);
+            this.chkDrawHoles.TabIndex = 5;
+            this.chkDrawHoles.Text = "Draw Holes";
+            this.chkDrawHoles.UseVisualStyleBackColor = true;
+            this.chkDrawHoles.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
-            // groupBox1
+            // btnInitHoles
             // 
-            this.groupBox1.Controls.Add(this.chkDrawFrame);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.chkDrawPixelValue);
-            this.groupBox1.Controls.Add(this.cbxImageBufferDrawer);
-            this.groupBox1.Controls.Add(this.chkDrawInfo);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox1.Location = new System.Drawing.Point(0, 0);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(435, 70);
-            this.groupBox1.TabIndex = 8;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Draw Option";
+            this.btnInitHoles.Location = new System.Drawing.Point(8, 203);
+            this.btnInitHoles.Name = "btnInitHoles";
+            this.btnInitHoles.Size = new System.Drawing.Size(91, 23);
+            this.btnInitHoles.TabIndex = 1;
+            this.btnInitHoles.Text = "Init Holes";
+            this.btnInitHoles.UseVisualStyleBackColor = true;
+            this.btnInitHoles.Click += new System.EventHandler(this.btnInitHoles_Click);
             // 
-            // cbxImageBufferDrawer
+            // numHolePitchX
             // 
-            this.cbxImageBufferDrawer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbxImageBufferDrawer.FormattingEnabled = true;
-            this.cbxImageBufferDrawer.Items.AddRange(new object[] {
-            "C",
-            ".NET Unsafe",
-            ".NET Marshal"});
-            this.cbxImageBufferDrawer.Location = new System.Drawing.Point(132, 42);
-            this.cbxImageBufferDrawer.Name = "cbxImageBufferDrawer";
-            this.cbxImageBufferDrawer.Size = new System.Drawing.Size(121, 20);
-            this.cbxImageBufferDrawer.TabIndex = 6;
+            this.numHolePitchX.DecimalPlaces = 2;
+            this.numHolePitchX.Location = new System.Drawing.Point(107, 203);
+            this.numHolePitchX.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numHolePitchX.Name = "numHolePitchX";
+            this.numHolePitchX.Size = new System.Drawing.Size(67, 21);
+            this.numHolePitchX.TabIndex = 3;
+            this.numHolePitchX.Value = new decimal(new int[] {
+            31,
+            0,
+            0,
+            0});
             // 
-            // label2
+            // numHolePitchY
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 45);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(120, 12);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Image Buffer Drawer";
+            this.numHolePitchY.DecimalPlaces = 2;
+            this.numHolePitchY.Location = new System.Drawing.Point(180, 203);
+            this.numHolePitchY.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numHolePitchY.Name = "numHolePitchY";
+            this.numHolePitchY.Size = new System.Drawing.Size(67, 21);
+            this.numHolePitchY.TabIndex = 3;
+            this.numHolePitchY.Value = new decimal(new int[] {
+            31,
+            0,
+            0,
+            0});
+            // 
+            // numHoleW
+            // 
+            this.numHoleW.Location = new System.Drawing.Point(107, 230);
+            this.numHoleW.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numHoleW.Name = "numHoleW";
+            this.numHoleW.Size = new System.Drawing.Size(67, 21);
+            this.numHoleW.TabIndex = 3;
+            this.numHoleW.Value = new decimal(new int[] {
+            1444,
+            0,
+            0,
+            0});
+            // 
+            // numHoleH
+            // 
+            this.numHoleH.Location = new System.Drawing.Point(180, 230);
+            this.numHoleH.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numHoleH.Name = "numHoleH";
+            this.numHoleH.Size = new System.Drawing.Size(67, 21);
+            this.numHoleH.TabIndex = 3;
+            this.numHoleH.Value = new decimal(new int[] {
+            20000,
+            0,
+            0,
+            0});
             // 
             // FormMain
             // 
@@ -353,12 +462,16 @@
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFH)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numHolePitchX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHolePitchY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleW)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleH)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -389,6 +502,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox cbxImageBufferDrawer;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox chkDrawHoles;
+        private System.Windows.Forms.Button btnInitHoles;
+        private System.Windows.Forms.NumericUpDown numHoleH;
+        private System.Windows.Forms.NumericUpDown numHolePitchY;
+        private System.Windows.Forms.NumericUpDown numHoleW;
+        private System.Windows.Forms.NumericUpDown numHolePitchX;
     }
 }
 
