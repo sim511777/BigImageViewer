@@ -346,6 +346,10 @@ namespace BigImageViewer {
                 DrawInfo(g);
             if (chkDrawHoles.Checked)
                 DrawHoles(g);
+            
+            var hdc = g.GetHdc();
+                NativeDll.DrawDC(hdc);
+            g.ReleaseHdc(hdc);
         }
 
         private void chkDrawFrame_CheckedChanged(object sender, EventArgs e) {

@@ -147,3 +147,7 @@ NATIVE_API void CopyImageBuf(BYTE* srcBuf, int srcBW, int srcBH, BYTE* dstBuf, i
     delete[] srcXs;
     delete[] srcYs;
 }
+
+NATIVE_API void DrawDC(HDC hdc) {
+    Ellipse(hdc, 0, 0, 100, 100);
+}
