@@ -10,13 +10,13 @@ namespace BigImageViewer {
         public float y;
         public float w;
         public float h;
-        public bool exist;
-        public Hole(float x, float y, float dx, float dy, bool exist) {
+        public int val;
+        public Hole(float x, float y, float dx, float dy, int val) {
             this.x = x;
             this.y = y;
             this.w = dx;
             this.h = dy;
-            this.exist = exist;
+            this.val = val;
         }
     }
 }

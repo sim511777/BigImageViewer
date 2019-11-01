@@ -119,8 +119,8 @@ namespace BigImageViewer {
                     MsvcrtDll.memset(buf, 0, (ulong)frmSize);
                 }
             }
-            Log($"End Load Fwd Image");
             Log($"이미지 {numFrm}개 중 {succNum}개 이미지 로드 성공");
+            Log($"End Load Fwd Image");
         }
 
         // 이미지 버퍼를 표시 버퍼로 복사
@@ -257,21 +257,16 @@ namespace BigImageViewer {
         int holeH;
         Hole[] holes;
 
-        private void InitHoles() {
-            holeW = (int)numHoleW.Value;            
-            holeH = (int)numHoleH.Value;
-            float pitchX = (float)numHolePitchX.Value;
-            float pitchY = (float)numHolePitchY.Value;
-            float dx = 18;
-            float dy = 18;
-            holes = new Hole[holeW * holeH];
+        private Hole[] InitHoles(int holeW, int holeH, float pitchX, float pitchY, float dx, float dy) {
+            Hole[] holes = new Hole[holeW * holeH];
             for (int iy = 0; iy < holeH; iy++) {
                 for (int ix = 0; ix < holeW; ix++) {
                     float x = 3340 + ix * pitchX;
                     float y = 7280 + iy * pitchY;
-                    holes[holeW * iy + ix] = new Hole(x, y, dx, dy, true);
+                    holes[holeW * iy + ix] = new Hole(x, y, dx, dy, 1);
                 }
             }
+            return holes;
         }
 
         private void DrawHoles(Graphics g) {
@@ -403,7 +398,24 @@ namespace BigImageViewer {
         }
 
         private void btnInitHoles_Click(object sender, EventArgs e) {
-            InitHoles();
+            holeW = (int)numHoleW.Value;
+            holeH = (int)numHoleH.Value;
+            float pitchX = (float)numHolePitchX.Value;
+            float pitchY = (float)numHolePitchY.Value;
+            float dx = (float)numHoleDx.Value;
+            float dy = (float)numHoleDy.Value;
+            Log("Init Holes");
+            holes = InitHoles(holeW, holeH, pitchX, pitchY, dx, dy);
+            Log("End Init Holes");
+            pbxDraw.Invalidate();
+        }
+
+        private void btnFreeHoles_Click(object sender, EventArgs e) {
+            Log("Free Holes");
+            holeW = 0;
+            holeH = 0;
+            holes = null;
+            Log("End Free Holes");
             pbxDraw.Invalidate();
         }
     }
