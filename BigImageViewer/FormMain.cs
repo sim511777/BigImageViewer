@@ -201,7 +201,7 @@ namespace BigImageViewer {
             Brushes.Black,      // 224~255
         };
         private void DrawPixelValue(Graphics g) {
-            if (ZoomLevel < 20)
+            if (ZoomLevel < 15)
                 return;
 
             var ptDisp1 = Point.Empty;
@@ -337,19 +337,23 @@ namespace BigImageViewer {
         Font infoFont = SystemFonts.DefaultFont;
         private void pbxDraw_Paint(object sender, PaintEventArgs e) {
             var g = e.Graphics;
+
             g.DrawImage(dispBmp, 0, 0);
-            if (chkDrawPixelValue.Checked)
-                DrawPixelValue(g);
+            if (chkDrawPixelValue.Checked) {
+                if (chkUseHDC.Checked) {
+                    var hdc = g.GetHdc();
+                    NativeDll.DrawPixelValue(hdc, ZoomLevel, ptPanning.X, ptPanning.Y, pbxDraw.ClientSize.Width, pbxDraw.ClientSize.Height, imgBuf, ImgBW, ImgBH);
+                    g.ReleaseHdc(hdc);
+                } else {
+                    DrawPixelValue(g);
+                }
+            }
             if (chkDrawFrame.Checked)
                 DrawFrame(g);
             if (chkDrawInfo.Checked)
                 DrawInfo(g);
             if (chkDrawHoles.Checked)
                 DrawHoles(g);
-            
-            var hdc = g.GetHdc();
-                NativeDll.DrawDC(hdc);
-            g.ReleaseHdc(hdc);
         }
 
         private void chkDrawFrame_CheckedChanged(object sender, EventArgs e) {

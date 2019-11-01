@@ -17,5 +17,6 @@ namespace BigImageViewer {
         [DllImport(dll)] public static extern bool Load8bitBmp(IntPtr buf, int bw, int bh, string filePath);
         [DllImport(dll)] public static extern void CopyImageBuf(IntPtr srcBuf, int srcBW, int srcBH, IntPtr dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel);
         [DllImport(dll)] public static extern void DrawDC(IntPtr hdc);
+        [DllImport(dll)] public static extern void DrawPixelValue(IntPtr hdc, float ZoomLevel, int panX, int panY, int clientW, int clientH, IntPtr imgBuf, int ImgBW, int ImgBH);
     }
 }

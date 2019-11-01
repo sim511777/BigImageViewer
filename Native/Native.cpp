@@ -151,3 +151,85 @@ NATIVE_API void CopyImageBuf(BYTE* srcBuf, int srcBW, int srcBH, BYTE* dstBuf, i
 NATIVE_API void DrawDC(HDC hdc) {
     Ellipse(hdc, 0, 0, 100, 100);
 }
+
+// 표시 픽셀 좌표를 이미지 좌표로 변환
+float DispToImg(int pt, float zoomLevel, int pan) {
+    return (pt - pan) / zoomLevel;
+}
+
+// 이미지 좌표를 표시 픽셀 좌표로 변환
+int ImgToDisp(float pt, float zoomLevel, int pan) {
+    return (int)floor(pt * zoomLevel + pan);
+}
+
+#define VC_BLACK       RGB(0,0,0)
+#define VC_BLUE        RGB(0,0,255)
+#define VC_GREEN       RGB(0,255,0)
+#define VC_CYAN        RGB(0,255,255)
+#define VC_RED         RGB(255,0,0)
+#define VC_MAGENTA     RGB(255,0,255)
+#define VC_YELLOW      RGB(255,255,0)
+#define VC_WHITE       RGB(255,255,255)
+#define VC_DARKBLUE    RGB(0,0,128)
+#define VC_DARKGREEN   RGB(0,128,0)
+#define VC_DARKCYAN    RGB(0,128,128)
+#define VC_DARKRED     RGB(128,0,0)
+#define VC_DARKMAGENTA RGB(128,0,128)
+#define VC_DARKYELLOW  RGB(128,128,0)
+#define VC_DARKGRAY    RGB(128,128,128)
+#define VC_LIGHTGRAY   RGB(192,192,192)
+#define VC_LIGHTGREEN  RGB(192,220,192)
+#define VC_LIGHTCYAN   RGB(166,202,240)
+#define VC_CREAM       RGB(255,251,240)
+#define VC_MIDGRAY     RGB(160,160,164)
+#define VC_DODGERBLUE  RGB(30,144,255)
+#define VC_BROWN       RGB(165,42,42)
+
+COLORREF pseudo[] = {
+    
+    VC_WHITE,      // 0~31
+    VC_LIGHTCYAN,  // 32~63
+    VC_DODGERBLUE, // 63~95
+    VC_YELLOW,     // 96~127
+    VC_BROWN,      // 128~159
+    VC_MAGENTA,    // 160~191
+    VC_RED    ,    // 192~223
+    VC_BLACK,      // 224~255
+};
+
+
+NATIVE_API void DrawPixelValue(HDC hdc, float ZoomLevel, int panX, int panY, int clientW, int clientH, BYTE *imgBuf, int ImgBW, int ImgBH) {
+    if (ZoomLevel < 15)
+        return;
+
+    int oldBkMode = SetBkMode(hdc, TRANSPARENT);
+    
+    int imgX1 = (int)floor(DispToImg(0, ZoomLevel, panX));
+    int imgY1 = (int)floor(DispToImg(0, ZoomLevel, panY));
+    int imgX2 = (int)floor(DispToImg(clientW, ZoomLevel, panX));
+    int imgY2 = (int)floor(DispToImg(clientH, ZoomLevel, panY));
+    if (imgX1 < 0)
+        imgX1 = 0;
+    if (imgY1 < 0)
+        imgY1 = 0;
+    if (imgX2 >= ImgBW)
+        imgX2 = ImgBW - 1;
+    if (imgY2 >= ImgBH)
+        imgY2 = ImgBH - 1;
+
+    char str[256];
+
+    for (int imgY = imgY1; imgY <= imgY2; imgY++) {
+        for (int imgX = imgX1; imgX <= imgX2; imgX++) {
+            int dispX = ImgToDisp(imgX, ZoomLevel, panX);
+            int dispY = ImgToDisp(imgY, ZoomLevel, panY);
+            int pixelVal = imgBuf[(long)ImgBW * imgY + imgX];
+            _itoa_s(pixelVal, str, 10);
+            COLORREF oldColor = SetTextColor(hdc, pseudo[pixelVal/32]);
+            TextOut(hdc, dispX, dispY, str, strlen(str));
+            SetTextColor(hdc, oldColor);
+        }
+    }
+
+    SetBkMode(hdc, oldBkMode);
+}

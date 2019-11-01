@@ -11,6 +11,8 @@
 // Windows 헤더 파일
 #include <windows.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 
