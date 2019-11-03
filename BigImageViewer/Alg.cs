@@ -9,15 +9,6 @@ using System.Threading.Tasks;
 
 namespace BigImageViewer {
     class Alg {
-        public static bool Load8bitBmp(IntPtr buf, int bw, int bh, string filePath) {
-            Bitmap bmp = new Bitmap(filePath);
-            BitmapData bd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, bmp.PixelFormat);
-            MsvcrtDll.memcpy(buf, bd.Scan0, (ulong)(bw * bh));
-            bmp.UnlockBits(bd);
-            bmp.Dispose();
-            return true;
-        }
-                
         unsafe public static void CopyImageBuf(IntPtr srcBuf, int srcBW, int srcBH, IntPtr dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel) {
             int[] srcYs = new int[dstBH];
             int[] srcXs = new int[dstBW];
