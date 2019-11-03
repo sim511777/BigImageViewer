@@ -241,12 +241,12 @@ namespace BigImageViewer {
         int holeH;
         Hole[] holes;
         // 홀 버퍼 초기화
-        private Hole[] InitHoles(int holeW, int holeH, float pitchX, float pitchY, float dx, float dy) {
+        private Hole[] InitHoles(int holeW, int holeH, float left, float top, float pitchX, float pitchY, float dx, float dy) {
             Hole[] holes = new Hole[holeW * holeH];
             for (int iy = 0; iy < holeH; iy++) {
                 for (int ix = 0; ix < holeW; ix++) {
-                    float x = 3340 + ix * pitchX;
-                    float y = 7280 + iy * pitchY;
+                    float x = left + ix * pitchX;
+                    float y = top + iy * pitchY;
                     holes[holeW * iy + ix] = new Hole(x, y, dx, dy, 1);
                 }
             }
@@ -379,12 +379,14 @@ namespace BigImageViewer {
         private void btnInitHoles_Click(object sender, EventArgs e) {
             holeW = (int)numHoleW.Value;
             holeH = (int)numHoleH.Value;
+            float left = (float)numHoleLeft.Value;
+            float top = (float)numHoleTop.Value;
             float pitchX = (float)numHolePitchX.Value;
             float pitchY = (float)numHolePitchY.Value;
             float dx = (float)numHoleDx.Value;
             float dy = (float)numHoleDy.Value;
             Log("Init Holes");
-            holes = InitHoles(holeW, holeH, pitchX, pitchY, dx, dy);
+            holes = InitHoles(holeW, holeH, left, top, pitchX, pitchY, dx, dy);
             Log("End Init Holes");
             pbxDraw.Invalidate();
         }

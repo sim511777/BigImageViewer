@@ -54,6 +54,9 @@
             this.pbxDraw = new System.Windows.Forms.PictureBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.dlgFolder = new System.Windows.Forms.FolderBrowserDialog();
+            this.numHoleLeft = new System.Windows.Forms.NumericUpDown();
+            this.numHoleTop = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -67,6 +70,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numHolePitchX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleLeft)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleTop)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -84,6 +89,7 @@
             // 
             this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Controls.Add(this.label5);
+            this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.label4);
             this.panel2.Controls.Add(this.label3);
             this.panel2.Controls.Add(this.btnInitHoles);
@@ -95,10 +101,12 @@
             this.panel2.Controls.Add(this.btnLoadFwd);
             this.panel2.Controls.Add(this.numHoleH);
             this.panel2.Controls.Add(this.numHoleDy);
+            this.panel2.Controls.Add(this.numHoleTop);
             this.panel2.Controls.Add(this.numHolePitchY);
             this.panel2.Controls.Add(this.numFH);
             this.panel2.Controls.Add(this.numHoleW);
             this.panel2.Controls.Add(this.numHoleDx);
+            this.panel2.Controls.Add(this.numHoleLeft);
             this.panel2.Controls.Add(this.numHolePitchX);
             this.panel2.Controls.Add(this.numFW);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -177,29 +185,29 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(105, 303);
+            this.label5.Location = new System.Drawing.Point(105, 330);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(54, 12);
+            this.label5.Size = new System.Drawing.Size(55, 12);
             this.label5.TabIndex = 7;
-            this.label5.Text = "diameter";
+            this.label5.Text = "Diameter";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(105, 276);
+            this.label4.Location = new System.Drawing.Point(105, 303);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(32, 12);
+            this.label4.Size = new System.Drawing.Size(33, 12);
             this.label4.TabIndex = 7;
-            this.label4.Text = "pitch";
+            this.label4.Text = "Pitch";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(105, 250);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(30, 12);
+            this.label3.Size = new System.Drawing.Size(32, 12);
             this.label3.TabIndex = 7;
-            this.label3.Text = "num";
+            this.label3.Text = "Num";
             // 
             // btnInitHoles
             // 
@@ -307,7 +315,7 @@
             // numHoleDy
             // 
             this.numHoleDy.DecimalPlaces = 4;
-            this.numHoleDy.Location = new System.Drawing.Point(238, 301);
+            this.numHoleDy.Location = new System.Drawing.Point(238, 328);
             this.numHoleDy.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -325,7 +333,7 @@
             // numHolePitchY
             // 
             this.numHolePitchY.DecimalPlaces = 4;
-            this.numHolePitchY.Location = new System.Drawing.Point(238, 274);
+            this.numHolePitchY.Location = new System.Drawing.Point(238, 301);
             this.numHolePitchY.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -377,7 +385,7 @@
             // numHoleDx
             // 
             this.numHoleDx.DecimalPlaces = 4;
-            this.numHoleDx.Location = new System.Drawing.Point(165, 301);
+            this.numHoleDx.Location = new System.Drawing.Point(165, 328);
             this.numHoleDx.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -395,7 +403,7 @@
             // numHolePitchX
             // 
             this.numHolePitchX.DecimalPlaces = 4;
-            this.numHolePitchX.Location = new System.Drawing.Point(165, 274);
+            this.numHolePitchX.Location = new System.Drawing.Point(165, 301);
             this.numHolePitchX.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -471,6 +479,51 @@
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
+            // numHoleLeft
+            // 
+            this.numHoleLeft.DecimalPlaces = 4;
+            this.numHoleLeft.Location = new System.Drawing.Point(165, 274);
+            this.numHoleLeft.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numHoleLeft.Name = "numHoleLeft";
+            this.numHoleLeft.Size = new System.Drawing.Size(67, 21);
+            this.numHoleLeft.TabIndex = 3;
+            this.numHoleLeft.Value = new decimal(new int[] {
+            3340,
+            0,
+            0,
+            0});
+            // 
+            // numHoleTop
+            // 
+            this.numHoleTop.DecimalPlaces = 4;
+            this.numHoleTop.Location = new System.Drawing.Point(238, 274);
+            this.numHoleTop.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numHoleTop.Name = "numHoleTop";
+            this.numHoleTop.Size = new System.Drawing.Size(67, 21);
+            this.numHoleTop.TabIndex = 3;
+            this.numHoleTop.Value = new decimal(new int[] {
+            7280,
+            0,
+            0,
+            0});
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(105, 276);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(51, 12);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Left Top";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -497,6 +550,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numHolePitchX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleLeft)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleTop)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -534,6 +589,9 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown numHoleTop;
+        private System.Windows.Forms.NumericUpDown numHoleLeft;
     }
 }
 
