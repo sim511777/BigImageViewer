@@ -14,8 +14,6 @@ namespace BigImageViewer {
     public partial class FormMain : Form {
         public FormMain() {
             InitializeComponent();
-            cbxImageBufferDrawer.SelectedIndex = 0;
-            cbxBmpLoader.SelectedIndex = 0;
             this.pbxDraw.MouseWheel += this.PbxDraw_MouseWheel;
 
             AllocDispBuf();
@@ -98,21 +96,13 @@ namespace BigImageViewer {
             string dir = tbxFwdDir.Text;
             int succNum = 0;
 
-            var bmpLoader = (BitmapLoader)cbxBmpLoader.SelectedIndex;
-            Log($"Load Fwd Image (Loader:{bmpLoader})");
+            Log($"Load Fwd Image");
 
             for (int i = 0; i < numFrm; i++) {
                 string filePath = $"{dir}\\Frame_{i:000}.BMP";
                 IntPtr buf = (IntPtr)(imgBuf.ToInt64() + frmSize * i);
                 
-                var r = false;
-                if (bmpLoader == BitmapLoader.C)
-                    r = NativeDll.Load8bitBmp(buf, imgFW, imgFH, filePath);
-                else if (bmpLoader == BitmapLoader.OpenCV)
-                    r = OpenCv.Load8bitBmp(buf, imgFW, imgFH, filePath);
-                else
-                    r = Alg.Load8bitBmp(buf, imgFW, imgFH, filePath);
-                
+                var r = OpenCv.Load8bitBmp(buf, imgFW, imgFH, filePath);
                 if (r) {
                     succNum++;
                 } else {
@@ -124,15 +114,9 @@ namespace BigImageViewer {
         }
 
         // 이미지 버퍼를 표시 버퍼로 복사
-        enum ImageBufferDrawer { C, Dotnet_Unsafe, Dotnet_Marshal}
+        enum ImageBufferDrawer { C, Dotnet_Unsafe}
         private void RedrawImage() {
-            var drawer = (ImageBufferDrawer)cbxImageBufferDrawer.SelectedIndex;
-            if (drawer == ImageBufferDrawer.C)
-                NativeDll.CopyImageBuf(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
-            else if (drawer == ImageBufferDrawer.Dotnet_Unsafe)
-                Alg.CopyImageBufUnsafe(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
-            else
-                Alg.CopyImageBufMarshal(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
+            Alg.CopyImageBuf(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
             pbxDraw.Invalidate();
         }
 
@@ -256,7 +240,7 @@ namespace BigImageViewer {
         int holeW;
         int holeH;
         Hole[] holes;
-
+        // 홀 버퍼 초기화
         private Hole[] InitHoles(int holeW, int holeH, float pitchX, float pitchY, float dx, float dy) {
             Hole[] holes = new Hole[holeW * holeH];
             for (int iy = 0; iy < holeH; iy++) {
@@ -269,6 +253,7 @@ namespace BigImageViewer {
             return holes;
         }
 
+        // 홀버퍼 드로우
         private void DrawHoles(Graphics g) {
             if (holes == null)
                 return;
@@ -296,6 +281,7 @@ namespace BigImageViewer {
             }
         }
 
+        // 개별 홀 드로우
         private void DrawHole(Graphics g, Pen pen, Hole hole, float zoomLevel, float panX, float panY) {
             float x = (hole.x-hole.w/2f) * zoomLevel + panX;
             float y = (hole.y-hole.h/2f) * zoomLevel + panY;
@@ -334,15 +320,8 @@ namespace BigImageViewer {
             var g = e.Graphics;
 
             g.DrawImage(dispBmp, 0, 0);
-            if (chkDrawPixelValue.Checked) {
-                if (chkUseHDC.Checked) {
-                    var hdc = g.GetHdc();
-                    NativeDll.DrawPixelValue(hdc, ZoomLevel, ptPanning.X, ptPanning.Y, pbxDraw.ClientSize.Width, pbxDraw.ClientSize.Height, imgBuf, ImgBW, ImgBH);
-                    g.ReleaseHdc(hdc);
-                } else {
-                    DrawPixelValue(g);
-                }
-            }
+            if (chkDrawPixelValue.Checked)
+                DrawPixelValue(g);
             if (chkDrawFrame.Checked)
                 DrawFrame(g);
             if (chkDrawInfo.Checked)
@@ -407,15 +386,6 @@ namespace BigImageViewer {
             Log("Init Holes");
             holes = InitHoles(holeW, holeH, pitchX, pitchY, dx, dy);
             Log("End Init Holes");
-            pbxDraw.Invalidate();
-        }
-
-        private void btnFreeHoles_Click(object sender, EventArgs e) {
-            Log("Free Holes");
-            holeW = 0;
-            holeH = 0;
-            holes = null;
-            Log("End Free Holes");
             pbxDraw.Invalidate();
         }
     }

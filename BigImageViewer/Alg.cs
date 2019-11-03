@@ -17,40 +17,8 @@ namespace BigImageViewer {
             bmp.Dispose();
             return true;
         }
-
-        public static void CopyImageBufMarshal(IntPtr srcBuf, int srcBW, int srcBH, IntPtr dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel) {
-            int[] srcYs = new int[dstBH];
-            int[] srcXs = new int[dstBW];
-
-            for (int y = 0; y < dstBH; y++) {
-                int srcY = (int)Math.Floor((y - offsetY) / zoomLevel);
-                srcYs[y] = (srcY < 0 || srcY >= srcBH) ? -1 : srcY;
-            }
-
-            for (int x = 0; x < dstBW; x++) {
-                int srcX = (int)Math.Floor((x - offsetX) / zoomLevel);
-                srcXs[x] = (srcX < 0 || srcX >= srcBW) ? -1 : srcX;
-            }
-
-            for (int y = 0; y < dstBH; y++) {
-                IntPtr dstPtr = (IntPtr)(dstBuf.ToInt64() + (long)dstBW * y);
-
-                int srcY = srcYs[y];
-                if (srcY == -1) {
-                    MsvcrtDll.memset(dstPtr, 128, (ulong)dstBW);
-                    continue;
-                }
-
-                IntPtr srcPtr = (IntPtr)(srcBuf.ToInt64() + (long)srcBW * srcY);
-
-                for (int x = 0; x < dstBW; x++, dstPtr += 1) {
-                    int srcX = srcXs[x];
-                    Marshal.WriteByte(dstPtr, (srcX == -1) ? (byte)128 : Marshal.ReadByte(srcPtr + srcX));
-                }
-            }
-        }
-
-        unsafe public static void CopyImageBufUnsafe(IntPtr srcBuf, int srcBW, int srcBH, IntPtr dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel) {
+                
+        unsafe public static void CopyImageBuf(IntPtr srcBuf, int srcBW, int srcBH, IntPtr dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel) {
             int[] srcYs = new int[dstBH];
             int[] srcXs = new int[dstBW];
 

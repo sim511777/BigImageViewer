@@ -13,5 +13,3 @@
 NATIVE_API BOOL Load8BitBmp(BYTE* buf, int bw, int bh, char* filePath);
 NATIVE_API BOOL Save8bitBmp(BYTE *buf, int bw, int bh, char *filePath);
 NATIVE_API void CopyImageBuf(BYTE* srcBuf, int srcBW, int srcBH, BYTE* dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel);
-NATIVE_API void DrawDC(HDC hdc);
-NATIVE_API void DrawPixelValue(HDC hdc, float ZoomLevel, int panX, int panY, int clientW, int clientH, BYTE *imgBuf, int ImgBW, int ImgBH);
