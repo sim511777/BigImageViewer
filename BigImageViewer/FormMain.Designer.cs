@@ -57,8 +57,11 @@
             this.pbxDraw = new System.Windows.Forms.PictureBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.dlgFolder = new System.Windows.Forms.FolderBrowserDialog();
-            this.cbxDispHoleInfo = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.rdoHoleInfoNone = new System.Windows.Forms.RadioButton();
+            this.rdoHoleInfoIndexX = new System.Windows.Forms.RadioButton();
+            this.rdoHoleInfoIndexY = new System.Windows.Forms.RadioButton();
+            this.rdoHoleInfoFWD = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -74,6 +77,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numHolePitchX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -119,17 +123,16 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.cbxDispHoleInfo);
+            this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.chkDrawFrame);
             this.groupBox1.Controls.Add(this.chkDrawPixelValue);
             this.groupBox1.Controls.Add(this.chkDrawHoles);
-            this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.chkDrawInfo);
             this.groupBox1.Controls.Add(this.btnResetZoom);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(435, 101);
+            this.groupBox1.Size = new System.Drawing.Size(435, 123);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Draw Option";
@@ -188,7 +191,7 @@
             // 
             // btnResetZoom
             // 
-            this.btnResetZoom.Location = new System.Drawing.Point(8, 68);
+            this.btnResetZoom.Location = new System.Drawing.Point(6, 94);
             this.btnResetZoom.Name = "btnResetZoom";
             this.btnResetZoom.Size = new System.Drawing.Size(91, 23);
             this.btnResetZoom.TabIndex = 1;
@@ -528,28 +531,64 @@
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
-            // cbxDispHoleInfo
+            // groupBox2
             // 
-            this.cbxDispHoleInfo.FormattingEnabled = true;
-            this.cbxDispHoleInfo.Items.AddRange(new object[] {
-            "None",
-            "IndexX",
-            "IndexY",
-            "Fwd"});
-            this.cbxDispHoleInfo.Location = new System.Drawing.Point(95, 42);
-            this.cbxDispHoleInfo.Name = "cbxDispHoleInfo";
-            this.cbxDispHoleInfo.Size = new System.Drawing.Size(121, 20);
-            this.cbxDispHoleInfo.TabIndex = 6;
-            this.cbxDispHoleInfo.SelectedIndexChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            this.groupBox2.Controls.Add(this.rdoHoleInfoFWD);
+            this.groupBox2.Controls.Add(this.rdoHoleInfoIndexY);
+            this.groupBox2.Controls.Add(this.rdoHoleInfoIndexX);
+            this.groupBox2.Controls.Add(this.rdoHoleInfoNone);
+            this.groupBox2.Location = new System.Drawing.Point(8, 42);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(415, 46);
+            this.groupBox2.TabIndex = 8;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Disp Hole Info";
             // 
-            // label2
+            // rdoHoleInfoNone
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 45);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(83, 12);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Disp Hole Info";
+            this.rdoHoleInfoNone.AutoSize = true;
+            this.rdoHoleInfoNone.Location = new System.Drawing.Point(6, 20);
+            this.rdoHoleInfoNone.Name = "rdoHoleInfoNone";
+            this.rdoHoleInfoNone.Size = new System.Drawing.Size(53, 16);
+            this.rdoHoleInfoNone.TabIndex = 0;
+            this.rdoHoleInfoNone.Text = "None";
+            this.rdoHoleInfoNone.UseVisualStyleBackColor = true;
+            this.rdoHoleInfoNone.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // rdoHoleInfoIndexX
+            // 
+            this.rdoHoleInfoIndexX.AutoSize = true;
+            this.rdoHoleInfoIndexX.Checked = true;
+            this.rdoHoleInfoIndexX.Location = new System.Drawing.Point(65, 20);
+            this.rdoHoleInfoIndexX.Name = "rdoHoleInfoIndexX";
+            this.rdoHoleInfoIndexX.Size = new System.Drawing.Size(62, 16);
+            this.rdoHoleInfoIndexX.TabIndex = 0;
+            this.rdoHoleInfoIndexX.TabStop = true;
+            this.rdoHoleInfoIndexX.Text = "IndexX";
+            this.rdoHoleInfoIndexX.UseVisualStyleBackColor = true;
+            this.rdoHoleInfoIndexX.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // rdoHoleInfoIndexY
+            // 
+            this.rdoHoleInfoIndexY.AutoSize = true;
+            this.rdoHoleInfoIndexY.Location = new System.Drawing.Point(133, 20);
+            this.rdoHoleInfoIndexY.Name = "rdoHoleInfoIndexY";
+            this.rdoHoleInfoIndexY.Size = new System.Drawing.Size(62, 16);
+            this.rdoHoleInfoIndexY.TabIndex = 0;
+            this.rdoHoleInfoIndexY.Text = "IndexY";
+            this.rdoHoleInfoIndexY.UseVisualStyleBackColor = true;
+            this.rdoHoleInfoIndexY.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // rdoHoleInfoFWD
+            // 
+            this.rdoHoleInfoFWD.AutoSize = true;
+            this.rdoHoleInfoFWD.Location = new System.Drawing.Point(201, 20);
+            this.rdoHoleInfoFWD.Name = "rdoHoleInfoFWD";
+            this.rdoHoleInfoFWD.Size = new System.Drawing.Size(48, 16);
+            this.rdoHoleInfoFWD.TabIndex = 0;
+            this.rdoHoleInfoFWD.Text = "FWD";
+            this.rdoHoleInfoFWD.UseVisualStyleBackColor = true;
+            this.rdoHoleInfoFWD.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
             // FormMain
             // 
@@ -579,6 +618,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numHolePitchX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -619,8 +660,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numHoleTop;
         private System.Windows.Forms.NumericUpDown numHoleLeft;
-        private System.Windows.Forms.ComboBox cbxDispHoleInfo;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.RadioButton rdoHoleInfoFWD;
+        private System.Windows.Forms.RadioButton rdoHoleInfoIndexY;
+        private System.Windows.Forms.RadioButton rdoHoleInfoIndexX;
+        private System.Windows.Forms.RadioButton rdoHoleInfoNone;
     }
 }
 
