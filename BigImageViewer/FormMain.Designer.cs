@@ -30,23 +30,26 @@
             this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
             this.chkDrawHoles = new System.Windows.Forms.CheckBox();
             this.chkDrawInfo = new System.Windows.Forms.CheckBox();
+            this.btnResetZoom = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.btnInitHoles = new System.Windows.Forms.Button();
             this.btnAlloc = new System.Windows.Forms.Button();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.tbxFwdDir = new System.Windows.Forms.TextBox();
-            this.btnResetZoom = new System.Windows.Forms.Button();
             this.numFNum = new System.Windows.Forms.NumericUpDown();
             this.btnFwdDir = new System.Windows.Forms.Button();
             this.btnLoadFwd = new System.Windows.Forms.Button();
             this.numHoleH = new System.Windows.Forms.NumericUpDown();
             this.numHoleDy = new System.Windows.Forms.NumericUpDown();
+            this.numHoleTop = new System.Windows.Forms.NumericUpDown();
             this.numHolePitchY = new System.Windows.Forms.NumericUpDown();
             this.numFH = new System.Windows.Forms.NumericUpDown();
             this.numHoleW = new System.Windows.Forms.NumericUpDown();
             this.numHoleDx = new System.Windows.Forms.NumericUpDown();
+            this.numHoleLeft = new System.Windows.Forms.NumericUpDown();
             this.numHolePitchX = new System.Windows.Forms.NumericUpDown();
             this.numFW = new System.Windows.Forms.NumericUpDown();
             this.splitter2 = new System.Windows.Forms.Splitter();
@@ -54,24 +57,23 @@
             this.pbxDraw = new System.Windows.Forms.PictureBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.dlgFolder = new System.Windows.Forms.FolderBrowserDialog();
-            this.numHoleLeft = new System.Windows.Forms.NumericUpDown();
-            this.numHoleTop = new System.Windows.Forms.NumericUpDown();
-            this.label1 = new System.Windows.Forms.Label();
+            this.cbxDispHoleInfo = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHoleH)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHoleDy)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleTop)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHolePitchY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFH)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHoleW)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHoleDx)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleLeft)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHolePitchX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHoleLeft)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHoleTop)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -117,9 +119,11 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cbxDispHoleInfo);
             this.groupBox1.Controls.Add(this.chkDrawFrame);
             this.groupBox1.Controls.Add(this.chkDrawPixelValue);
             this.groupBox1.Controls.Add(this.chkDrawHoles);
+            this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.chkDrawInfo);
             this.groupBox1.Controls.Add(this.btnResetZoom);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -182,6 +186,16 @@
             this.chkDrawInfo.UseVisualStyleBackColor = true;
             this.chkDrawInfo.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
+            // btnResetZoom
+            // 
+            this.btnResetZoom.Location = new System.Drawing.Point(8, 68);
+            this.btnResetZoom.Name = "btnResetZoom";
+            this.btnResetZoom.Size = new System.Drawing.Size(91, 23);
+            this.btnResetZoom.TabIndex = 1;
+            this.btnResetZoom.Text = "Reset Zoom";
+            this.btnResetZoom.UseVisualStyleBackColor = true;
+            this.btnResetZoom.Click += new System.EventHandler(this.btnResetZoom_Click);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -190,6 +204,15 @@
             this.label5.Size = new System.Drawing.Size(55, 12);
             this.label5.TabIndex = 7;
             this.label5.Text = "Diameter";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(105, 276);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(51, 12);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Left Top";
             // 
             // label4
             // 
@@ -247,16 +270,6 @@
             this.tbxFwdDir.Size = new System.Drawing.Size(299, 21);
             this.tbxFwdDir.TabIndex = 4;
             this.tbxFwdDir.Text = "C:\\test\\대외비_이영철_190712_Rib\\Fwd0";
-            // 
-            // btnResetZoom
-            // 
-            this.btnResetZoom.Location = new System.Drawing.Point(6, 42);
-            this.btnResetZoom.Name = "btnResetZoom";
-            this.btnResetZoom.Size = new System.Drawing.Size(91, 23);
-            this.btnResetZoom.TabIndex = 1;
-            this.btnResetZoom.Text = "Reset Zoom";
-            this.btnResetZoom.UseVisualStyleBackColor = true;
-            this.btnResetZoom.Click += new System.EventHandler(this.btnResetZoom_Click);
             // 
             // numFNum
             // 
@@ -330,6 +343,24 @@
             0,
             0});
             // 
+            // numHoleTop
+            // 
+            this.numHoleTop.DecimalPlaces = 4;
+            this.numHoleTop.Location = new System.Drawing.Point(238, 274);
+            this.numHoleTop.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numHoleTop.Name = "numHoleTop";
+            this.numHoleTop.Size = new System.Drawing.Size(67, 21);
+            this.numHoleTop.TabIndex = 3;
+            this.numHoleTop.Value = new decimal(new int[] {
+            7280,
+            0,
+            0,
+            0});
+            // 
             // numHolePitchY
             // 
             this.numHolePitchY.DecimalPlaces = 4;
@@ -396,6 +427,24 @@
             this.numHoleDx.TabIndex = 3;
             this.numHoleDx.Value = new decimal(new int[] {
             25,
+            0,
+            0,
+            0});
+            // 
+            // numHoleLeft
+            // 
+            this.numHoleLeft.DecimalPlaces = 4;
+            this.numHoleLeft.Location = new System.Drawing.Point(165, 274);
+            this.numHoleLeft.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numHoleLeft.Name = "numHoleLeft";
+            this.numHoleLeft.Size = new System.Drawing.Size(67, 21);
+            this.numHoleLeft.TabIndex = 3;
+            this.numHoleLeft.Value = new decimal(new int[] {
+            3340,
             0,
             0,
             0});
@@ -479,50 +528,28 @@
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
-            // numHoleLeft
+            // cbxDispHoleInfo
             // 
-            this.numHoleLeft.DecimalPlaces = 4;
-            this.numHoleLeft.Location = new System.Drawing.Point(165, 274);
-            this.numHoleLeft.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.numHoleLeft.Name = "numHoleLeft";
-            this.numHoleLeft.Size = new System.Drawing.Size(67, 21);
-            this.numHoleLeft.TabIndex = 3;
-            this.numHoleLeft.Value = new decimal(new int[] {
-            3340,
-            0,
-            0,
-            0});
+            this.cbxDispHoleInfo.FormattingEnabled = true;
+            this.cbxDispHoleInfo.Items.AddRange(new object[] {
+            "None",
+            "IndexX",
+            "IndexY",
+            "Fwd"});
+            this.cbxDispHoleInfo.Location = new System.Drawing.Point(95, 42);
+            this.cbxDispHoleInfo.Name = "cbxDispHoleInfo";
+            this.cbxDispHoleInfo.Size = new System.Drawing.Size(121, 20);
+            this.cbxDispHoleInfo.TabIndex = 6;
+            this.cbxDispHoleInfo.SelectedIndexChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
-            // numHoleTop
+            // label2
             // 
-            this.numHoleTop.DecimalPlaces = 4;
-            this.numHoleTop.Location = new System.Drawing.Point(238, 274);
-            this.numHoleTop.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.numHoleTop.Name = "numHoleTop";
-            this.numHoleTop.Size = new System.Drawing.Size(67, 21);
-            this.numHoleTop.TabIndex = 3;
-            this.numHoleTop.Value = new decimal(new int[] {
-            7280,
-            0,
-            0,
-            0});
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(105, 276);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(51, 12);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "Left Top";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(83, 12);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Disp Hole Info";
             // 
             // FormMain
             // 
@@ -543,15 +570,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.numFNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHoleH)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHoleDy)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleTop)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHolePitchY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFH)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHoleW)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHoleDx)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHoleLeft)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHolePitchX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFW)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHoleLeft)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHoleTop)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -592,6 +619,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numHoleTop;
         private System.Windows.Forms.NumericUpDown numHoleLeft;
+        private System.Windows.Forms.ComboBox cbxDispHoleInfo;
+        private System.Windows.Forms.Label label2;
     }
 }
 

@@ -15,6 +15,7 @@ namespace BigImageViewer {
         public FormMain() {
             InitializeComponent();
             this.pbxDraw.MouseWheel += this.PbxDraw_MouseWheel;
+            this.cbxDispHoleInfo.SelectedIndex = 0;
 
             AllocDispBuf();
             RedrawImage();
@@ -253,6 +254,8 @@ namespace BigImageViewer {
             return holes;
         }
 
+        enum HoleInfo { None, IndexX, IndexY, Fwd, }
+
         // 홀버퍼 드로우
         private void DrawHoles(Graphics g) {
             if (holes == null)
@@ -272,12 +275,16 @@ namespace BigImageViewer {
             float panY = ptPanning.Y;
 
             Pen linePen = Pens.Red;
+            Brush infoBrush = Brushes.Yellow;
+            Font infoFont = SystemFonts.DefaultFont;
 
             float holePitch = 32.0f;
-            int step = (int)(4.0f / (zoomLevel * holePitch));
+            int step = (int)(2.0f / (zoomLevel * holePitch));
             if (step < 1)
                 step = 1;
             bool holeDrawCircle = zoomLevel > (4.0f / holePitch);
+
+            HoleInfo holeInfo = (HoleInfo)cbxDispHoleInfo.SelectedIndex;
 
             for (int iy = 0; iy < holeH; iy += step) {
                 for (int ix = 0; ix < holeW; ix += step) {
@@ -288,6 +295,17 @@ namespace BigImageViewer {
                         DrawHoleCircle(g, linePen, hole, zoomLevel, panX, panY);
                     else
                         DrawHolePoint(g, linePen, hole, zoomLevel, panX, panY);
+                    
+                    if (zoomLevel < 0.5f || holeInfo == HoleInfo.None)
+                        continue;
+                    string infoText = string.Empty;
+                    if (holeInfo == HoleInfo.IndexX)
+                        infoText = ix.ToString();
+                    else if (holeInfo == HoleInfo.IndexY)
+                        infoText = iy.ToString();
+                    else
+                        infoText = "2";
+                    DrawHoleInfo(g, infoBrush, infoFont, hole, zoomLevel, panX, panY, infoText);
                 }
             }
         }
@@ -306,6 +324,13 @@ namespace BigImageViewer {
             float x = (int)(hole.x * zoomLevel + panX) - 0.5f;
             float y = (int)(hole.y * zoomLevel + panY) - 0.5f;
             g.DrawLine(linePen, x, y, x + 1, y + 1);
+        }
+
+        // 홀 정보 표시
+        private void DrawHoleInfo(Graphics g, Brush brush, Font font, Hole hole, float zoomLevel, float panX, float panY, string infoText) {
+            float x = hole.x * zoomLevel + panX;
+            float y = hole.y * zoomLevel + panY;
+            g.DrawString(infoText, font, brush, x, y);
         }
 
         //=============================================================
