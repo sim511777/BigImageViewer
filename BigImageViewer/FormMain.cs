@@ -270,24 +270,39 @@ namespace BigImageViewer {
             float zoomLevel = ZoomLevel;
             float panX = ptPanning.X;
             float panY = ptPanning.Y;
-            Pen pen = Pens.Red;
+
+            Pen linePen = Pens.Red;
+
+            float holePitch = 32.0f;
+            bool holeDrawCircle = zoomLevel > (4.0f / holePitch);
+
             for (int iy = 0; iy < holeH; iy++) {
                 for (int ix = 0; ix < holeW; ix++) {
                     var hole = holes[holeW * iy + ix];
                     if (hole.x < imgX1 || hole.x > imgX2 || hole.y < imgY1 || hole.y > imgY2)
                         continue;
-                    DrawHole(g, pen, hole, zoomLevel, panX, panY);
+                    if (holeDrawCircle)
+                        DrawHoleCircle(g, linePen, hole, zoomLevel, panX, panY);
+                    else
+                        DrawHolePoint(g, linePen, hole, zoomLevel, panX, panY);
                 }
             }
         }
 
-        // 개별 홀 드로우
-        private void DrawHole(Graphics g, Pen pen, Hole hole, float zoomLevel, float panX, float panY) {
+        // 개별 홀 써클 드로우
+        private void DrawHoleCircle(Graphics g, Pen pen, Hole hole, float zoomLevel, float panX, float panY) {
             float x = (hole.x-hole.w/2f) * zoomLevel + panX;
             float y = (hole.y-hole.h/2f) * zoomLevel + panY;
             float width = hole.w * zoomLevel;
             float height = hole.h * zoomLevel;
             g.DrawEllipse(pen, x, y, width, height);
+        }
+
+        // 개별 홀 포인트 드로우
+        private void DrawHolePoint(Graphics g, Pen linePen, Hole hole, float zoomLevel, float panX, float panY) {
+            float x = (int)(hole.x * zoomLevel + panX)-0.5f;
+            float y = (int)(hole.y * zoomLevel + panY)-0.5f;
+            g.DrawLine(linePen, x, y, x+1, y+1);
         }
 
         //=============================================================
