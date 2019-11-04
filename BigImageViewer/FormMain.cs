@@ -62,7 +62,7 @@ namespace BigImageViewer {
             MsvcrtDll.memset(dispBuf, 0, (ulong)(dispBW * dispBH));
             dispBmp = new Bitmap(dispBW, dispBH, dispBW, PixelFormat.Format8bppIndexed, dispBuf);
             var pal = dispBmp.Palette;
-            for (int i=0; i<256; i++) {
+            for (int i = 0; i < 256; i++) {
                 pal.Entries[i] = Color.FromArgb(i, i, i);
             }
             dispBmp.Palette = pal;
@@ -101,7 +101,7 @@ namespace BigImageViewer {
             for (int i = 0; i < numFrm; i++) {
                 string filePath = $"{dir}\\Frame_{i:000}.BMP";
                 IntPtr buf = (IntPtr)(imgBuf.ToInt64() + frmSize * i);
-                
+
                 var r = OpenCv.Load8bitBmp(buf, imgFW, imgFH, filePath);
                 if (r) {
                     succNum++;
@@ -114,7 +114,7 @@ namespace BigImageViewer {
         }
 
         // 이미지 버퍼를 표시 버퍼로 복사
-        enum ImageBufferDrawer { C, Dotnet_Unsafe}
+        enum ImageBufferDrawer { C, Dotnet_Unsafe }
         private void RedrawImage() {
             Alg.CopyImageBuf(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
             pbxDraw.Invalidate();
@@ -122,14 +122,14 @@ namespace BigImageViewer {
 
         // 표시 픽셀 좌표를 이미지 좌표로 변환
         private PointF DispToImg(Point pt) {
-            var pt2 =  pt - (Size)ptPanning;
+            var pt2 = pt - (Size)ptPanning;
             return new PointF(pt2.X / ZoomLevel, pt2.Y / ZoomLevel);
         }
 
         // 이미지 좌표를 표시 픽셀 좌표로 변환
         private Point ImgToDisp(PointF pt) {
             var pt2 = new PointF(pt.X * ZoomLevel, pt.Y * ZoomLevel);
-            return new Point ((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y));
+            return new Point((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y));
         }
 
         // 이미지 픽셀값 리턴
@@ -164,12 +164,12 @@ namespace BigImageViewer {
                 var ptImg2 = new PointF(imgFW, imgFH * i);
                 var ptDisp1 = ImgToDisp(ptImg1);
                 var ptDisp2 = ImgToDisp(ptImg2);
-                
+
                 if (ptDisp1.Y < 0 || ptDisp1.Y >= clientSize.Height || ptDisp1.X >= clientSize.Width || ptDisp2.X < 0)
                     continue;
 
                 g.DrawLine(Pens.PowderBlue, ptDisp1, ptDisp2);
-                g.DrawString($"Frame={i}", infoFont, Brushes.LightBlue, ptDisp1.X, ptDisp1.Y+2);
+                g.DrawString($"Frame={i}", infoFont, Brushes.LightBlue, ptDisp1.X, ptDisp1.Y + 2);
             }
         }
 
@@ -201,16 +201,16 @@ namespace BigImageViewer {
             if (imgY1 < 0)
                 imgY1 = 0;
             if (imgX2 >= ImgBW)
-                imgX2 = ImgBW-1;
+                imgX2 = ImgBW - 1;
             if (imgY2 >= ImgBH)
-                imgY2 = ImgBH-1;
+                imgY2 = ImgBH - 1;
 
             for (int imgY = imgY1; imgY <= imgY2; imgY++) {
                 for (int imgX = imgX1; imgX <= imgX2; imgX++) {
                     var ptImg = new PointF(imgX, imgY);
                     var ptDisp = ImgToDisp(ptImg);
                     int pixelVal = GetImagePixelValue(imgX, imgY);
-                    var brush = pseudo[pixelVal/32];
+                    var brush = pseudo[pixelVal / 32];
                     g.DrawString(pixelVal.ToString(), infoFont, brush, ptDisp.X, ptDisp.Y);
                 }
             }
@@ -266,7 +266,7 @@ namespace BigImageViewer {
             float imgY1 = (float)Math.Floor(ptImg1.Y);
             float imgX2 = (float)Math.Floor(ptImg2.X);
             float imgY2 = (float)Math.Floor(ptImg2.Y);
-            
+
             float zoomLevel = ZoomLevel;
             float panX = ptPanning.X;
             float panY = ptPanning.Y;
@@ -274,10 +274,13 @@ namespace BigImageViewer {
             Pen linePen = Pens.Red;
 
             float holePitch = 32.0f;
+            int step = (int)(4.0f / (zoomLevel * holePitch));
+            if (step < 1)
+                step = 1;
             bool holeDrawCircle = zoomLevel > (4.0f / holePitch);
 
-            for (int iy = 0; iy < holeH; iy++) {
-                for (int ix = 0; ix < holeW; ix++) {
+            for (int iy = 0; iy < holeH; iy += step) {
+                for (int ix = 0; ix < holeW; ix += step) {
                     var hole = holes[holeW * iy + ix];
                     if (hole.x < imgX1 || hole.x > imgX2 || hole.y < imgY1 || hole.y > imgY2)
                         continue;
@@ -291,8 +294,8 @@ namespace BigImageViewer {
 
         // 개별 홀 써클 드로우
         private void DrawHoleCircle(Graphics g, Pen pen, Hole hole, float zoomLevel, float panX, float panY) {
-            float x = (hole.x-hole.w/2f) * zoomLevel + panX;
-            float y = (hole.y-hole.h/2f) * zoomLevel + panY;
+            float x = (hole.x - hole.w / 2f) * zoomLevel + panX;
+            float y = (hole.y - hole.h / 2f) * zoomLevel + panY;
             float width = hole.w * zoomLevel;
             float height = hole.h * zoomLevel;
             g.DrawEllipse(pen, x, y, width, height);
@@ -300,9 +303,9 @@ namespace BigImageViewer {
 
         // 개별 홀 포인트 드로우
         private void DrawHolePoint(Graphics g, Pen linePen, Hole hole, float zoomLevel, float panX, float panY) {
-            float x = (int)(hole.x * zoomLevel + panX)-0.5f;
-            float y = (int)(hole.y * zoomLevel + panY)-0.5f;
-            g.DrawLine(linePen, x, y, x+1, y+1);
+            float x = (int)(hole.x * zoomLevel + panX) - 0.5f;
+            float y = (int)(hole.y * zoomLevel + panY) - 0.5f;
+            g.DrawLine(linePen, x, y, x + 1, y + 1);
         }
 
         //=============================================================
