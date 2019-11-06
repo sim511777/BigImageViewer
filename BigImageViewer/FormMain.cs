@@ -44,6 +44,9 @@ namespace BigImageViewer {
         int ImgBH { get { return imgFH * numFrm; } }
         IntPtr imgBuf;
 
+        // QuadTree
+        QuadTree tree;
+
         // zoom, panning
         float[] zoomLevels = { 1f / 512, 3f / 1024, 1f / 256, 3f / 512, 1f / 128, 3f / 256, 1f / 64, 3f / 128, 1f / 32, 3f / 64, 1f / 16, 3f / 32, 1f / 8, 3f / 16, 1f / 4, 3f / 8, 1f / 2, 3f / 4, 1, 3f / 2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96 };
         string[] zoomTexts = { "1/512", "3/1024", "1/256", "3/512", "1/128", "3/256", "1/64", "3/128", "1/32", "3/64", "1/16", "3/32", "1/8", "3/16", "1/4", "3/8", "1/2", "3/4", "1", "3/2", "2", "3", "4", "6", "8", "12", "16", "24", "32", "48", "64", "96" };
@@ -440,6 +443,16 @@ namespace BigImageViewer {
             Log("Init Holes");
             holes = InitHoles(holeW, holeH, left, top, pitchX, pitchY, dx, dy);
             Log("End Init Holes");
+
+            float minX = left;
+            float minY = top;
+            float maxX = left + (holeW - 1) * pitchX;
+            float maxY = top + (holeH - 1) * pitchY;
+            float minPitch = Math.Min(pitchX, pitchY) * 2;
+            Log("Init QuadTree");
+            tree = QuadTree.Generate(minX, minY, maxX, maxY, minPitch);
+            Log("End Init QuadTree");
+
             pbxDraw.Invalidate();
         }
     }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BigImageViewer {
-    class Hole {
+    public class Hole {
         public float x;
         public float y;
         public float w;
