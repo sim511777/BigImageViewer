@@ -90,7 +90,6 @@ namespace BigImageViewer {
         }
 
         // 포워드 이미지 로드
-        enum BitmapLoader { C, OpenCV, Dotnet_Bitmap }
         private void LoadFwdImg() {
             long frmSize = imgFW * imgFH;
             string dir = tbxFwdDir.Text;
@@ -102,7 +101,7 @@ namespace BigImageViewer {
                 string filePath = $"{dir}\\Frame_{i:000}.BMP";
                 IntPtr buf = (IntPtr)(imgBuf.ToInt64() + frmSize * i);
 
-                var r = OpenCv.Load8bitBmp(buf, imgFW, imgFH, filePath);
+                var r = NativeDll.Load8bitBmp(buf, imgFW, imgFH, filePath);
                 if (r) {
                     succNum++;
                 } else {
