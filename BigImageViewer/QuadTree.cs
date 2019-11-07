@@ -21,6 +21,13 @@ namespace BigImageViewer {
             tree.root = QuadTreeNode.Generate(x1, y1, x2, y2, minX, minY, maxX, maxY, minPitch);
             return tree;
         }
+
+        public void AddHoles(Hole[] holes) {
+            for (int i=0; i<holes.Length; i++) {
+                var hole = holes[i];
+                root.AddHole(hole);
+            }
+        }
     }
 
     public class QuadTreeNode {
@@ -47,7 +54,7 @@ namespace BigImageViewer {
                 return null;
 
             QuadTreeNode node = new QuadTreeNode(x1, y1, x2, y2);
-            if (x2-x1 < minPitch) {
+            if (x2-x1 <= minPitch) {
                 node.holes = new List<Hole>();
                 return node;
             }
@@ -59,6 +66,37 @@ namespace BigImageViewer {
             node.childLB = Generate(x1, yMid, xMid, y2, minX, minY, maxX, maxY, minPitch);
             node.childRB = Generate(xMid, yMid, x2, y2, minX, minY, maxX, maxY, minPitch);
             return node;
+        }
+
+        internal void AddHole(Hole hole) {
+            // 대표 홀 처리
+            // 마지막 리프이면 리스트에 Add하고 리턴
+            // 아니면 홀의 좌표로 하나의 차일드에 Add
+            if (holeFront == null) {
+                holeFront = hole;
+            } else {
+                if (hole.x < holeFront.x && hole.y < holeFront.y)
+                    holeFront = hole;
+            }
+            if (holes != null) {
+                holes.Add(hole);
+                    return;
+            }
+            float xMid = (x1 + x2) * 0.5f;
+            float yMid = (y1 + y2) * 0.5f;
+            if (hole.y <= yMid) {
+                if (hole.x < xMid) {
+                    childLT.AddHole(hole);
+                } else {
+                    childRT.AddHole(hole);
+                }
+            } else {
+                if (hole.x < xMid) {
+                    childLB.AddHole(hole);
+                } else {
+                    childRB.AddHole(hole);
+                }
+            }
         }
     }
 }

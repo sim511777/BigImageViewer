@@ -281,9 +281,6 @@ namespace BigImageViewer {
             Font infoFont = SystemFonts.DefaultFont;
 
             float holePitch = 32.0f;
-            int step = (int)(2.0f / (zoomLevel * holePitch));
-            if (step < 1)
-                step = 1;
             bool holeDrawCircle = zoomLevel > (4.0f / holePitch);
 
             HoleInfoItemType infoItemType = HoleInfoItemType.None;
@@ -294,21 +291,63 @@ namespace BigImageViewer {
             else if (rdoHoleInfoFWD.Checked)
                 infoItemType = HoleInfoItemType.Fwd;
 
-            for (int iy = 0; iy < holeH; iy += step) {
-                for (int ix = 0; ix < holeW; ix += step) {
-                    var hole = holes[holeW * iy + ix];
-                    if (hole.x < imgX1 || hole.x > imgX2 || hole.y < imgY1 || hole.y > imgY2)
-                        continue;
-                    if (holeDrawCircle)
-                        DrawHoleCircle(g, zoomLevel, panX, panY, hole, linePen);
-                    else
-                        DrawHolePoint(g, zoomLevel, panX, panY, hole, linePen);
-                    
-                    if (zoomLevel < 0.5f)
-                        continue;
-                    DrawHoleInfo(g, zoomLevel, panX, panY, hole, infoItemType, infoFont, infoBrush);
-                }
+            //int step = (int)(2.0f / (zoomLevel * holePitch));
+            //if (step < 1)
+            //    step = 1;
+            //for (int iy = 0; iy < holeH; iy += step) {
+            //    for (int ix = 0; ix < holeW; ix += step) {
+            //        var hole = holes[holeW * iy + ix];
+            //        if (hole.x < imgX1 || hole.x > imgX2 || hole.y < imgY1 || hole.y > imgY2)
+            //            continue;
+
+            //        DrawHole(g, zoomLevel, panX, panY, hole, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            //    }
+            //}
+
+            DrawNodeHole(tree.root, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+        }
+
+        // 노드 홀 그리기
+        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, Graphics g, float zoomLevel, float panX, float panY, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+            // 뷰 영역에 벗어난 노드는 리턴
+            if (node.x1 > imgX2 || node.y1 > imgY2 || node.x2 < imgX1 || node.y2 < imgY1)
+                return;
+
+            // 현재 레벨에서 드로우
+            if ((node.x2 - node.x1) * zoomLevel <= 4.0f) {
+                DrawHole(g, zoomLevel, panX, panY, node.holeFront, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                return;
             }
+
+            // 노드가 리프 노드 이면 노드에 포함된 홀 그리고 리턴
+            if (node.holes != null) {
+                foreach (Hole hole in node.holes)
+                    DrawHole(g, zoomLevel, panX, panY, hole, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                return;
+            }
+
+            // 하위 노드로 내려감
+            if (node.childLT != null)
+                DrawNodeHole(node.childLT, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            if (node.childRT != null)
+                DrawNodeHole(node.childRT, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            if (node.childLB != null)
+                DrawNodeHole(node.childLB, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            if (node.childRB != null)
+                DrawNodeHole(node.childRB, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+        }
+
+        // 홀그리기
+        private void DrawHole(Graphics g, float zoomLevel, float panX, float panY, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+            if (holeDrawCircle)
+                DrawHoleCircle(g, zoomLevel, panX, panY, hole, linePen);
+            else
+                DrawHolePoint(g, zoomLevel, panX, panY, hole, linePen);
+
+            if (zoomLevel < 0.5f)
+                return;
+
+            DrawHoleInfo(g, zoomLevel, panX, panY, hole, infoItemType, infoFont, infoBrush);
         }
 
         // 개별 홀 써클 드로우
@@ -448,10 +487,14 @@ namespace BigImageViewer {
             float minY = top;
             float maxX = left + (holeW - 1) * pitchX;
             float maxY = top + (holeH - 1) * pitchY;
-            float minPitch = Math.Min(pitchX, pitchY) * 2;
+            float minPitch = Math.Min(pitchX, pitchY) * 4.0f;
             Log("Init QuadTree");
             tree = QuadTree.Generate(minX, minY, maxX, maxY, minPitch);
             Log("End Init QuadTree");
+
+            Log("Add Holes");
+            tree.AddHoles(holes);
+            Log("End Add Holes");
 
             pbxDraw.Invalidate();
         }
