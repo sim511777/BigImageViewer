@@ -13,14 +13,17 @@ namespace BigImageViewer {
         public int idxX;
         public int idxY;
         public int fwd;
-        public Hole(float x, float y, float dx, float dy, int idxX, int idxY, int fwd) {
+        public Hole(float x, float y, float w, float h, int idxX, int idxY, int fwd) {
             this.x = x;
             this.y = y;
-            this.w = dx;
-            this.h = dy;
+            this.w = w;
+            this.h = h;
             this.idxX = idxX;
             this.idxY = idxY;
             this.fwd = fwd;
+        }
+        public override string ToString() {
+            return $"Hole(x:{x},y:{y},dx:{w},dy:{h},idx:{idxX},idy:{idxY},fwd:{fwd})";
         }
     }
 }

@@ -62,6 +62,7 @@
             this.pbxDraw = new System.Windows.Forms.PictureBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.dlgFolder = new System.Windows.Forms.FolderBrowserDialog();
+            this.chkDrawCursorHole = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -126,6 +127,7 @@
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.chkDrawFrame);
             this.groupBox1.Controls.Add(this.chkDrawPixelValue);
+            this.groupBox1.Controls.Add(this.chkDrawCursorHole);
             this.groupBox1.Controls.Add(this.chkDrawHoles);
             this.groupBox1.Controls.Add(this.chkDrawInfo);
             this.groupBox1.Controls.Add(this.btnResetZoom);
@@ -203,9 +205,9 @@
             this.chkDrawFrame.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkDrawFrame.Location = new System.Drawing.Point(6, 20);
             this.chkDrawFrame.Name = "chkDrawFrame";
-            this.chkDrawFrame.Size = new System.Drawing.Size(93, 16);
+            this.chkDrawFrame.Size = new System.Drawing.Size(60, 16);
             this.chkDrawFrame.TabIndex = 5;
-            this.chkDrawFrame.Text = "Draw Frame";
+            this.chkDrawFrame.Text = "Frame";
             this.chkDrawFrame.UseVisualStyleBackColor = true;
             this.chkDrawFrame.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
@@ -214,11 +216,11 @@
             this.chkDrawPixelValue.AutoSize = true;
             this.chkDrawPixelValue.Checked = true;
             this.chkDrawPixelValue.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawPixelValue.Location = new System.Drawing.Point(105, 20);
+            this.chkDrawPixelValue.Location = new System.Drawing.Point(72, 20);
             this.chkDrawPixelValue.Name = "chkDrawPixelValue";
-            this.chkDrawPixelValue.Size = new System.Drawing.Size(121, 16);
+            this.chkDrawPixelValue.Size = new System.Drawing.Size(88, 16);
             this.chkDrawPixelValue.TabIndex = 5;
-            this.chkDrawPixelValue.Text = "Draw Pixel Value";
+            this.chkDrawPixelValue.Text = "Pixel Value";
             this.chkDrawPixelValue.UseVisualStyleBackColor = true;
             this.chkDrawPixelValue.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
@@ -227,11 +229,11 @@
             this.chkDrawHoles.AutoSize = true;
             this.chkDrawHoles.Checked = true;
             this.chkDrawHoles.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawHoles.Location = new System.Drawing.Point(315, 20);
+            this.chkDrawHoles.Location = new System.Drawing.Point(258, 20);
             this.chkDrawHoles.Name = "chkDrawHoles";
-            this.chkDrawHoles.Size = new System.Drawing.Size(89, 16);
+            this.chkDrawHoles.Size = new System.Drawing.Size(56, 16);
             this.chkDrawHoles.TabIndex = 5;
-            this.chkDrawHoles.Text = "Draw Holes";
+            this.chkDrawHoles.Text = "Holes";
             this.chkDrawHoles.UseVisualStyleBackColor = true;
             this.chkDrawHoles.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
@@ -240,11 +242,11 @@
             this.chkDrawInfo.AutoSize = true;
             this.chkDrawInfo.Checked = true;
             this.chkDrawInfo.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawInfo.Location = new System.Drawing.Point(232, 20);
+            this.chkDrawInfo.Location = new System.Drawing.Point(166, 20);
             this.chkDrawInfo.Name = "chkDrawInfo";
-            this.chkDrawInfo.Size = new System.Drawing.Size(77, 16);
+            this.chkDrawInfo.Size = new System.Drawing.Size(86, 16);
             this.chkDrawInfo.TabIndex = 5;
-            this.chkDrawInfo.Text = "Draw Info";
+            this.chkDrawInfo.Text = "Cursur Info";
             this.chkDrawInfo.UseVisualStyleBackColor = true;
             this.chkDrawInfo.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
@@ -590,6 +592,19 @@
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
+            // chkDrawCursorHole
+            // 
+            this.chkDrawCursorHole.AutoSize = true;
+            this.chkDrawCursorHole.Checked = true;
+            this.chkDrawCursorHole.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDrawCursorHole.Location = new System.Drawing.Point(320, 20);
+            this.chkDrawCursorHole.Name = "chkDrawCursorHole";
+            this.chkDrawCursorHole.Size = new System.Drawing.Size(91, 16);
+            this.chkDrawCursorHole.TabIndex = 5;
+            this.chkDrawCursorHole.Text = "Cursor Hole";
+            this.chkDrawCursorHole.UseVisualStyleBackColor = true;
+            this.chkDrawCursorHole.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -665,6 +680,7 @@
         private System.Windows.Forms.RadioButton rdoHoleInfoIndexY;
         private System.Windows.Forms.RadioButton rdoHoleInfoIndexX;
         private System.Windows.Forms.RadioButton rdoHoleInfoNone;
+        private System.Windows.Forms.CheckBox chkDrawCursorHole;
     }
 }
 
