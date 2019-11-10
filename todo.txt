@@ -10,6 +10,8 @@ CopyImageBufferZoom Dst범위 계산해서 범위만 루프 돌것
 전체 서페이스 (모든 포워드) 이미지 로딩 기능
 이미지 로드 bw bh 안맞아도 로드 되게
 라이브러리 화
+dll 함수 오타 수정
+CopyImageBufZoom x1,y1,x2,y2로 지정된 영역만 그리게
 
 ok 홀그리기 테스트
 ok 홀버퍼 native에 생성하고 native gdi로 그릴것
