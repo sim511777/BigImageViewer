@@ -14,8 +14,8 @@ namespace BigImageViewer {
 
     public class NativeDll {
         const string dll = "native.dll";
-        [DllImport(dll)] public static extern bool Load8bitBmp(IntPtr buf, int bw, int bh, string filePath);
-        [DllImport(dll)] public static extern bool Save8bitBmp(IntPtr buf, int bw, int bh, string filePath);
-        [DllImport(dll)] public static extern void CopyImageBuf(IntPtr srcBuf, int srcBW, int srcBH, IntPtr dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel);
+        [DllImport(dll)] public static extern bool Load8BitBmp(IntPtr buf, int bw, int bh, string filePath);
+        [DllImport(dll)] public static extern bool Save8BitBmp(IntPtr buf, int bw, int bh, string filePath);
+        [DllImport(dll)] public static extern void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int dx, int dy, float zoom);
     }
 }

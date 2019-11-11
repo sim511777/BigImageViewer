@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "Native.h"
-NATIVE_API BOOL Load8bitBmp(BYTE* buf, int bw, int bh, char* filePath) {
+NATIVE_API BOOL Load8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     DWORD bytesRead;
 
     // 파일 오픈
@@ -61,7 +61,7 @@ BOOL GenerateGrayPalette() {
     return TRUE;
 }
 
-NATIVE_API BOOL Save8bitBmp(BYTE *buf, int bw, int bh, char *filePath) {
+NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     static BOOL doOnce = GenerateGrayPalette();
 
     DWORD bytesWritten;
@@ -113,37 +113,37 @@ NATIVE_API BOOL Save8bitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     return TRUE;
 }
 
-NATIVE_API void CopyImageBuf(BYTE* srcBuf, int srcBW, int srcBH, BYTE* dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel) {
-    int *srcYs = new int[dstBH];
-    int *srcXs = new int[dstBW];
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int dx, int dy, float zoom) {
+    int *sys = new int[dbh];
+    int *sxs = new int[dbw];
 
-    for (int y = 0; y < dstBH;  y++) {
-        int srcY = (int)floor((y - offsetY) / zoomLevel);
-        srcYs[y] = (srcY < 0 || srcY >= srcBH) ? -1 : srcY;
+    for (int y = 0; y < dbh;  y++) {
+        int sy = (int)floor((y - dy) / zoom);
+        sys[y] = (sy < 0 || sy >= sbh) ? -1 : sy;
     }
 
-    for (int x = 0; x < dstBW; x++) {
-        int srcX = (int)floor((x - offsetX) / zoomLevel);
-        srcXs[x] = (srcX < 0 || srcX >= srcBW) ? -1 : srcX;
+    for (int x = 0; x < dbw; x++) {
+        int sx = (int)floor((x - dx) / zoom);
+        sxs[x] = (sx < 0 || sx >= sbw) ? -1 : sx;
     }
 
-    for (int y = 0; y < dstBH; y++) {
-        BYTE *dstPtr = dstBuf + (size_t)dstBW * y;
+    for (int y = 0; y < dbh; y++) {
+        BYTE *dp = dbuf + (size_t)dbw * y;
         
-        int srcY = srcYs[y];
-        if (srcY == -1) {
-            memset(dstPtr, 128, dstBW);
+        int sy = sys[y];
+        if (sy == -1) {
+            memset(dp, 128, dbw);
             continue;
         }
         
-        BYTE *srcPtr = srcBuf + (size_t)srcBW * srcY;
+        BYTE *sp = sbuf + (size_t)sbw * sy;
 
-        for (int x = 0; x < dstBW; x++, dstPtr++) {
-            int srcX = srcXs[x];
-            *dstPtr = (srcX == -1) ? 128 : *(srcPtr + srcX);
+        for (int x = 0; x < dbw; x++, dp++) {
+            int sx = sxs[x];
+            *dp = (sx == -1) ? 128 : *(sp + sx);
         }
     }
 
-    delete[] srcXs;
-    delete[] srcYs;
+    delete[] sxs;
+    delete[] sys;
 }

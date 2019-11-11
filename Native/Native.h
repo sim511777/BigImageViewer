@@ -10,6 +10,6 @@
 #define NATIVE_API extern "C" __declspec(dllimport)
 #endif
 
-NATIVE_API BOOL Load8BitBmp(BYTE* buf, int bw, int bh, char* filePath);
-NATIVE_API BOOL Save8bitBmp(BYTE *buf, int bw, int bh, char *filePath);
-NATIVE_API void CopyImageBuf(BYTE* srcBuf, int srcBW, int srcBH, BYTE* dstBuf, int dstBW, int dstBH, int offsetX, int offsetY, float zoomLevel);
+NATIVE_API BOOL Load8BitBmp(BYTE *buf, int bw, int bh, char *filePath);
+NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath);
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int dx, int dy, float zoom);
