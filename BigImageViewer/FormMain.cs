@@ -118,7 +118,8 @@ namespace BigImageViewer {
         // 이미지 버퍼를 표시 버퍼로 복사
         enum ImageBufferDrawer { C, Dotnet_Unsafe }
         private void RedrawImage() {
-            NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
+            var rect = pbxDraw.ClientRectangle;
+            NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, rect.Width, rect.Height, ptPanning.X, ptPanning.Y, ZoomLevel, true);
             pbxDraw.Invalidate();
         }
 
@@ -538,7 +539,8 @@ namespace BigImageViewer {
             if (mouseDown) {
                 ptPanning += ((Size)e.Location - (Size)ptOld);
                 ptOld = e.Location;
-                NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomLevel);
+                var rect = pbxDraw.ClientRectangle;
+                NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, rect.Width, rect.Height, ptPanning.X, ptPanning.Y, ZoomLevel, true);
             }
             
             GetCursorHole();

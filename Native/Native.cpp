@@ -113,37 +113,46 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     return TRUE;
 }
 
-NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int dx, int dy, float zoom) {
-    int *sys = new int[dbh];
-    int *sxs = new int[dbw];
-
-    for (int y = 0; y < dbh;  y++) {
-        int sy = (int)floor((y - dy) / zoom);
-        sys[y] = (sy < 0 || sy >= sbh) ? -1 : sy;
-    }
-
-    for (int x = 0; x < dbw; x++) {
-        int sx = (int)floor((x - dx) / zoom);
-        sxs[x] = (sx < 0 || sx >= sbw) ? -1 : sx;
-    }
-
-    for (int y = 0; y < dbh; y++) {
-        BYTE *dp = dbuf + (size_t)dbw * y;
-        
-        int sy = sys[y];
-        if (sy == -1) {
-            memset(dp, 128, dbw);
-            continue;
-        }
-        
-        BYTE *sp = sbuf + (size_t)sbw * sy;
-
-        for (int x = 0; x < dbw; x++, dp++) {
-            int sx = sxs[x];
-            *dp = (sx == -1) ? 128 : *(sp + sx);
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int dw, int dh, int panx, int pany, float zoom, BOOL clear) {
+    // 디스플레이 영역 클리어
+    if (clear) {
+        for (int y = 0; y < dh; y++) {
+            BYTE *dp = dbuf + (size_t)dbw * y;
+            memset(dp, 0, dw);
         }
     }
 
-    delete[] sxs;
-    delete[] sys;
+    // dst 인덱스의 범위를 구함
+    int y1 = max(pany, 0);
+    int y2 = min((int)floor(sbh * zoom + pany), min(dbh, dh));
+    int x1 = max(panx, 0);
+    int x2 = min((int)floor(sbw * zoom + panx), min(dbw, dw));
+
+    // dst 인덱스에 해당하는 src 인덱스를 담을 버퍼 생성
+    int *siys = new int[dbh];
+    int *sixs = new int[dbw];
+
+    // 버퍼에 값 구해서 넣음
+    for (int y = y1; y < y2;  y++) {
+        siys[y] = (int)floor((y - pany) / zoom);
+    }
+    for (int x = x1; x < x2; x++) {
+        sixs[x] = (int)floor((x - panx) / zoom);
+    }
+
+    // dst 인덱스의 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
+    for (int y = y1; y < y2; y++) {
+        BYTE *dp = dbuf + (size_t)dbw * y + x1;
+
+        int siy = siys[y];
+        BYTE *sp = sbuf + (size_t)sbw * siy;
+        for (int x = x1; x < x2; x++, dp++) {
+            int six = sixs[x];
+            *dp = *(sp + six);
+        }
+    }
+
+    // 버퍼 삭제
+    delete[] sixs;
+    delete[] siys;
 }

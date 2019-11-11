@@ -6,12 +6,13 @@ ok DrawPixel
 ok GDI 표시 옵션 처리
 ok BmpLoader : OpenCV 지우고 C코드만 남길것
 ok CopyImageBufferZoom : Unsafe 지우고 C코드만 남길것
-CopyImageBufferZoom Dst범위 계산해서 범위만 루프 돌것
+ok dll 함수 오타 수정
+ok CopyImageBufferZoom Dst범위 계산해서 범위만 루프 돌것
+
+
 전체 서페이스 (모든 포워드) 이미지 로딩 기능
 이미지 로드 bw bh 안맞아도 로드 되게
 라이브러리 화
-ok dll 함수 오타 수정
-CopyImageBufZoom x1,y1,x2,y2로 지정된 영역만 그리게
 
 ok 홀그리기 테스트
 ok 홀버퍼 native에 생성하고 native gdi로 그릴것
@@ -35,4 +36,4 @@ ok - 노드에 홀 넣을때 Mid보다 작은것 else 로 구분
 ok - Display 할때도 마찬가지
 ok - 1/16보다 작아지면 LOD 시작
 ok - LOD는 모든 노드마다 대표노드를 달아둠, 그걸 표시
- - 마우스 포인터 Move시에 홀상세정보 표시 쿼드 트리 사용, 홀이 써클로 보일때만
+ok - 마우스 포인터 Move시에 홀상세정보 표시 쿼드 트리 사용, 홀이 써클로 보일때만
