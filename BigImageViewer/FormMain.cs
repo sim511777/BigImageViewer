@@ -243,9 +243,15 @@ namespace BigImageViewer {
         }
 
         // 휠 스크롤
-        private void WheelScroll(MouseEventArgs e) {
+        private void WheelScrollV(MouseEventArgs e)
+        {
             int scroll = 128;
             ptPanning.Y += (e.Delta > 0) ? scroll : -scroll;
+        }
+        private void WheelScrollH(MouseEventArgs e)
+        {
+            int scroll = 128;
+            ptPanning.X += (e.Delta > 0) ? scroll : -scroll;
         }
 
         int holeW;
@@ -516,8 +522,10 @@ namespace BigImageViewer {
         }
 
         private void PbxDraw_MouseWheel(object sender, MouseEventArgs e) {
-            if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
-                WheelScroll(e);
+            if (Control.ModifierKeys == Keys.Control) {
+                WheelScrollV(e);
+            } else if (Control.ModifierKeys == Keys.Shift) {
+                WheelScrollH(e);
             } else {
                 WheelZoom(e);
             }
