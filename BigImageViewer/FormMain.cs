@@ -591,5 +591,9 @@ namespace BigImageViewer {
 
             pbxDraw.Invalidate();
         }
+
+        private void pbxDraw_Layout(object sender, LayoutEventArgs e) {
+            RedrawImage();
+        }
     }
 }

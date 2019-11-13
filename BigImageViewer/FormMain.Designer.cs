@@ -33,6 +33,7 @@
             this.rdoHoleInfoNone = new System.Windows.Forms.RadioButton();
             this.chkDrawFrame = new System.Windows.Forms.CheckBox();
             this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
+            this.chkDrawCursorHole = new System.Windows.Forms.CheckBox();
             this.chkDrawHoles = new System.Windows.Forms.CheckBox();
             this.chkDrawInfo = new System.Windows.Forms.CheckBox();
             this.btnResetZoom = new System.Windows.Forms.Button();
@@ -62,7 +63,6 @@
             this.pbxDraw = new System.Windows.Forms.PictureBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.dlgFolder = new System.Windows.Forms.FolderBrowserDialog();
-            this.chkDrawCursorHole = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -223,6 +223,19 @@
             this.chkDrawPixelValue.Text = "Pixel Value";
             this.chkDrawPixelValue.UseVisualStyleBackColor = true;
             this.chkDrawPixelValue.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // chkDrawCursorHole
+            // 
+            this.chkDrawCursorHole.AutoSize = true;
+            this.chkDrawCursorHole.Checked = true;
+            this.chkDrawCursorHole.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDrawCursorHole.Location = new System.Drawing.Point(320, 20);
+            this.chkDrawCursorHole.Name = "chkDrawCursorHole";
+            this.chkDrawCursorHole.Size = new System.Drawing.Size(91, 16);
+            this.chkDrawCursorHole.TabIndex = 5;
+            this.chkDrawCursorHole.Text = "Cursor Hole";
+            this.chkDrawCursorHole.UseVisualStyleBackColor = true;
+            this.chkDrawCursorHole.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
             // chkDrawHoles
             // 
@@ -579,6 +592,7 @@
             this.pbxDraw.TabIndex = 1;
             this.pbxDraw.TabStop = false;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
+            this.pbxDraw.Layout += new System.Windows.Forms.LayoutEventHandler(this.pbxDraw_Layout);
             this.pbxDraw.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseDown);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
             this.pbxDraw.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseUp);
@@ -591,19 +605,6 @@
             this.splitter1.Size = new System.Drawing.Size(3, 600);
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
-            // 
-            // chkDrawCursorHole
-            // 
-            this.chkDrawCursorHole.AutoSize = true;
-            this.chkDrawCursorHole.Checked = true;
-            this.chkDrawCursorHole.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawCursorHole.Location = new System.Drawing.Point(320, 20);
-            this.chkDrawCursorHole.Name = "chkDrawCursorHole";
-            this.chkDrawCursorHole.Size = new System.Drawing.Size(91, 16);
-            this.chkDrawCursorHole.TabIndex = 5;
-            this.chkDrawCursorHole.Text = "Cursor Hole";
-            this.chkDrawCursorHole.UseVisualStyleBackColor = true;
-            this.chkDrawCursorHole.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
             // FormMain
             // 
