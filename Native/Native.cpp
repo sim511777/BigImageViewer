@@ -16,10 +16,6 @@ NATIVE_API BOOL Load8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     BITMAPFILEHEADER fh;
     ReadFile(hFile, &fh, sizeof(BITMAPFILEHEADER), &bytesRead, NULL);
     DWORD bufSize = fh.bfSize - fh.bfOffBits;
-    if (bufSize != bw * bh) {    // 버퍼사이즈 체크
-        CloseHandle(hFile);
-        return FALSE;
-    }
 
     // 정보 헤더
     BITMAPINFOHEADER ih;
@@ -29,24 +25,32 @@ NATIVE_API BOOL Load8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
         return  FALSE;
     }
 
-    if (ih.biWidth != bw || ih.biHeight != bh) {  // 이미지사이즈 체크
-        CloseHandle(hFile);
-        return FALSE;
-    }
-
     LARGE_INTEGER largeSize;
     largeSize.QuadPart = fh.bfOffBits;
     SetFilePointerEx(hFile, largeSize, NULL, FILE_BEGIN);
 
+    int fbw = ih.biWidth;
+    int fbh = ih.biHeight;
+
     // bmp파일은 파일 저장시 라인당 4byte padding을 한다.
     // bw가 4로 나눠 떨어지지 않을경우 padding처리 해야 함
     // int stride = (bw+3)/4*4;
+    int fstep = (fbw + 3) / 4 * 4;
+    
+    BYTE *fbuf = new BYTE[fbh * fstep];
+    ReadFile(hFile, fbuf, fbh * fstep, &bytesRead, NULL);
 
-    // bmp파일은 위아래가 뒤집혀 있으므로 파일에서 읽어서 버퍼 아래라인 부터 쓴다
-    for (int y = bh - 1; y >= 0; y--) {
-        ReadFile(hFile, buf + y * bw, bw, &bytesRead, NULL);
+    // 대상버퍼 width/height 소스버퍼 width/height 중 작은거 만큼 카피
+    int minh = min(bh, fbh);
+    int minw = min(bw, fbw);
+    
+    // bmp파일은 위아래가 뒤집혀 있으므로 파일에서 아래 라인부터 읽어서 버퍼에 쓴다
+    for (int y = 0; y < minh; y++) {
+        memcpy(buf + y * bw, fbuf + (fbh-y-1) * fstep, minw);
     }
 
+    delete[] fbuf;
+    
     CloseHandle(hFile);
     return TRUE;
 }
@@ -102,11 +106,15 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
 
     // bmp파일은 파일 저장시 라인당 4byte padding을 한다.
     // bw가 4로 나눠 떨어지지 않을경우 padding처리 해야 함
-    // int stride = (bw+3)/4*4;
+    int fstep = (bw + 3) / 4 * 4;
+    int paddingSize = fstep - bw;
+    BYTE paddingBuf[] = {0,0,0,0};
 
     // bmp파일은 위아래가 뒤집혀 있으므로 버퍼 아래라인 부터 읽어서 파일에 쓴다
     for (int y = bh - 1; y >= 0; y--) {
         WriteFile(hFile, buf + y * bw, bw, &bytesWritten, NULL);
+        if (paddingSize > 0)
+            WriteFile(hFile, paddingBuf, paddingSize, &bytesWritten, NULL);
     }
 
     CloseHandle(hFile);
