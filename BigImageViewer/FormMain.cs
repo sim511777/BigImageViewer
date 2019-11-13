@@ -37,11 +37,13 @@ namespace BigImageViewer {
         int dispBH;
         IntPtr dispBuf;
         Bitmap dispBmp;
-        int imgFW;
-        int imgFH;
-        int numFrm;
-        int ImgBW { get { return imgFW; } }
-        int ImgBH { get { return imgFH * numFrm; } }
+        int frmW;
+        int frmH;
+        int frmNum;
+        int fwdNum;
+        int fwdOvlp;
+        int ImgBW { get { return (frmW - fwdOvlp) * fwdNum + fwdOvlp; } }
+        int ImgBH { get { return frmH * frmNum; } }
         IntPtr imgBuf;
 
         // QuadTree
@@ -85,33 +87,34 @@ namespace BigImageViewer {
 
         // 이미지 버퍼 할당
         private void AllocImgBuf() {
-            imgFW = (int)numFW.Value;
-            imgFH = (int)numFH.Value;
-            numFrm = (int)numFNum.Value;
+            frmW = (int)numFW.Value;
+            frmH = (int)numFH.Value;
+            frmNum = (int)numFNum.Value;
+            fwdNum = (int)numFwd.Value;
+            fwdOvlp = (int)numFwdOverlap.Value;
             imgBuf = Marshal.AllocHGlobal((IntPtr)((long)ImgBW * ImgBH));
             MsvcrtDll.memset(imgBuf, 0, (ulong)((long)ImgBW * ImgBH));
         }
 
         // 포워드 이미지 로드
-        private void LoadFwdImg() {
-            long frmSize = imgFW * imgFH;
-            string dir = tbxFwdDir.Text;
+        private void LoadFwdImg(string dir, int ifwd) {
+            long frmSize = ImgBW * frmH;
             int succNum = 0;
 
             Log($"Load Fwd Image");
 
-            for (int i = 0; i < numFrm; i++) {
+            for (int i = 0; i < frmNum; i++) {
                 string filePath = $"{dir}\\Frame_{i:000}.BMP";
-                IntPtr buf = (IntPtr)(imgBuf.ToInt64() + frmSize * i);
+                IntPtr buf = (IntPtr)(imgBuf.ToInt64() + frmSize * i + ifwd * (frmW - fwdOvlp));
 
-                var r = NativeDll.Load8BitBmp(buf, imgFW, imgFH, filePath);
+                var r = NativeDll.Load8BitBmp(buf, ImgBW, frmH, filePath);
                 if (r) {
                     succNum++;
                 } else {
                     MsvcrtDll.memset(buf, 0, (ulong)frmSize);
                 }
             }
-            Log($"이미지 {numFrm}개 중 {succNum}개 이미지 로드 성공");
+            Log($"Fwd_{ifwd} 이미지 {frmNum}개 중 {succNum}개 이미지 로드 성공");
             Log($"End Load Fwd Image");
         }
 
@@ -133,6 +136,13 @@ namespace BigImageViewer {
         private Point ImgToDisp(PointF pt) {
             var pt2 = new PointF(pt.X * ZoomLevel, pt.Y * ZoomLevel);
             return new Point((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y));
+        }
+        private Rectangle ImgToDisp(RectangleF rect) {
+            var pt = rect.Location;
+            var pt2 = new PointF(pt.X * ZoomLevel, pt.Y * ZoomLevel);
+            var size = rect.Size;
+            var size2 = new SizeF(size.Width * ZoomLevel, size.Height * ZoomLevel);
+            return new Rectangle((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y), (int)Math.Floor(size2.Width), (int)Math.Floor(size2.Height));
         }
 
         // 이미지 픽셀값 리턴
@@ -167,20 +177,30 @@ namespace BigImageViewer {
 
         // 프레임 표시
         private void DrawFrame(Graphics g) {
-            if (imgFH * ZoomLevel < 15)
-                return;
             var clientSize = pbxDraw.ClientSize;
-            for (int i = 0; i < numFrm; i++) {
-                var ptImg1 = new PointF(0, imgFH * i);
-                var ptImg2 = new PointF(imgFW, imgFH * i);
-                var ptDisp1 = ImgToDisp(ptImg1);
-                var ptDisp2 = ImgToDisp(ptImg2);
-
-                if (ptDisp1.Y < 0 || ptDisp1.Y >= clientSize.Height || ptDisp1.X >= clientSize.Width || ptDisp2.X < 0)
+            for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
+                int x1 = (frmW - fwdOvlp) * ifwd;
+                var rectImg = new RectangleF(x1, 0, frmW, ImgBH);
+                var rectDisp = ImgToDisp(rectImg);
+                if (rectDisp.Bottom < 0 || rectDisp.Top >= clientSize.Height || rectDisp.Right < 0 || rectDisp.Left >= clientSize.Width)
                     continue;
 
-                g.DrawLine(Pens.PowderBlue, ptDisp1, ptDisp2);
-                g.DrawString($"Frame={i}", infoFont, Brushes.LightBlue, ptDisp1.X, ptDisp1.Y + 2);
+                g.DrawRectangle(Pens.PowderBlue, rectDisp);
+
+                for (int ifrm = 0; ifrm < frmNum; ifrm++) {
+                    var ptImg1 = new PointF(x1, frmH * ifrm);
+                    var ptImg2 = new PointF(x1 + frmW, frmH * ifrm);
+                    var ptDisp1 = ImgToDisp(ptImg1);
+                    var ptDisp2 = ImgToDisp(ptImg2);
+
+                    if (ptDisp1.Y < 0 || ptDisp1.Y >= clientSize.Height || ptDisp1.X >= clientSize.Width || ptDisp2.X < 0)
+                        continue;
+
+                    g.DrawLine(Pens.PowderBlue, ptDisp1, ptDisp2);
+                    if (frmH * ZoomLevel < 20)
+                        continue;
+                    g.DrawString($"fwd={ifwd}/frm={ifrm}", infoFont, Brushes.LightBlue, ptDisp1.X + 3, ptDisp1.Y + 5);
+                }
             }
         }
 
@@ -480,15 +500,8 @@ namespace BigImageViewer {
             RedrawImage();
         }
 
-        private void btnFwdDir_Click(object sender, EventArgs e) {
-            var dr = dlgFolder.ShowDialog(this);
-            if (dr != DialogResult.OK)
-                return;
-            tbxFwdDir.Text = dlgFolder.SelectedPath;
-        }
-
         private void btnLoadFwd_Click(object sender, EventArgs e) {
-            LoadFwdImg();
+            LoadFwdImg(tbxFwdDir.Text, 0);
             RedrawImage();
         }
 
@@ -593,6 +606,19 @@ namespace BigImageViewer {
         }
 
         private void pbxDraw_Layout(object sender, LayoutEventArgs e) {
+            RedrawImage();
+        }
+
+        private void btnLoadSurf_Click(object sender, EventArgs e) {
+            bool fromBack = chkFromBack.Checked;
+            for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
+                int fwd = ifwd;
+                if (fromBack)
+                    fwd = fwdNum - ifwd - 1;
+
+                string dir = tbxSurfDir.Text + "\\Fwd" + fwd.ToString();
+                LoadFwdImg(dir, fwd);
+            }
             RedrawImage();
         }
     }

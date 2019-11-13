@@ -8,10 +8,9 @@ ok BmpLoader : OpenCV 지우고 C코드만 남길것
 ok CopyImageBufferZoom : Unsafe 지우고 C코드만 남길것
 ok dll 함수 오타 수정
 ok CopyImageBufferZoom Dst범위 계산해서 범위만 루프 돌것
+ok 이미지 로드 bw bh 안맞아도 로드 되게
+ok 전체 서페이스 (모든 포워드) 이미지 로딩 기능
 
-
-전체 서페이스 (모든 포워드) 이미지 로딩 기능
-이미지 로드 bw bh 안맞아도 로드 되게
 라이브러리 화
 
 ok 홀그리기 테스트

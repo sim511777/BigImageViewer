@@ -126,7 +126,7 @@ NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, in
     if (clear) {
         for (int y = 0; y < dh; y++) {
             BYTE *dp = dbuf + (size_t)dbw * y;
-            memset(dp, 0, dw);
+            memset(dp, 128, dw);
         }
     }
 
