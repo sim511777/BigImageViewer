@@ -50,12 +50,12 @@ namespace BigImageViewer {
         QuadTree tree;
 
         // zoom, panning
-        float[] zoomLevels = { 1f / 512, 3f / 1024, 1f / 256, 3f / 512, 1f / 128, 3f / 256, 1f / 64, 3f / 128, 1f / 32, 3f / 64, 1f / 16, 3f / 32, 1f / 8, 3f / 16, 1f / 4, 3f / 8, 1f / 2, 3f / 4, 1, 3f / 2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96 };
+        float[] zoomFactors = { 1f / 512, 3f / 1024, 1f / 256, 3f / 512, 1f / 128, 3f / 256, 1f / 64, 3f / 128, 1f / 32, 3f / 64, 1f / 16, 3f / 32, 1f / 8, 3f / 16, 1f / 4, 3f / 8, 1f / 2, 3f / 4, 1, 3f / 2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96 };
         string[] zoomTexts = { "1/512", "3/1024", "1/256", "3/512", "1/128", "3/256", "1/64", "3/128", "1/32", "3/64", "1/16", "3/32", "1/8", "3/16", "1/4", "3/8", "1/2", "3/4", "1", "3/2", "2", "3", "4", "6", "8", "12", "16", "24", "32", "48", "64", "96" };
-        const int zoomIndexReset = 8;
-        int zoomIndex = zoomIndexReset;
-        float ZoomLevel { get { return zoomLevels[zoomIndex]; } }
-        string ZoomText { get { return zoomTexts[zoomIndex]; } }
+        const int zoomLevelReset = 8;
+        int zoomLevel = zoomLevelReset;
+        float ZoomFactor { get { return zoomFactors[zoomLevel]; } }
+        string ZoomText { get { return zoomTexts[zoomLevel]; } }
         Point ptPanning = Point.Empty;
 
 
@@ -124,26 +124,26 @@ namespace BigImageViewer {
             var rect = pbxDraw.ClientRectangle;
             int dw = Math.Min(rect.Width, dispBW);
             int dh = Math.Min(rect.Height, dispBH);
-            NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomLevel, true);
+            NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
             pbxDraw.Invalidate();
         }
 
         // 표시 픽셀 좌표를 이미지 좌표로 변환
         private PointF DispToImg(Point pt) {
             var pt2 = pt - (Size)ptPanning;
-            return new PointF(pt2.X / ZoomLevel, pt2.Y / ZoomLevel);
+            return new PointF(pt2.X / ZoomFactor, pt2.Y / ZoomFactor);
         }
 
         // 이미지 좌표를 표시 픽셀 좌표로 변환
         private Point ImgToDisp(PointF pt) {
-            var pt2 = new PointF(pt.X * ZoomLevel, pt.Y * ZoomLevel);
+            var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
             return new Point((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y));
         }
         private Rectangle ImgToDisp(RectangleF rect) {
             var pt = rect.Location;
-            var pt2 = new PointF(pt.X * ZoomLevel, pt.Y * ZoomLevel);
+            var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
             var size = rect.Size;
-            var size2 = new SizeF(size.Width * ZoomLevel, size.Height * ZoomLevel);
+            var size2 = new SizeF(size.Width * ZoomFactor, size.Height * ZoomFactor);
             return new Rectangle((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y), (int)Math.Floor(size2.Width), (int)Math.Floor(size2.Height));
         }
 
@@ -199,7 +199,7 @@ namespace BigImageViewer {
                         continue;
 
                     g.DrawLine(Pens.PowderBlue, ptDisp1, ptDisp2);
-                    if (frmH * ZoomLevel < 20)
+                    if (frmH * ZoomFactor < 20)
                         continue;
                     g.DrawString($"fwd={ifwd}/frm={ifrm}", infoFont, Brushes.LightBlue, ptDisp1.X + 3, ptDisp1.Y + 5);
                 }
@@ -218,7 +218,7 @@ namespace BigImageViewer {
             Brushes.Black,      // 224~255
         };
         private void DrawPixelValue(Graphics g) {
-            if (ZoomLevel < 16)
+            if (ZoomFactor < 16)
                 return;
 
             var ptDisp1 = Point.Empty;
@@ -238,7 +238,7 @@ namespace BigImageViewer {
             if (imgY2 >= ImgBH)
                 imgY2 = ImgBH - 1;
 
-            Font font = new Font("돋움체", ZoomLevel / 16 * 6);
+            Font font = new Font("돋움체", ZoomFactor / 16 * 6);
             for (int imgY = imgY1; imgY <= imgY2; imgY++) {
                 for (int imgX = imgX1; imgX <= imgX2; imgX++) {
                     var ptImg = new PointF(imgX, imgY);
@@ -255,15 +255,15 @@ namespace BigImageViewer {
         private void WheelZoom(MouseEventArgs e) {
             var ptImg = DispToImg(e.Location);
 
-            var zoomLevelOld = ZoomLevel;
-            zoomIndex = (e.Delta > 0) ? zoomIndex + 1 : zoomIndex - 1;
-            if (zoomIndex < 0)
-                zoomIndex = 0;
-            if (zoomIndex >= zoomLevels.Length)
-                zoomIndex = zoomLevels.Length - 1;
+            var zoomFacotrOld = ZoomFactor;
+            zoomLevel = (e.Delta > 0) ? zoomLevel + 1 : zoomLevel - 1;
+            if (zoomLevel < 0)
+                zoomLevel = 0;
+            if (zoomLevel >= zoomFactors.Length)
+                zoomLevel = zoomFactors.Length - 1;
 
-            ptPanning.X += (int)Math.Floor(ptImg.X * (zoomLevelOld - ZoomLevel));
-            ptPanning.Y += (int)Math.Floor(ptImg.Y * (zoomLevelOld - ZoomLevel));
+            ptPanning.X += (int)Math.Floor(ptImg.X * (zoomFacotrOld - ZoomFactor));
+            ptPanning.Y += (int)Math.Floor(ptImg.Y * (zoomFacotrOld - ZoomFactor));
         }
 
         // 휠 스크롤
@@ -312,7 +312,7 @@ namespace BigImageViewer {
             float imgX2 = (float)Math.Floor(ptImg2.X);
             float imgY2 = (float)Math.Floor(ptImg2.Y);
 
-            float zoomLevel = ZoomLevel;
+            float zoomFactor = ZoomFactor;
             float panX = ptPanning.X;
             float panY = ptPanning.Y;
 
@@ -321,7 +321,7 @@ namespace BigImageViewer {
             Font infoFont = SystemFonts.DefaultFont;
 
             float holePitch = 32.0f;
-            bool holeDrawCircle = zoomLevel > (4.0f / holePitch);
+            bool holeDrawCircle = zoomFactor > (4.0f / holePitch);
 
             HoleInfoItemType infoItemType = HoleInfoItemType.None;
             if (rdoHoleInfoIndexX.Checked)
@@ -347,10 +347,10 @@ namespace BigImageViewer {
             //}
 
             // 쿼드트리 사용하여 비저블 역역에 포함되는 노드만 그림
-            DrawNodeHole(tree.root, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            DrawNodeHole(tree.root, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
 
             if (chkDrawCursorHole.Checked && cursorHole != null) {
-                DrawHole(g, zoomLevel, panX, panY, cursorHole, holeDrawCircle, Pens.Lime, infoItemType, infoFont, infoBrush);
+                DrawHole(g, zoomFactor, panX, panY, cursorHole, holeDrawCircle, Pens.Lime, infoItemType, infoFont, infoBrush);
             }
         }
 
@@ -423,43 +423,43 @@ namespace BigImageViewer {
         }
 
         // 노드 홀 그리기
-        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, Graphics g, float zoomLevel, float panX, float panY, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, Graphics g, float zoomFactor, float panX, float panY, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
             // 뷰 영역에 벗어난 노드는 리턴
             if (node.x1 > imgX2 || node.y1 > imgY2 || node.x2 < imgX1 || node.y2 < imgY1)
                 return;
 
             // 현재 레벨에서 드로우
-            if ((node.x2 - node.x1) * zoomLevel <= 4.0f) {
-                DrawHole(g, zoomLevel, panX, panY, node.holeFront, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            if ((node.x2 - node.x1) * zoomFactor <= 4.0f) {
+                DrawHole(g, zoomFactor, panX, panY, node.holeFront, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
                 return;
             }
 
             // 노드가 리프 노드 이면 노드에 포함된 홀 그리고 리턴
             if (node.holes != null) {
                 foreach (Hole hole in node.holes)
-                    DrawHole(g, zoomLevel, panX, panY, hole, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                    DrawHole(g, zoomFactor, panX, panY, hole, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
                 return;
             }
 
             // 하위 노드로 내려감
             if (node.childLT != null)
-                DrawNodeHole(node.childLT, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childLT, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
             if (node.childRT != null)
-                DrawNodeHole(node.childRT, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childRT, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
             if (node.childLB != null)
-                DrawNodeHole(node.childLB, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childLB, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
             if (node.childRB != null)
-                DrawNodeHole(node.childRB, imgX1, imgY1, imgX2, imgY2, g, zoomLevel, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childRB, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
         }
 
         // 홀그리기
-        private void DrawHole(Graphics g, float zoomLevel, float panX, float panY, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawHole(Graphics g, float zoomFactor, float panX, float panY, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
             if (holeDrawCircle)
-                DrawHoleCircle(g, zoomLevel, panX, panY, hole, linePen);
+                DrawHoleCircle(g, zoomFactor, panX, panY, hole, linePen);
             else
-                DrawHolePoint(g, zoomLevel, panX, panY, hole, linePen);
+                DrawHolePoint(g, zoomFactor, panX, panY, hole, linePen);
 
-            if (infoItemType == HoleInfoItemType.None || zoomLevel < 0.5f)
+            if (infoItemType == HoleInfoItemType.None || zoomFactor < 0.5f)
                 return;
             
             string infoText;
@@ -469,29 +469,29 @@ namespace BigImageViewer {
                 infoText = hole.idxY.ToString();
             else
                 infoText = hole.fwd.ToString();
-            DrawHoleInfo(g, zoomLevel, panX, panY, hole, infoText, infoFont, infoBrush);
+            DrawHoleInfo(g, zoomFactor, panX, panY, hole, infoText, infoFont, infoBrush);
         }
 
         // 개별 홀 써클 드로우
-        private void DrawHoleCircle(Graphics g, float zoomLevel, float panX, float panY, Hole hole, Pen pen) {
-            float x = (hole.x - hole.w / 2f) * zoomLevel + panX;
-            float y = (hole.y - hole.h / 2f) * zoomLevel + panY;
-            float width = hole.w * zoomLevel;
-            float height = hole.h * zoomLevel;
+        private void DrawHoleCircle(Graphics g, float zoomFactor, float panX, float panY, Hole hole, Pen pen) {
+            float x = (hole.x - hole.w / 2f) * zoomFactor + panX;
+            float y = (hole.y - hole.h / 2f) * zoomFactor + panY;
+            float width = hole.w * zoomFactor;
+            float height = hole.h * zoomFactor;
             g.DrawEllipse(pen, x, y, width, height);
         }
 
         // 개별 홀 포인트 드로우
-        private void DrawHolePoint(Graphics g, float zoomLevel, float panX, float panY, Hole hole, Pen linePen) {
-            float x = (int)(hole.x * zoomLevel + panX) - 0.5f;
-            float y = (int)(hole.y * zoomLevel + panY) - 0.5f;
+        private void DrawHolePoint(Graphics g, float zoomFactor, float panX, float panY, Hole hole, Pen linePen) {
+            float x = (int)(hole.x * zoomFactor + panX) - 0.5f;
+            float y = (int)(hole.y * zoomFactor + panY) - 0.5f;
             g.DrawLine(linePen, x, y, x + 1, y + 1);
         }
 
         // 홀 정보 표시
-        private void DrawHoleInfo(Graphics g, float zoomLevel, float panX, float panY, Hole hole, string infoText, Font font, Brush brush) {
-            float x = hole.x * zoomLevel + panX;
-            float y = hole.y * zoomLevel + panY;
+        private void DrawHoleInfo(Graphics g, float zoomFactor, float panX, float panY, Hole hole, string infoText, Font font, Brush brush) {
+            float x = hole.x * zoomFactor + panX;
+            float y = hole.y * zoomFactor + panY;
             g.DrawString(infoText, font, brush, x, y);
         }
 
@@ -534,7 +534,7 @@ namespace BigImageViewer {
 
         private void btnResetZoom_Click(object sender, EventArgs e) {
             ptPanning = Point.Empty;
-            zoomIndex = zoomIndexReset;
+            zoomLevel = zoomLevelReset;
             RedrawImage();
         }
 
@@ -567,7 +567,7 @@ namespace BigImageViewer {
                 var rect = pbxDraw.ClientRectangle;
                 int dw = Math.Min(rect.Width, dispBW);
                 int dh = Math.Min(rect.Height, dispBH);
-                NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomLevel, true);
+                NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
             }
             
             GetCursorHole();
