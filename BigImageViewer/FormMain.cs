@@ -122,7 +122,9 @@ namespace BigImageViewer {
         enum ImageBufferDrawer { C, Dotnet_Unsafe }
         private void RedrawImage() {
             var rect = pbxDraw.ClientRectangle;
-            NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, rect.Width, rect.Height, ptPanning.X, ptPanning.Y, ZoomLevel, true);
+            int dw = Math.Min(rect.Width, dispBW);
+            int dh = Math.Min(rect.Height, dispBH);
+            NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomLevel, true);
             pbxDraw.Invalidate();
         }
 
@@ -561,7 +563,9 @@ namespace BigImageViewer {
                 ptPanning += ((Size)e.Location - (Size)ptOld);
                 ptOld = e.Location;
                 var rect = pbxDraw.ClientRectangle;
-                NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, rect.Width, rect.Height, ptPanning.X, ptPanning.Y, ZoomLevel, true);
+                int dw = Math.Min(rect.Width, dispBW);
+                int dh = Math.Min(rect.Height, dispBH);
+                NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomLevel, true);
             }
             
             GetCursorHole();
