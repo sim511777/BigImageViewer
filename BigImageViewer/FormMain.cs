@@ -218,7 +218,7 @@ namespace BigImageViewer {
             Brushes.Black,      // 224~255
         };
         private void DrawPixelValue(Graphics g) {
-            if (ZoomLevel < 15)
+            if (ZoomLevel < 16)
                 return;
 
             var ptDisp1 = Point.Empty;
@@ -238,15 +238,17 @@ namespace BigImageViewer {
             if (imgY2 >= ImgBH)
                 imgY2 = ImgBH - 1;
 
+            Font font = new Font("돋움체", ZoomLevel / 16 * 6);
             for (int imgY = imgY1; imgY <= imgY2; imgY++) {
                 for (int imgX = imgX1; imgX <= imgX2; imgX++) {
                     var ptImg = new PointF(imgX, imgY);
                     var ptDisp = ImgToDisp(ptImg);
                     int pixelVal = GetImagePixelValue(imgX, imgY);
                     var brush = pseudo[pixelVal / 32];
-                    g.DrawString(pixelVal.ToString(), infoFont, brush, ptDisp.X, ptDisp.Y);
+                    g.DrawString(pixelVal.ToString(), font, brush, ptDisp.X, ptDisp.Y);
                 }
             }
+            font.Dispose();
         }
 
         // 휠 줌
