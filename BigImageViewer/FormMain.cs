@@ -238,7 +238,10 @@ namespace BigImageViewer {
             if (imgY2 >= ImgBH)
                 imgY2 = ImgBH - 1;
 
-            Font font = new Font("돋움체", ZoomFactor / 16 * 6);
+            float fontSize = ZoomFactor / 16 * 6;
+            if (fontSize > 12)
+                fontSize = 12;
+            Font font = new Font("돋움체", fontSize);
             for (int imgY = imgY1; imgY <= imgY2; imgY++) {
                 for (int imgX = imgX1; imgX <= imgX2; imgX++) {
                     var ptImg = new PointF(imgX, imgY);
