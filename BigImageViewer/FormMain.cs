@@ -299,7 +299,7 @@ namespace BigImageViewer {
                 for (int ix = 0; ix < holeW; ix++) {
                     float x = left + ix * pitchX;
                     float y = top + iy * pitchY;
-                    holes[holeW * iy + ix] = new Hole(x, y, w, h, ix, iy, ix / fwdStep);
+                    holes[holeW * iy + ix] = new Hole(x, y, w, h, ix, iy, (int)x / (frmW - fwdOvlp));
                 }
             }
             return holes;
