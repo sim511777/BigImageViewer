@@ -61,8 +61,11 @@ namespace BigImageViewer {
 
         // 표시 버퍼 할당
         private void AllocDispBuf() {
-            dispBW = 1920;
-            dispBH = 1080;
+            FreeDispBuf();
+            
+            dispBW = Math.Max((pbxDraw.ClientSize.Width + 3) / 4 * 4, 0);
+            dispBH = Math.Max(pbxDraw.ClientSize.Height, 0);
+
             dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH));
             MsvcrtDll.memset(dispBuf, 0, (ulong)(dispBW * dispBH));
             dispBmp = new Bitmap(dispBW, dispBH, dispBW, PixelFormat.Format8bppIndexed, dispBuf);
@@ -75,7 +78,10 @@ namespace BigImageViewer {
 
         // 표시 버퍼 해제
         private void FreeDispBuf() {
-            Marshal.FreeHGlobal(dispBuf);
+            if (dispBmp != null)
+                dispBmp.Dispose();
+            if (dispBuf != IntPtr.Zero)
+                Marshal.FreeHGlobal(dispBuf);
         }
 
         // 이미지 버퍼 해제
@@ -615,6 +621,7 @@ namespace BigImageViewer {
         }
 
         private void pbxDraw_Layout(object sender, LayoutEventArgs e) {
+            AllocDispBuf();
             RedrawImage();
         }
 
