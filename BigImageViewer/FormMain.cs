@@ -32,19 +32,23 @@ namespace BigImageViewer {
             tbxLog.AppendText(timeMsg + msg + Environment.NewLine);
         }
 
-        // 버퍼
+        // 디스플레이 버퍼
         int dispBW;
         int dispBH;
         IntPtr dispBuf;
         Bitmap dispBmp;
+
+        // 이미지 버퍼
+        int imgBW;
+        int imgBH;
+        IntPtr imgBuf;
+
+        // 포워드 정보
         int frmW;
         int frmH;
         int frmNum;
         int fwdNum;
         int fwdOvlp;
-        int ImgBW { get { return (frmW - fwdOvlp) * fwdNum + fwdOvlp; } }
-        int ImgBH { get { return frmH * frmNum; } }
-        IntPtr imgBuf;
 
         // QuadTree
         QuadTree tree;
@@ -98,13 +102,16 @@ namespace BigImageViewer {
             frmNum = (int)numFNum.Value;
             fwdNum = (int)numFwd.Value;
             fwdOvlp = (int)numFwdOverlap.Value;
-            imgBuf = Marshal.AllocHGlobal((IntPtr)((long)ImgBW * ImgBH));
-            MsvcrtDll.memset(imgBuf, 0, (ulong)((long)ImgBW * ImgBH));
+
+            imgBW = (frmW - fwdOvlp) * fwdNum + fwdOvlp;
+            imgBH = frmH * frmNum;
+            imgBuf = Marshal.AllocHGlobal((IntPtr)((long)imgBW * imgBH));
+            MsvcrtDll.memset(imgBuf, 0, (ulong)((long)imgBW * imgBH));
         }
 
         // 포워드 이미지 로드
         private void LoadFwdImg(string dir, int ifwd) {
-            long frmSize = ImgBW * frmH;
+            long frmSize = imgBW * frmH;
             int succNum = 0;
 
             Log($"Load Fwd Image");
@@ -113,7 +120,7 @@ namespace BigImageViewer {
                 string filePath = $"{dir}\\Frame_{i:000}.BMP";
                 IntPtr buf = (IntPtr)(imgBuf.ToInt64() + frmSize * i + ifwd * (frmW - fwdOvlp));
 
-                var r = NativeDll.Load8BitBmp(buf, ImgBW, frmH, filePath);
+                var r = NativeDll.Load8BitBmp(buf, imgBW, frmH, filePath);
                 if (r) {
                     succNum++;
                 } else {
@@ -130,7 +137,7 @@ namespace BigImageViewer {
             var rect = pbxDraw.ClientRectangle;
             int dw = Math.Min(rect.Width, dispBW);
             int dh = Math.Min(rect.Height, dispBH);
-            NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
+            NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
             pbxDraw.Invalidate();
         }
 
@@ -155,10 +162,10 @@ namespace BigImageViewer {
 
         // 이미지 픽셀값 리턴
         private int GetImagePixelValue(int x, int y) {
-            if (imgBuf == IntPtr.Zero || x < 0 || x >= ImgBW || y < 0 || y >= ImgBH)
+            if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH)
                 return -1;
 
-            IntPtr ptr = (IntPtr)(imgBuf.ToInt64() + (long)ImgBW * y + x);
+            IntPtr ptr = (IntPtr)(imgBuf.ToInt64() + (long)imgBW * y + x);
             return Marshal.ReadByte(ptr);
         }
 
@@ -188,7 +195,7 @@ namespace BigImageViewer {
             var clientSize = pbxDraw.ClientSize;
             for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
                 int x1 = (frmW - fwdOvlp) * ifwd;
-                var rectImg = new RectangleF(x1, 0, frmW, ImgBH);
+                var rectImg = new RectangleF(x1, 0, frmW, imgBH);
                 var rectDisp = ImgToDisp(rectImg);
                 if (rectDisp.Bottom < 0 || rectDisp.Top >= clientSize.Height || rectDisp.Right < 0 || rectDisp.Left >= clientSize.Width)
                     continue;
@@ -239,10 +246,10 @@ namespace BigImageViewer {
                 imgX1 = 0;
             if (imgY1 < 0)
                 imgY1 = 0;
-            if (imgX2 >= ImgBW)
-                imgX2 = ImgBW - 1;
-            if (imgY2 >= ImgBH)
-                imgY2 = ImgBH - 1;
+            if (imgX2 >= imgBW)
+                imgX2 = imgBW - 1;
+            if (imgY2 >= imgBH)
+                imgY2 = imgBH - 1;
 
             float fontSize = ZoomFactor / 16 * 6;
             if (fontSize > 12)
@@ -576,7 +583,7 @@ namespace BigImageViewer {
                 var rect = pbxDraw.ClientRectangle;
                 int dw = Math.Min(rect.Width, dispBW);
                 int dh = Math.Min(rect.Height, dispBH);
-                NativeDll.CopyImageBufferZoom(imgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
+                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
             }
             
             GetCursorHole();
