@@ -580,14 +580,10 @@ namespace BigImageViewer {
             if (mouseDown) {
                 ptPanning += ((Size)e.Location - (Size)ptOld);
                 ptOld = e.Location;
-                var rect = pbxDraw.ClientRectangle;
-                int dw = Math.Min(rect.Width, dispBW);
-                int dh = Math.Min(rect.Height, dispBH);
-                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
+                RedrawImage();
+                return;
             }
-            
-            GetCursorHole();
-            
+                        
             pbxDraw.Invalidate();
         }
 
