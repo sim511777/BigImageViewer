@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NativeImport;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,15 +15,6 @@ namespace BigImageViewer {
     public partial class FormMain : Form {
         public FormMain() {
             InitializeComponent();
-            this.pbxDraw.MouseWheel += this.PbxDraw_MouseWheel;
-
-            AllocDispBuf();
-            RedrawImage();
-        }
-
-        ~FormMain() {
-            FreeImgBuf();
-            FreeDispBuf();
         }
 
         // 로그 출력
@@ -31,12 +23,6 @@ namespace BigImageViewer {
             string timeMsg = now.ToString("[yy/MM/dd HH:mm:ss.fff] ");
             tbxLog.AppendText(timeMsg + msg + Environment.NewLine);
         }
-
-        // 디스플레이 버퍼
-        int dispBW;
-        int dispBH;
-        IntPtr dispBuf;
-        Bitmap dispBmp;
 
         // 이미지 버퍼
         int imgBW;
@@ -52,41 +38,6 @@ namespace BigImageViewer {
 
         // QuadTree
         QuadTree tree;
-
-        // zoom, panning
-        float[] zoomFactors = { 1f / 512, 3f / 1024, 1f / 256, 3f / 512, 1f / 128, 3f / 256, 1f / 64, 3f / 128, 1f / 32, 3f / 64, 1f / 16, 3f / 32, 1f / 8, 3f / 16, 1f / 4, 3f / 8, 1f / 2, 3f / 4, 1, 3f / 2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96 };
-        string[] zoomTexts = { "1/512", "3/1024", "1/256", "3/512", "1/128", "3/256", "1/64", "3/128", "1/32", "3/64", "1/16", "3/32", "1/8", "3/16", "1/4", "3/8", "1/2", "3/4", "1", "3/2", "2", "3", "4", "6", "8", "12", "16", "24", "32", "48", "64", "96" };
-        const int zoomLevelReset = 8;
-        int zoomLevel = zoomLevelReset;
-        float ZoomFactor { get { return zoomFactors[zoomLevel]; } }
-        string ZoomText { get { return zoomTexts[zoomLevel]; } }
-        Point ptPanning = Point.Empty;
-
-
-        // 표시 버퍼 할당
-        private void AllocDispBuf() {
-            FreeDispBuf();
-            
-            dispBW = Math.Max((pbxDraw.ClientSize.Width + 3) / 4 * 4, 0);
-            dispBH = Math.Max(pbxDraw.ClientSize.Height, 0);
-
-            dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH));
-            MsvcrtDll.memset(dispBuf, 0, (ulong)(dispBW * dispBH));
-            dispBmp = new Bitmap(dispBW, dispBH, dispBW, PixelFormat.Format8bppIndexed, dispBuf);
-            var pal = dispBmp.Palette;
-            for (int i = 0; i < 256; i++) {
-                pal.Entries[i] = Color.FromArgb(i, i, i);
-            }
-            dispBmp.Palette = pal;
-        }
-
-        // 표시 버퍼 해제
-        private void FreeDispBuf() {
-            if (dispBmp != null)
-                dispBmp.Dispose();
-            if (dispBuf != IntPtr.Zero)
-                Marshal.FreeHGlobal(dispBuf);
-        }
 
         // 이미지 버퍼 해제
         private void FreeImgBuf() {
@@ -131,62 +82,14 @@ namespace BigImageViewer {
             Log($"End Load Fwd Image");
         }
 
-        // 이미지 버퍼를 표시 버퍼로 복사
-        enum ImageBufferDrawer { C, Dotnet_Unsafe }
-        private void RedrawImage() {
-            var rect = pbxDraw.ClientRectangle;
-            int dw = Math.Min(rect.Width, dispBW);
-            int dh = Math.Min(rect.Height, dispBH);
-            NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
-            pbxDraw.Invalidate();
-        }
-
-        // 표시 픽셀 좌표를 이미지 좌표로 변환
-        private PointF DispToImg(Point pt) {
-            var pt2 = pt - (Size)ptPanning;
-            return new PointF(pt2.X / ZoomFactor, pt2.Y / ZoomFactor);
-        }
-
-        // 이미지 좌표를 표시 픽셀 좌표로 변환
-        private Point ImgToDisp(PointF pt) {
-            var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
-            return new Point((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y));
-        }
-        private Rectangle ImgToDisp(RectangleF rect) {
-            var pt = rect.Location;
-            var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
-            var size = rect.Size;
-            var size2 = new SizeF(size.Width * ZoomFactor, size.Height * ZoomFactor);
-            return new Rectangle((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y), (int)Math.Floor(size2.Width), (int)Math.Floor(size2.Height));
-        }
-
-        // 이미지 픽셀값 리턴
-        private int GetImagePixelValue(int x, int y) {
-            if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH)
-                return -1;
-
-            IntPtr ptr = (IntPtr)(imgBuf.ToInt64() + (long)imgBW * y + x);
-            return Marshal.ReadByte(ptr);
-        }
-
-        // 정보 표시
-        private void DrawInfo(Graphics g) {
-            Point ptCur = pbxDraw.PointToClient(Cursor.Position);
-            PointF ptImg = DispToImg(ptCur);
-            int imgX = (int)Math.Floor(ptImg.X);
-            int imgY = (int)Math.Floor(ptImg.Y);
-            int pixelVal = GetImagePixelValue(imgX, imgY);
-            string info = $"{ZoomText}x ({imgX},{imgY}) [{pixelVal}]";
-            var rect = g.MeasureString(info, infoFont);
-            g.FillRectangle(Brushes.White, 0, 0, rect.Width, rect.Height);
-            g.DrawString(info, infoFont, Brushes.Black, 0, 0);
-            
-            float y = rect.Height;
-            if (chkDrawCursorHole.Checked && cursorHole != null) {
-                info = cursorHole.ToString();
-                rect = g.MeasureString(info, infoFont);
+        // 현재 홀 정보 표시
+        private void DrawCursorHoleInfo(Graphics g) {
+            float y = 23;
+            if (cursorHole != null) {
+                string info = cursorHole.ToString();
+                var rect = g.MeasureString(info, defFont);
                 g.FillRectangle(Brushes.White, 0, y, rect.Width, rect.Height);
-                g.DrawString(info, infoFont, Brushes.Black, 0, y);
+                g.DrawString(info, defFont, Brushes.Black, 0, y);
             }
         }
 
@@ -196,7 +99,7 @@ namespace BigImageViewer {
             for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
                 int x1 = (frmW - fwdOvlp) * ifwd;
                 var rectImg = new RectangleF(x1, 0, frmW, imgBH);
-                var rectDisp = ImgToDisp(rectImg);
+                var rectDisp = pbxDraw.ImgToDisp(rectImg);
                 if (rectDisp.Bottom < 0 || rectDisp.Top >= clientSize.Height || rectDisp.Right < 0 || rectDisp.Left >= clientSize.Width)
                     continue;
 
@@ -205,93 +108,18 @@ namespace BigImageViewer {
                 for (int ifrm = 0; ifrm < frmNum; ifrm++) {
                     var ptImg1 = new PointF(x1, frmH * ifrm);
                     var ptImg2 = new PointF(x1 + frmW, frmH * ifrm);
-                    var ptDisp1 = ImgToDisp(ptImg1);
-                    var ptDisp2 = ImgToDisp(ptImg2);
+                    var ptDisp1 = pbxDraw.ImgToDisp(ptImg1);
+                    var ptDisp2 = pbxDraw.ImgToDisp(ptImg2);
 
                     if (ptDisp1.Y < 0 || ptDisp1.Y >= clientSize.Height || ptDisp1.X >= clientSize.Width || ptDisp2.X < 0)
                         continue;
 
                     g.DrawLine(Pens.PowderBlue, ptDisp1, ptDisp2);
-                    if (frmH * ZoomFactor < 20)
+                    if (frmH * pbxDraw.ZoomFactor < 20)
                         continue;
-                    g.DrawString($"fwd={ifwd}/frm={ifrm}", infoFont, Brushes.LightBlue, ptDisp1.X + 3, ptDisp1.Y + 5);
+                    g.DrawString($"fwd={ifwd}/frm={ifrm}", defFont, Brushes.LightBlue, ptDisp1.X + 3, ptDisp1.Y + 5);
                 }
             }
-        }
-
-        // 이미지 픽셀값 표시
-        Brush[] pseudo = {
-            Brushes.White,      // 0~31
-            Brushes.LightCyan,  // 32~63
-            Brushes.DodgerBlue, // 63~95
-            Brushes.Yellow,     // 96~127
-            Brushes.Brown,      // 128~159
-            Brushes.Magenta,    // 160~191
-            Brushes.Red    ,    // 192~223
-            Brushes.Black,      // 224~255
-        };
-        private void DrawPixelValue(Graphics g) {
-            if (ZoomFactor < 16)
-                return;
-
-            var ptDisp1 = Point.Empty;
-            var ptDisp2 = (Point)pbxDraw.ClientSize;
-            var ptImg1 = DispToImg(ptDisp1);
-            var ptImg2 = DispToImg(ptDisp2);
-            int imgX1 = (int)Math.Floor(ptImg1.X);
-            int imgY1 = (int)Math.Floor(ptImg1.Y);
-            int imgX2 = (int)Math.Floor(ptImg2.X);
-            int imgY2 = (int)Math.Floor(ptImg2.Y);
-            if (imgX1 < 0)
-                imgX1 = 0;
-            if (imgY1 < 0)
-                imgY1 = 0;
-            if (imgX2 >= imgBW)
-                imgX2 = imgBW - 1;
-            if (imgY2 >= imgBH)
-                imgY2 = imgBH - 1;
-
-            float fontSize = ZoomFactor / 16 * 6;
-            if (fontSize > 12)
-                fontSize = 12;
-            Font font = new Font("돋움체", fontSize);
-            for (int imgY = imgY1; imgY <= imgY2; imgY++) {
-                for (int imgX = imgX1; imgX <= imgX2; imgX++) {
-                    var ptImg = new PointF(imgX, imgY);
-                    var ptDisp = ImgToDisp(ptImg);
-                    int pixelVal = GetImagePixelValue(imgX, imgY);
-                    var brush = pseudo[pixelVal / 32];
-                    g.DrawString(pixelVal.ToString(), font, brush, ptDisp.X, ptDisp.Y);
-                }
-            }
-            font.Dispose();
-        }
-
-        // 휠 줌
-        private void WheelZoom(MouseEventArgs e) {
-            var ptImg = DispToImg(e.Location);
-
-            var zoomFacotrOld = ZoomFactor;
-            zoomLevel = (e.Delta > 0) ? zoomLevel + 1 : zoomLevel - 1;
-            if (zoomLevel < 0)
-                zoomLevel = 0;
-            if (zoomLevel >= zoomFactors.Length)
-                zoomLevel = zoomFactors.Length - 1;
-
-            ptPanning.X += (int)Math.Floor(ptImg.X * (zoomFacotrOld - ZoomFactor));
-            ptPanning.Y += (int)Math.Floor(ptImg.Y * (zoomFacotrOld - ZoomFactor));
-        }
-
-        // 휠 스크롤
-        private void WheelScrollV(MouseEventArgs e)
-        {
-            int scroll = 128;
-            ptPanning.Y += (e.Delta > 0) ? scroll : -scroll;
-        }
-        private void WheelScrollH(MouseEventArgs e)
-        {
-            int scroll = 128;
-            ptPanning.X += (e.Delta > 0) ? scroll : -scroll;
         }
 
         int holeW;
@@ -314,23 +142,23 @@ namespace BigImageViewer {
 
         enum HoleInfoItemType { None, IndexX, IndexY, Fwd, }
 
-        // 홀버퍼 드로우
+        // 홀 드로우
         private void DrawHoles(Graphics g) {
             if (holes == null)
                 return;
 
             var ptDisp1 = Point.Empty;
             var ptDisp2 = (Point)pbxDraw.ClientSize;
-            var ptImg1 = DispToImg(ptDisp1);
-            var ptImg2 = DispToImg(ptDisp2);
+            var ptImg1 = pbxDraw.DispToImg(ptDisp1);
+            var ptImg2 = pbxDraw.DispToImg(ptDisp2);
             float imgX1 = (float)Math.Floor(ptImg1.X);
             float imgY1 = (float)Math.Floor(ptImg1.Y);
             float imgX2 = (float)Math.Floor(ptImg2.X);
             float imgY2 = (float)Math.Floor(ptImg2.Y);
 
-            float zoomFactor = ZoomFactor;
-            float panX = ptPanning.X;
-            float panY = ptPanning.Y;
+            float zoomFactor = pbxDraw.ZoomFactor;
+            float panX = pbxDraw.PtPanning.X;
+            float panY = pbxDraw.PtPanning.Y;
 
             Pen linePen = Pens.Red;
             Brush infoBrush = Brushes.Yellow;
@@ -378,7 +206,7 @@ namespace BigImageViewer {
             }
 
             Point ptCur = pbxDraw.PointToClient(Cursor.Position);
-            PointF ptImg = DispToImg(ptCur);
+            PointF ptImg = pbxDraw.DispToImg(ptCur);
             float holePitch = 32.0f;
             float pickHoleMargin = holePitch * 0.5f;
             cursorHole = GetCursorNodeHole(tree.root, ptImg, pickHoleMargin);
@@ -517,81 +345,38 @@ namespace BigImageViewer {
             FreeImgBuf();
             AllocImgBuf();
             Log("End Alloc Buffer");
-            RedrawImage();
+            pbxDraw.SetImgBuf(imgBW, imgBH, imgBuf);
         }
 
         private void btnLoadFwd_Click(object sender, EventArgs e) {
             LoadFwdImg(tbxFwdDir.Text, 0);
-            RedrawImage();
+            pbxDraw.RedrawImage();
         }
 
         private void btnClearLog_Click(object sender, EventArgs e) {
             tbxLog.Clear();
         }
 
-        Font infoFont = SystemFonts.DefaultFont;
+        Font defFont = SystemFonts.DefaultFont;
         private void pbxDraw_Paint(object sender, PaintEventArgs e) {
             var g = e.Graphics;
-
-            g.DrawImage(dispBmp, 0, 0);
-            if (chkDrawPixelValue.Checked)
-                DrawPixelValue(g);
             if (chkDrawHoles.Checked)
                 DrawHoles(g);
             if (chkDrawFrame.Checked)
                 DrawFrame(g);
-            if (chkDrawInfo.Checked)
-                DrawInfo(g);
+            if (chkDrawCursorHole.Checked)
+                DrawCursorHoleInfo(g);
         }
 
         private void chkDrawFrame_CheckedChanged(object sender, EventArgs e) {
+            pbxDraw.UseDrawPixelValue = chkDrawPixelValue.Checked;
+            pbxDraw.UseDrawInfo = chkDrawInfo.Checked;
+            pbxDraw.UseDrawCenterLine = chkDrawCenterLine.Checked;
             pbxDraw.Invalidate();
         }
 
         private void btnResetZoom_Click(object sender, EventArgs e) {
-            ptPanning = Point.Empty;
-            zoomLevel = zoomLevelReset;
-            RedrawImage();
-        }
-
-        private void PbxDraw_MouseWheel(object sender, MouseEventArgs e) {
-            if (Control.ModifierKeys == Keys.Control) {
-                WheelScrollV(e);
-            } else if (Control.ModifierKeys == Keys.Shift) {
-                WheelScrollH(e);
-            } else {
-                WheelZoom(e);
-            }
-            GetCursorHole();
-            RedrawImage();
-        }
-
-        bool mouseDown = false;
-        Point ptOld;
-        private void pbxDraw_MouseDown(object sender, MouseEventArgs e) {
-            if (e.Button != MouseButtons.Left)
-                return;
-
-            mouseDown = true;
-            ptOld = e.Location;
-        }
-
-        private void pbxDraw_MouseMove(object sender, MouseEventArgs e) {
-            if (mouseDown) {
-                ptPanning += ((Size)e.Location - (Size)ptOld);
-                ptOld = e.Location;
-                RedrawImage();
-                return;
-            }
-                        
-            pbxDraw.Invalidate();
-        }
-
-        private void pbxDraw_MouseUp(object sender, MouseEventArgs e) {
-            if (e.Button != MouseButtons.Left)
-                return;
-
-            mouseDown = false;
+            pbxDraw.ResetZoom();
         }
 
         private void btnInitHoles_Click(object sender, EventArgs e) {
@@ -623,11 +408,6 @@ namespace BigImageViewer {
             pbxDraw.Invalidate();
         }
 
-        private void pbxDraw_Layout(object sender, LayoutEventArgs e) {
-            AllocDispBuf();
-            RedrawImage();
-        }
-
         private void btnLoadSurf_Click(object sender, EventArgs e) {
             bool fromBack = chkFromBack.Checked;
             for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
@@ -638,7 +418,11 @@ namespace BigImageViewer {
                 string dir = tbxSurfDir.Text + "\\Fwd" + fwd.ToString();
                 LoadFwdImg(dir, fwd);
             }
-            RedrawImage();
+            pbxDraw.RedrawImage();
+        }
+
+        private void pbxDraw_MouseMove(object sender, MouseEventArgs e) {
+            GetCursorHole();
         }
     }
 }

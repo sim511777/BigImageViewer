@@ -72,7 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dll.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +106,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NativeImport\NativeImport.csproj">
+      <Project>{60a7ec83-e6f7-40f7-8424-2568695a6fef}</Project>
+      <Name>NativeImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ShimLib\ShimLib.csproj">
+      <Project>{C70EFCD5-2A2B-4384-81E5-39275DF3BE42}</Project>
+      <Name>ShimLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

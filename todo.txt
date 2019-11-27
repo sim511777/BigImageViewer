@@ -35,22 +35,25 @@ ok - 1/16보다 작아지면 LOD 시작
 ok - LOD는 모든 노드마다 대표노드를 달아둠, 그걸 표시
 ok - 마우스 포인터 Move시에 홀상세정보 표시 쿼드 트리 사용, 홀이 써클로 보일때만
 
-라이브러리 화
+ok 라이브러리 화
   - 주요기능
-    - 더블 버퍼링 처리
-    - 거대 이미지 버퍼 확대 / 축소
-    - 마우스 wheel시 zoom / 마우스 click+move시 panning
-    - 일정 배율 이상(>15) 확대시 이미지 개별픽셀값 표시
-    - 마우스 move시에 픽쳐박스 좌상단에 이미지 줌배율, 커서픽셀좌표, 커서픽셀값 표시 ( Zoom=3/4 (113,225)=256)
-    - 멀티 쓰레드 처리
+ok    - 더블 버퍼링 처리
+ok    - 거대 이미지 버퍼 확대 / 축소
+ok    - 마우스 wheel시 zoom / 마우스 click+move시 panning
+ok    - 마우스 ctrl+wheel, shift+wheel 시에 panning
+ok    - 일정 배율 이상(>15) 확대시 이미지 개별픽셀값 표시
+ok    - 마우스 move시에 픽쳐박스 좌상단에 이미지 줌배율, 커서픽셀좌표, 커서픽셀값 표시 ( Zoom=3/4 (113,225)=256)
   - 기타 기능
-    - 중심선 표시
-    - 개별 픽셀값 표시할때 배율에 따라 폰트 크기 변경
+ok    - 중심선 표시
+ok    - 개별 픽셀값 표시할때 배율에 따라 폰트 크기 변경
   - 방법
-    - PictureBox를 상속해서 만든다
-    - dispBW, dispBH, dispBuf, dispBmp : PictureBox 크기변경시 갱신됨
-    - imgBW, imgBH, imgBuf
-    - Point ptPanning, const floot[] zoomFactors, const string[] zoomTexts, int zoomLevel, float ZoomFactor{get;}
-    - SetImgBuf(IntPtr imgBuf, int BW, int BH);
-    - RedrawImage : imgBuf -> dispBuf 디스프버퍼 생성시, 이미지 버퍼 생성시, 삭제시, 이미지 로드시, 줌시, Panning시, Layout변경시, 
-    - Paint시에 DrawImage(g, dispBuf), Draw PixelValue, Draw PixelInfo, Draw CrossLine 한 후 User Draw
+ok    - PictureBox를 상속해서 만든다
+ok    - dispBW, dispBH, dispBuf, dispBmp : PictureBox 크기변경시 갱신됨
+ok    - imgBW, imgBH, imgBuf
+ok    - Point ptPanning, const floot[] zoomFactors, const string[] zoomTexts, int zoomLevel, float ZoomFactor{get;}
+ok    - SetImgBuf(IntPtr imgBuf, int BW, int BH);
+ok    - RedrawImage : imgBuf -> dispBuf 디스프버퍼 생성시, 이미지 버퍼 생성시, 삭제시, 이미지 로드시, 줌시, Panning시, Layout변경시, 
+ok    - Paint시에 DrawImage(g, dispBuf), Draw PixelValue, Draw PixelInfo, Draw CrossLine 한 후 User Draw
+
+CopyImageBuf C#코드로 정리
+컬러 이미지 표시 기능
