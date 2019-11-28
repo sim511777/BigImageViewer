@@ -121,20 +121,17 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     return TRUE;
 }
 
-NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int dw, int dh, int panx, int pany, float zoom, BOOL clear) {
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom, BOOL clear) {
     // 디스플레이 영역 클리어
     if (clear) {
-        for (int y = 0; y < dh; y++) {
-            BYTE *dp = dbuf + (size_t)dbw * y;
-            memset(dp, 128, dw);
-        }
+        memset(dbuf, 128, (size_t)dbw * dbh);
     }
 
     // dst 인덱스의 범위를 구함
     int y1 = max(pany, 0);
-    int y2 = min((int)floor(sbh * zoom + pany), min(dbh, dh));
+    int y2 = min((int)floor(sbh * zoom + pany), dbh);
     int x1 = max(panx, 0);
-    int x2 = min((int)floor(sbw * zoom + panx), min(dbw, dw));
+    int x2 = min((int)floor(sbw * zoom + panx), dbw);
 
     // dst 인덱스에 해당하는 src 인덱스를 담을 버퍼 생성
     int *siys = new int[dbh];

@@ -181,10 +181,7 @@ namespace ShimLib {
             if (imgBuf == IntPtr.Zero) {
                 MsvcrtDll.memset(dispBuf, 128, (ulong)dispBW * (ulong)dispBH);
             } else {
-                var rect = this.ClientRectangle;
-                int dw = Math.Min(rect.Width, dispBW);
-                int dh = Math.Min(rect.Height, dispBH);
-                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, dw, dh, ptPanning.X, ptPanning.Y, ZoomFactor, true);
+                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomFactor, true);
             }
             this.Invalidate();
         }
