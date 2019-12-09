@@ -21,7 +21,7 @@ namespace ShimLib {
         private int imgBH;
         private IntPtr imgBuf;
 
-        private static float[] zoomFactors = { 1f / 512, 3f / 1024, 1f / 256, 3f / 512, 1f / 128, 3f / 256, 1f / 64, 3f / 128, 1f / 32, 3f / 64, 1f / 16, 3f / 32, 1f / 8, 3f / 16, 1f / 4, 3f / 8, 1f / 2, 3f / 4, 1, 3f / 2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96 };
+        private static float[] zoomFactors = { 1/512f, 3/1024f, 1/256f, 3/512f, 1/128f, 3/256f, 1/64f, 3/128f, 1/32f, 3/64f, 1/16f, 3/32f, 1/8f, 3/16f, 1/4f, 3/8f, 1/2f, 3/4f, 1, 3/2f, 2f, 3f, 4f, 6f, 8f, 12f, 16f, 24f, 32f, 48f, 64f, 96f };
         private static string[] zoomTexts = { "1/512", "3/1024", "1/256", "3/512", "1/128", "3/256", "1/64", "3/128", "1/32", "3/64", "1/16", "3/32", "1/8", "3/16", "1/4", "3/8", "1/2", "3/4", "1", "3/2", "2", "3", "4", "6", "8", "12", "16", "24", "32", "48", "64", "96" };
         private const int zoomLevelReset = 8;
 
