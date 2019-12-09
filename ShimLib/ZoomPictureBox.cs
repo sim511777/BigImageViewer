@@ -13,36 +13,43 @@ using System.Windows.Forms;
 
 namespace ShimLib {
     public class ZoomPictureBox : PictureBox {
+        // 디스플레이용 버퍼
         private int dispBW;
         private int dispBH;
         private IntPtr dispBuf;
         private Bitmap dispBmp;
+        
+        // 이미지용 버퍼
         private int imgBW;
         private int imgBH;
         private IntPtr imgBuf;
 
+        // 줌 파라미터
         private static float[] zoomFactors = { 1/512f, 3/1024f, 1/256f, 3/512f, 1/128f, 3/256f, 1/64f, 3/128f, 1/32f, 3/64f, 1/16f, 3/32f, 1/8f, 3/16f, 1/4f, 3/8f, 1/2f, 3/4f, 1, 3/2f, 2f, 3f, 4f, 6f, 8f, 12f, 16f, 24f, 32f, 48f, 64f, 96f };
         private static string[] zoomTexts = { "1/512", "3/1024", "1/256", "3/512", "1/128", "3/256", "1/64", "3/128", "1/32", "3/64", "1/16", "3/32", "1/8", "3/16", "1/4", "3/8", "1/2", "3/4", "1", "3/2", "2", "3", "4", "6", "8", "12", "16", "24", "32", "48", "64", "96" };
         private const int zoomLevelReset = 8;
-
         private int zoomLevel = zoomLevelReset;
         [Browsable(false)]
         public float ZoomFactor { get { return zoomFactors[zoomLevel]; } }
         private string ZoomText { get { return zoomTexts[zoomLevel]; } }
 
+        // 패닝 파라미터
         private Point ptPanning;
         [Browsable(false)]
         public Point PtPanning { get { return ptPanning; } }
 
+        // 화면 표시 옵션
         public bool UseDrawPixelValue { get; set; } = true;
         public bool UseDrawInfo { get; set; } = true;
         public bool UseDrawCenterLine { get; set; } = true;
 
+        // 생성자
         public ZoomPictureBox() {
             AllocDispBuf();
             RedrawImage();
         }
 
+        // 소멸자
         ~ZoomPictureBox() {
             FreeDispBuf();
         }
@@ -62,6 +69,7 @@ namespace ShimLib {
             RedrawImage();
         }
 
+        // 리사이즈 할때
         protected override void OnLayout(LayoutEventArgs e) {
             base.OnLayout(e);
 
@@ -69,6 +77,7 @@ namespace ShimLib {
             RedrawImage();
         }
 
+        // 페인트 할때
         protected override void OnPaint(PaintEventArgs e) {
             var g = e.Graphics;
 
@@ -84,6 +93,7 @@ namespace ShimLib {
                 DrawInfo(g);
         }
 
+        // 마우스 휠
         bool mouseDown = false;
         Point ptOld;
         protected override void OnMouseWheel(MouseEventArgs e) {
@@ -124,6 +134,7 @@ namespace ShimLib {
             ptPanning.Y += (int)Math.Floor(ptImg.Y * (zoomFacotrOld - ZoomFactor));
         }
 
+        // 마우스 다운
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
 
@@ -133,6 +144,7 @@ namespace ShimLib {
             }
         }
 
+        // 마우스 무브
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
 
@@ -145,6 +157,7 @@ namespace ShimLib {
             }
         }
 
+        // 마우스 업
         protected override void OnMouseUp(MouseEventArgs e) {
             base.OnMouseUp(e);
 
@@ -177,6 +190,7 @@ namespace ShimLib {
                 Marshal.FreeHGlobal(dispBuf);
         }
 
+        // 이미지 다시 그림
         public void RedrawImage() {
             if (imgBuf == IntPtr.Zero) {
                 MsvcrtDll.memset(dispBuf, 128, (ulong)dispBW * (ulong)dispBH);
@@ -260,6 +274,7 @@ namespace ShimLib {
             font.Dispose();
         }
 
+        // 좌상단 정보 표시
         Font defFont = SystemFonts.DefaultFont;
         private void DrawInfo(Graphics g) {
             Point ptCur = this.PointToClient(Cursor.Position);
@@ -284,6 +299,8 @@ namespace ShimLib {
             var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
             return new Point((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y));
         }
+
+        // 이미지 사각형을 픽셀 사각형으로 변환
         public Rectangle ImgToDisp(RectangleF rect) {
             var pt = rect.Location;
             var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
@@ -291,7 +308,6 @@ namespace ShimLib {
             var size2 = new SizeF(size.Width * ZoomFactor, size.Height * ZoomFactor);
             return new Rectangle((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y), (int)Math.Floor(size2.Width), (int)Math.Floor(size2.Height));
         }
-
 
         // 이미지 픽셀값 리턴
         private int GetImagePixelValue(int x, int y) {
