@@ -156,8 +156,8 @@ namespace ShimLib {
         private void AllocDispBuf() {
             FreeDispBuf();
 
-            dispBW = Math.Max((this.ClientSize.Width + 3) / 4 * 4, 0);
-            dispBH = Math.Max(this.ClientSize.Height, 0);
+            dispBW = Math.Max((this.ClientSize.Width + 3) / 4 * 4, 64);
+            dispBH = Math.Max(this.ClientSize.Height, 64);
 
             dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH));
             MsvcrtDll.memset(dispBuf, 0, (ulong)(dispBW * dispBH));
