@@ -296,7 +296,6 @@ namespace ShimLib {
         }
 
         // 좌상단 정보 표시
-        Font defFont = SystemFonts.DefaultFont;
         private void DrawInfo(Graphics g) {
             Point ptCur = this.PointToClient(Cursor.Position);
             PointF ptImg = DispToImg(ptCur);
@@ -304,9 +303,9 @@ namespace ShimLib {
             int imgY = (int)Math.Floor(ptImg.Y);
             int pixelVal = GetImagePixelValue(imgX, imgY);
             string info = $"zoom={ZoomText} ({imgX},{imgY})={pixelVal}";
-            var rect = g.MeasureString(info, defFont);
+            var rect = g.MeasureString(info, SystemFonts.DefaultFont);
             g.FillRectangle(Brushes.White, 0, 0, rect.Width, rect.Height);
-            g.DrawString(info, defFont, Brushes.Black, 0, 0);
+            g.DrawString(info, SystemFonts.DefaultFont, Brushes.Black, 0, 0);
         }
 
         // 표시 픽셀 좌표를 이미지 좌표로 변환
