@@ -1,5 +1,4 @@
-﻿using NativeImport;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -178,6 +177,10 @@ namespace ShimLib {
         }
 
         // 표시 버퍼 할당
+        const string dll = "msvcrt.dll";
+        [DllImport("msvcrt.dll")] private static extern IntPtr memcpy(IntPtr _Dst, IntPtr _Src, ulong _Size);
+        [DllImport("msvcrt.dll")] private static extern IntPtr memset(IntPtr _Dst, int _Val, ulong _Size);
+
         private void AllocDispBuf() {
             FreeDispBuf();
 
@@ -185,7 +188,7 @@ namespace ShimLib {
             dispBH = Math.Max(this.ClientSize.Height, 64);
 
             dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH));
-            MsvcrtDll.memset(dispBuf, 0, (ulong)(dispBW * dispBH));
+            memset(dispBuf, 0, (ulong)(dispBW * dispBH));
             dispBmp = new Bitmap(dispBW, dispBH, dispBW, PixelFormat.Format8bppIndexed, dispBuf);
             var pal = dispBmp.Palette;
             for (int i = 0; i < 256; i++) {
@@ -202,12 +205,51 @@ namespace ShimLib {
                 Marshal.FreeHGlobal(dispBuf);
         }
 
+        unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, bool clear) {
+            // 디스플레이 영역 클리어
+            if (clear) {
+                memset(dbuf, 128, (ulong)dbw * (ulong)dbh);
+            }
+
+            // dst 인덱스의 범위를 구함
+            int y1 = Math.Max(pany, 0);
+            int y2 = Math.Min((int)Math.Floor(sbh * zoom + pany), dbh);
+            int x1 = Math.Max(panx, 0);
+            int x2 = Math.Min((int)Math.Floor(sbw * zoom + panx), dbw);
+
+            // dst 인덱스에 해당하는 src 인덱스를 담을 버퍼 생성
+            int[] siys = new int[dbh];
+            int[] sixs = new int[dbw];
+
+            // 버퍼에 값 구해서 넣음
+            for (int y = y1; y < y2; y++) {
+                siys[y] = (int)Math.Floor((y - pany) / zoom);
+            }
+            for (int x = x1; x < x2; x++) {
+                sixs[x] = (int)Math.Floor((x - panx) / zoom);
+            }
+
+            // dst 인덱스의 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
+            for (int y = y1; y < y2; y++) {
+                byte* dp = (byte*)dbuf.ToPointer() + (long)dbw * y + x1;
+
+                int siy = siys[y];
+                byte* sp = (byte*)sbuf.ToPointer() + (long)sbw * siy;
+                for (int x = x1; x < x2; x++, dp++) {
+                    int six = sixs[x];
+                    *dp = *(sp + six);
+                }
+            }
+
+            // 버퍼 삭제
+        }
+
         // 이미지 다시 그림
         public void RedrawImage() {
             if (imgBuf == IntPtr.Zero) {
-                MsvcrtDll.memset(dispBuf, 128, (ulong)dispBW * (ulong)dispBH);
+                memset(dispBuf, 128, (ulong)dispBW * (ulong)dispBH);
             } else {
-                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, true);
+                CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, true);
             }
             this.Invalidate();
         }
