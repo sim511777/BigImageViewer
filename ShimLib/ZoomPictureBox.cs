@@ -54,9 +54,8 @@ namespace ShimLib {
         }
 
         // 패닝 파라미터
-        private Point ptPanning;
         [Browsable(false)]
-        public Point PtPanning { get { return ptPanning; } }
+        public Point PtPanning { get; private set; }
 
         // 화면 표시 옵션
         public bool UseDrawPixelValue { get; set; } = true;
@@ -84,7 +83,7 @@ namespace ShimLib {
 
         // zoom 리셋
         public void ResetZoom() {
-            ptPanning = Point.Empty;
+            PtPanning = Point.Empty;
             zoomLevel = zoomLevelReset;
             RedrawImage();
         }
@@ -131,12 +130,12 @@ namespace ShimLib {
 
         // 휠 스크롤
         private void WheelScrollV(MouseEventArgs e) {
-            int scroll = 128;
-            ptPanning.Y += (e.Delta > 0) ? scroll : -scroll;
+            int scroll = (e.Delta > 0) ? 128 : -128;
+            PtPanning += new Size(0, scroll);
         }
         private void WheelScrollH(MouseEventArgs e) {
-            int scroll = 128;
-            ptPanning.X += (e.Delta > 0) ? scroll : -scroll;
+            int scroll = (e.Delta > 0) ? 128 : -128;
+            PtPanning += new Size(scroll, 0);
         }
 
         // 휠 줌
@@ -151,8 +150,9 @@ namespace ShimLib {
                 zoomLevel = -20;
 
             var zoomFactorNew = ZoomFactor;
-            ptPanning.X += (int)Math.Floor(ptImg.X * (zoomFacotrOld - zoomFactorNew));
-            ptPanning.Y += (int)Math.Floor(ptImg.Y * (zoomFacotrOld - zoomFactorNew));
+            int sizeX = (int)Math.Floor(ptImg.X * (zoomFacotrOld - zoomFactorNew));
+            int sizeY = (int)Math.Floor(ptImg.Y * (zoomFacotrOld - zoomFactorNew));
+            PtPanning += new Size(sizeX, sizeY);
         }
 
         // 마우스 다운
@@ -170,7 +170,7 @@ namespace ShimLib {
             base.OnMouseMove(e);
 
             if (mouseDown) {
-                ptPanning += ((Size)e.Location - (Size)ptOld);
+                PtPanning += ((Size)e.Location - (Size)ptOld);
                 ptOld = e.Location;
                 RedrawImage();
             } else {
@@ -216,7 +216,7 @@ namespace ShimLib {
             if (imgBuf == IntPtr.Zero) {
                 MsvcrtDll.memset(dispBuf, 128, (ulong)dispBW * (ulong)dispBH);
             } else {
-                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, ptPanning.X, ptPanning.Y, ZoomFactor, true);
+                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, true);
             }
             this.Invalidate();
         }
@@ -311,14 +311,14 @@ namespace ShimLib {
 
         // 표시 픽셀 좌표를 이미지 좌표로 변환
         public PointF DispToImg(Point pt) {
-            var pt2 = pt - (Size)ptPanning;
+            var pt2 = pt - (Size)PtPanning;
             return new PointF(pt2.X / ZoomFactor, pt2.Y / ZoomFactor);
         }
 
         // 이미지 좌표를 표시 픽셀 좌표로 변환
         public Point ImgToDisp(PointF pt) {
             var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
-            return new Point((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y));
+            return new Point((int)Math.Floor(pt2.X + PtPanning.X), (int)Math.Floor(pt2.Y + PtPanning.Y));
         }
 
         // 이미지 사각형을 픽셀 사각형으로 변환
@@ -327,7 +327,7 @@ namespace ShimLib {
             var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
             var size = rect.Size;
             var size2 = new SizeF(size.Width * ZoomFactor, size.Height * ZoomFactor);
-            return new Rectangle((int)Math.Floor(pt2.X + ptPanning.X), (int)Math.Floor(pt2.Y + ptPanning.Y), (int)Math.Floor(size2.Width), (int)Math.Floor(size2.Height));
+            return new Rectangle((int)Math.Floor(pt2.X + PtPanning.X), (int)Math.Floor(pt2.Y + PtPanning.Y), (int)Math.Floor(size2.Width), (int)Math.Floor(size2.Height));
         }
 
         // 이미지 픽셀값 리턴
