@@ -16,6 +16,6 @@ namespace NativeImport {
         const string dll = "native.dll";
         [DllImport(dll)] public static extern bool Load8BitBmp(IntPtr buf, int bw, int bh, string filePath);
         [DllImport(dll)] public static extern bool Save8BitBmp(IntPtr buf, int bw, int bh, string filePath);
-        [DllImport(dll)] public static extern void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, bool clear);
+        [DllImport(dll)] public static extern void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, bool clear, int clearColor);
     }
 }

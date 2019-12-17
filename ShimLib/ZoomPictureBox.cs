@@ -17,7 +17,8 @@ namespace ShimLib {
         private int dispBH;
         private IntPtr dispBuf;
         private Bitmap dispBmp;
-        
+        public int ClearColor { get; set; }
+
         // 이미지용 버퍼
         private int imgBW;
         private int imgBH;
@@ -95,7 +96,7 @@ namespace ShimLib {
                 DrawPixelValue(g);
             if (UseDrawCenterLine)
                 DrawCenterLine(g);
-            
+
             base.OnPaint(e);
 
             if (UseDrawInfo)
@@ -205,10 +206,10 @@ namespace ShimLib {
                 Marshal.FreeHGlobal(dispBuf);
         }
 
-        unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, bool clear) {
+        unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, bool clear, int clearColor) {
             // 디스플레이 영역 클리어
             if (clear) {
-                memset(dbuf, 128, (ulong)dbw * (ulong)dbh);
+                memset(dbuf, clearColor, (ulong)dbw * (ulong)dbh);
             }
 
             // dst 인덱스의 범위를 구함
@@ -247,9 +248,9 @@ namespace ShimLib {
         // 이미지 다시 그림
         public void RedrawImage() {
             if (imgBuf == IntPtr.Zero) {
-                memset(dispBuf, 128, (ulong)dispBW * (ulong)dispBH);
+                memset(dispBuf, ClearColor, (ulong)dispBW * (ulong)dispBH);
             } else {
-                CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, true);
+                CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, true, ClearColor);
             }
             this.Invalidate();
         }

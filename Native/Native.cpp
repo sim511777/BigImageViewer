@@ -121,10 +121,10 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     return TRUE;
 }
 
-NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom, BOOL clear) {
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom, BOOL clear, int clearColor) {
     // 디스플레이 영역 클리어
     if (clear) {
-        memset(dbuf, 128, (size_t)dbw * dbh);
+        memset(dbuf, clearColor, (size_t)dbw * dbh);
     }
 
     // dst 인덱스의 범위를 구함

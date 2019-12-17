@@ -739,6 +739,7 @@
             // 
             // pbxDraw
             // 
+            this.pbxDraw.ClearColor = 128;
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
