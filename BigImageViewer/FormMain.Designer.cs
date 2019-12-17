@@ -742,12 +742,14 @@
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
+            this.pbxDraw.PtPanning = new System.Drawing.Point(0, 0);
             this.pbxDraw.Size = new System.Drawing.Size(561, 650);
             this.pbxDraw.TabIndex = 3;
             this.pbxDraw.TabStop = false;
             this.pbxDraw.UseDrawCenterLine = true;
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
+            this.pbxDraw.ZoomLevel = -10;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
             // 

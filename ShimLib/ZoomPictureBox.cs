@@ -26,16 +26,15 @@ namespace ShimLib {
 
         // 줌 파라미터
         // ..., 1/512, 3/1024, 1/256, 3/512, 1/128, 3/256, 1/64, 3/128, 1/32, 3/64, 1/16, 3/32, 1/8, 3/16, 1/4, 3/8, 1/2, 3/4, 1, 3/2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, ...
-        private const int zoomLevelReset = -11;
-        private int zoomLevel = zoomLevelReset;
+        public int ZoomLevel { get; set; }
         [Browsable(false)]
         public float ZoomFactor {
             get {
                 int base_num = 2;
-                int exp_num = (zoomLevel >= 0) ? zoomLevel / 2 : (zoomLevel - 1) / 2;
-                if (zoomLevel % 2 != 0)
+                int exp_num = (ZoomLevel >= 0) ? ZoomLevel / 2 : (ZoomLevel - 1) / 2;
+                if (ZoomLevel % 2 != 0)
                     exp_num--;
-                int c = (zoomLevel % 2 != 0) ? 3 : 1;
+                int c = (ZoomLevel % 2 != 0) ? 3 : 1;
                 float zoomFactor = c * (float)Math.Pow(base_num, exp_num);
                 return zoomFactor;
             }
@@ -43,10 +42,10 @@ namespace ShimLib {
         private string ZoomText {
             get {
                 int base_num = 2;
-                int exp_num = (zoomLevel >= 0) ? zoomLevel / 2 : (zoomLevel - 1) / 2;
-                if (zoomLevel % 2 != 0)
+                int exp_num = (ZoomLevel >= 0) ? ZoomLevel / 2 : (ZoomLevel - 1) / 2;
+                if (ZoomLevel % 2 != 0)
                     exp_num--;
-                int c = (zoomLevel % 2 != 0) ? 3 : 1;
+                int c = (ZoomLevel % 2 != 0) ? 3 : 1;
                 float zoomFactor = c * (float)Math.Pow(base_num, exp_num);
                 string zoomText = (exp_num >= 0) ? (c * (int)Math.Pow(base_num, exp_num)).ToString() : c.ToString() + "/" + ((int)Math.Pow(base_num, -exp_num)).ToString();
                 return zoomText;
@@ -54,8 +53,7 @@ namespace ShimLib {
         }
 
         // 패닝 파라미터
-        [Browsable(false)]
-        public Point PtPanning { get; private set; }
+        public Point PtPanning { get; set; }
 
         // 화면 표시 옵션
         public bool UseDrawPixelValue { get; set; } = true;
@@ -78,13 +76,6 @@ namespace ShimLib {
             imgBW = bw;
             imgBH = bh;
             imgBuf = buf;
-            RedrawImage();
-        }
-
-        // zoom 리셋
-        public void ResetZoom() {
-            PtPanning = Point.Empty;
-            zoomLevel = zoomLevelReset;
             RedrawImage();
         }
 
@@ -143,11 +134,11 @@ namespace ShimLib {
             var ptImg = DispToImg(e.Location);
 
             var zoomFacotrOld = ZoomFactor;
-            zoomLevel = (e.Delta > 0) ? zoomLevel + 1 : zoomLevel - 1;
-            if (zoomLevel > 20)
-                zoomLevel = 20;
-            if (zoomLevel < -20)
-                zoomLevel = -20;
+            ZoomLevel = (e.Delta > 0) ? ZoomLevel + 1 : ZoomLevel - 1;
+            if (ZoomLevel > 20)
+                ZoomLevel = 20;
+            if (ZoomLevel < -20)
+                ZoomLevel = -20;
 
             var zoomFactorNew = ZoomFactor;
             int sizeX = (int)Math.Floor(ptImg.X * (zoomFacotrOld - zoomFactorNew));
