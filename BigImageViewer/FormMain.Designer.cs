@@ -62,12 +62,16 @@
             this.rdoHoleInfoIndexX = new System.Windows.Forms.RadioButton();
             this.rdoHoleInfoNone = new System.Windows.Forms.RadioButton();
             this.chkDrawFrame = new System.Windows.Forms.CheckBox();
+            this.chkUseNative = new System.Windows.Forms.CheckBox();
+            this.chkClearFull = new System.Windows.Forms.CheckBox();
+            this.chkClear = new System.Windows.Forms.CheckBox();
             this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
             this.chkDrawCursorHole = new System.Windows.Forms.CheckBox();
             this.chkDrawHoles = new System.Windows.Forms.CheckBox();
             this.chkDrawCenterLine = new System.Windows.Forms.CheckBox();
             this.chkDrawInfo = new System.Windows.Forms.CheckBox();
             this.btnResetZoom = new System.Windows.Forms.Button();
+            this.numClearColor = new System.Windows.Forms.NumericUpDown();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.tbxLog = new System.Windows.Forms.TextBox();
@@ -91,6 +95,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numFNum)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numClearColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).BeginInit();
             this.SuspendLayout();
             // 
@@ -149,7 +154,7 @@
             this.groupBox3.Controls.Add(this.btnLoadSurf);
             this.groupBox3.Controls.Add(this.tbxFwdDir);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox3.Location = new System.Drawing.Point(5, 156);
+            this.groupBox3.Location = new System.Drawing.Point(5, 184);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(425, 232);
             this.groupBox3.TabIndex = 9;
@@ -535,16 +540,20 @@
             // 
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.chkDrawFrame);
+            this.groupBox1.Controls.Add(this.chkUseNative);
+            this.groupBox1.Controls.Add(this.chkClearFull);
+            this.groupBox1.Controls.Add(this.chkClear);
             this.groupBox1.Controls.Add(this.chkDrawPixelValue);
             this.groupBox1.Controls.Add(this.chkDrawCursorHole);
             this.groupBox1.Controls.Add(this.chkDrawHoles);
             this.groupBox1.Controls.Add(this.chkDrawCenterLine);
             this.groupBox1.Controls.Add(this.chkDrawInfo);
             this.groupBox1.Controls.Add(this.btnResetZoom);
+            this.groupBox1.Controls.Add(this.numClearColor);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(5, 5);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(425, 151);
+            this.groupBox1.Size = new System.Drawing.Size(425, 179);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Disp Option";
@@ -555,7 +564,7 @@
             this.groupBox2.Controls.Add(this.rdoHoleInfoIndexY);
             this.groupBox2.Controls.Add(this.rdoHoleInfoIndexX);
             this.groupBox2.Controls.Add(this.rdoHoleInfoNone);
-            this.groupBox2.Location = new System.Drawing.Point(9, 65);
+            this.groupBox2.Location = new System.Drawing.Point(12, 86);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(410, 46);
             this.groupBox2.TabIndex = 8;
@@ -613,13 +622,48 @@
             this.chkDrawFrame.AutoSize = true;
             this.chkDrawFrame.Checked = true;
             this.chkDrawFrame.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawFrame.Location = new System.Drawing.Point(14, 42);
+            this.chkDrawFrame.Location = new System.Drawing.Point(14, 64);
             this.chkDrawFrame.Name = "chkDrawFrame";
             this.chkDrawFrame.Size = new System.Drawing.Size(60, 16);
             this.chkDrawFrame.TabIndex = 5;
             this.chkDrawFrame.Text = "Frame";
             this.chkDrawFrame.UseVisualStyleBackColor = true;
             this.chkDrawFrame.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
+            // chkUseNative
+            // 
+            this.chkUseNative.AutoSize = true;
+            this.chkUseNative.Location = new System.Drawing.Point(286, 42);
+            this.chkUseNative.Name = "chkUseNative";
+            this.chkUseNative.Size = new System.Drawing.Size(85, 16);
+            this.chkUseNative.TabIndex = 5;
+            this.chkUseNative.Text = "Use Native";
+            this.chkUseNative.UseVisualStyleBackColor = true;
+            this.chkUseNative.CheckedChanged += new System.EventHandler(this.chkUseNative_CheckedChanged);
+            // 
+            // chkClearFull
+            // 
+            this.chkClearFull.AutoSize = true;
+            this.chkClearFull.Location = new System.Drawing.Point(200, 42);
+            this.chkClearFull.Name = "chkClearFull";
+            this.chkClearFull.Size = new System.Drawing.Size(78, 16);
+            this.chkClearFull.TabIndex = 5;
+            this.chkClearFull.Text = "Clear Full";
+            this.chkClearFull.UseVisualStyleBackColor = true;
+            this.chkClearFull.CheckedChanged += new System.EventHandler(this.chkClearFull_CheckedChanged);
+            // 
+            // chkClear
+            // 
+            this.chkClear.AutoSize = true;
+            this.chkClear.Checked = true;
+            this.chkClear.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkClear.Location = new System.Drawing.Point(14, 42);
+            this.chkClear.Name = "chkClear";
+            this.chkClear.Size = new System.Drawing.Size(54, 16);
+            this.chkClear.TabIndex = 5;
+            this.chkClear.Text = "Clear";
+            this.chkClear.UseVisualStyleBackColor = true;
+            this.chkClear.CheckedChanged += new System.EventHandler(this.chkClear_CheckedChanged);
             // 
             // chkDrawPixelValue
             // 
@@ -639,7 +683,7 @@
             this.chkDrawCursorHole.AutoSize = true;
             this.chkDrawCursorHole.Checked = true;
             this.chkDrawCursorHole.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawCursorHole.Location = new System.Drawing.Point(142, 42);
+            this.chkDrawCursorHole.Location = new System.Drawing.Point(142, 64);
             this.chkDrawCursorHole.Name = "chkDrawCursorHole";
             this.chkDrawCursorHole.Size = new System.Drawing.Size(91, 16);
             this.chkDrawCursorHole.TabIndex = 5;
@@ -652,7 +696,7 @@
             this.chkDrawHoles.AutoSize = true;
             this.chkDrawHoles.Checked = true;
             this.chkDrawHoles.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDrawHoles.Location = new System.Drawing.Point(80, 42);
+            this.chkDrawHoles.Location = new System.Drawing.Point(80, 64);
             this.chkDrawHoles.Name = "chkDrawHoles";
             this.chkDrawHoles.Size = new System.Drawing.Size(56, 16);
             this.chkDrawHoles.TabIndex = 5;
@@ -688,13 +732,31 @@
             // 
             // btnResetZoom
             // 
-            this.btnResetZoom.Location = new System.Drawing.Point(7, 117);
+            this.btnResetZoom.Location = new System.Drawing.Point(10, 138);
             this.btnResetZoom.Name = "btnResetZoom";
             this.btnResetZoom.Size = new System.Drawing.Size(91, 23);
             this.btnResetZoom.TabIndex = 1;
             this.btnResetZoom.Text = "Reset Zoom";
             this.btnResetZoom.UseVisualStyleBackColor = true;
             this.btnResetZoom.Click += new System.EventHandler(this.btnResetZoom_Click);
+            // 
+            // numClearColor
+            // 
+            this.numClearColor.Location = new System.Drawing.Point(108, 41);
+            this.numClearColor.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numClearColor.Name = "numClearColor";
+            this.numClearColor.Size = new System.Drawing.Size(55, 21);
+            this.numClearColor.TabIndex = 3;
+            this.numClearColor.Value = new decimal(new int[] {
+            128,
+            0,
+            0,
+            0});
+            this.numClearColor.ValueChanged += new System.EventHandler(this.numClearColor_ValueChanged);
             // 
             // btnClearLog
             // 
@@ -739,7 +801,9 @@
             // 
             // pbxDraw
             // 
+            this.pbxDraw.Clear = false;
             this.pbxDraw.ClearColor = 128;
+            this.pbxDraw.ClearFull = false;
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
@@ -750,6 +814,7 @@
             this.pbxDraw.UseDrawCenterLine = true;
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
+            this.pbxDraw.UseNative = false;
             this.pbxDraw.ZoomLevel = -10;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
@@ -786,6 +851,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numClearColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).EndInit();
             this.ResumeLayout(false);
 
@@ -843,6 +909,10 @@
         private System.Windows.Forms.Label label2;
         private ShimLib.ZoomPictureBox pbxDraw;
         private System.Windows.Forms.CheckBox chkDrawCenterLine;
+        private System.Windows.Forms.CheckBox chkClearFull;
+        private System.Windows.Forms.CheckBox chkClear;
+        private System.Windows.Forms.NumericUpDown numClearColor;
+        private System.Windows.Forms.CheckBox chkUseNative;
     }
 }
 

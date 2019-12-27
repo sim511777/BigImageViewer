@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NativeImport;
 
 namespace ShimLib {
     public class ZoomPictureBox : PictureBox {
@@ -17,7 +18,10 @@ namespace ShimLib {
         private int dispBH;
         private IntPtr dispBuf;
         private Bitmap dispBmp;
+        public bool Clear { get; set; }
         public int ClearColor { get; set; }
+        public bool ClearFull { get; set; }
+        public bool UseNative { get; set; }
 
         // 이미지용 버퍼
         private int imgBW;
@@ -206,17 +210,43 @@ namespace ShimLib {
                 Marshal.FreeHGlobal(dispBuf);
         }
 
-        unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, bool clear, int clearColor) {
-            // 디스플레이 영역 클리어
-            if (clear) {
-                memset(dbuf, clearColor, (ulong)dbw * (ulong)dbh);
-            }
-
+        unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, bool clear, int clearColor, bool clearFull) {
             // dst 인덱스의 범위를 구함
-            int y1 = Math.Max(pany, 0);
-            int y2 = Math.Min((int)Math.Floor(sbh * zoom + pany), dbh);
-            int x1 = Math.Max(panx, 0);
-            int x2 = Math.Min((int)Math.Floor(sbw * zoom + panx), dbw);
+            int y1 = Math.Min(Math.Max(pany, 0), dbh);
+            int y2 = Math.Max(Math.Min((int)Math.Floor(sbh * zoom + pany), dbh), 0);
+            int x1 = Math.Min(Math.Max(panx, 0), dbw);
+            int x2 = Math.Max(Math.Min((int)Math.Floor(sbw * zoom + panx), dbw), 0);
+
+            // 빈 영역 클리어
+            if (clear) {
+                if (clearFull) {
+                    memset(dbuf, clearColor, (ulong)dbw * (ulong)dbh);
+                } else {
+                    byte clearColorByte = (byte)clearColor;
+                    for (int y = 0; y < y1; y++) {
+                        byte* dp = (byte*)dbuf.ToPointer() + (long)dbw * y;
+                        for (int x = 0; x < dbw; x++, dp++) {
+                            *dp = clearColorByte;
+                        }
+                    }
+                    for (int y = y1; y < y2; y++) {
+                        byte* dp = (byte*)dbuf.ToPointer() + (long)dbw * y;
+                        for (int x = 0; x < x1; x++, dp++) {
+                            *dp = clearColorByte;
+                        }
+                        dp = (byte*)dbuf.ToPointer() + (long)dbw * y + x2;
+                        for (int x = x2; x < dbw; x++, dp++) {
+                            *dp = clearColorByte;
+                        }
+                    }
+                    for (int y = y2; y < dbh; y++) {
+                        byte* dp = (byte*)dbuf.ToPointer() + (long)dbw * y;
+                        for (int x = 0; x < dbw; x++, dp++) {
+                            *dp = clearColorByte;
+                        }
+                    }
+                }
+            }
 
             // dst 인덱스에 해당하는 src 인덱스를 담을 버퍼 생성
             int[] siys = new int[dbh];
@@ -250,7 +280,10 @@ namespace ShimLib {
             if (imgBuf == IntPtr.Zero) {
                 memset(dispBuf, ClearColor, (ulong)dispBW * (ulong)dispBH);
             } else {
-                CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, true, ClearColor);
+                if (UseNative)
+                    NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, Clear, ClearColor, ClearFull);
+                else
+                    CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, Clear, ClearColor, ClearFull);
             }
             this.Invalidate();
         }
