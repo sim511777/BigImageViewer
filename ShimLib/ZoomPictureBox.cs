@@ -59,12 +59,6 @@ namespace ShimLib {
             return zoomText;
         }
 
-        // 생성자
-        public ZoomPictureBox() {
-            AllocDispBuf();
-            RedrawImage();
-        }
-
         // 소멸자
         ~ZoomPictureBox() {
             FreeDispBuf();
