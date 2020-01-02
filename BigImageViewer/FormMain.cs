@@ -116,7 +116,7 @@ namespace BigImageViewer {
                         continue;
 
                     g.DrawLine(Pens.PowderBlue, ptDisp1, ptDisp2);
-                    if (frmH * pbxDraw.ZoomFactor < 20)
+                    if (frmH * pbxDraw.GetZoomFactor() < 20)
                         continue;
                     g.DrawString($"fwd={ifwd}/frm={ifrm}", defFont, Brushes.LightBlue, ptDisp1.X + 3, ptDisp1.Y + 5);
                 }
@@ -157,7 +157,7 @@ namespace BigImageViewer {
             float imgX2 = (float)Math.Floor(ptImg2.X);
             float imgY2 = (float)Math.Floor(ptImg2.Y);
 
-            float zoomFactor = pbxDraw.ZoomFactor;
+            float zoomFactor = pbxDraw.GetZoomFactor();
             float panX = pbxDraw.PtPanning.X;
             float panY = pbxDraw.PtPanning.Y;
 

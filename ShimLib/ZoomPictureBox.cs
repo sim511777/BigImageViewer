@@ -18,48 +18,46 @@ namespace ShimLib {
         private int dispBH;
         private IntPtr dispBuf;
         private Bitmap dispBmp;
-        public bool UseNative { get; set; }
 
         // 이미지용 버퍼
         private int imgBW;
         private int imgBH;
         private IntPtr imgBuf;
 
-        // 줌 파라미터
-        // ..., 1/512, 3/1024, 1/256, 3/512, 1/128, 3/256, 1/64, 3/128, 1/32, 3/64, 1/16, 3/32, 1/8, 3/16, 1/4, 3/8, 1/2, 3/4, 1, 3/2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, ...
-        public int ZoomLevel { get; set; }
-        [Browsable(false)]
-        public float ZoomFactor {
-            get {
-                int base_num = 2;
-                int exp_num = (ZoomLevel >= 0) ? ZoomLevel / 2 : (ZoomLevel - 1) / 2;
-                if (ZoomLevel % 2 != 0)
-                    exp_num--;
-                int c = (ZoomLevel % 2 != 0) ? 3 : 1;
-                float zoomFactor = c * (float)Math.Pow(base_num, exp_num);
-                return zoomFactor;
-            }
-        }
-        private string ZoomText {
-            get {
-                int base_num = 2;
-                int exp_num = (ZoomLevel >= 0) ? ZoomLevel / 2 : (ZoomLevel - 1) / 2;
-                if (ZoomLevel % 2 != 0)
-                    exp_num--;
-                int c = (ZoomLevel % 2 != 0) ? 3 : 1;
-                float zoomFactor = c * (float)Math.Pow(base_num, exp_num);
-                string zoomText = (exp_num >= 0) ? (c * (int)Math.Pow(base_num, exp_num)).ToString() : c.ToString() + "/" + ((int)Math.Pow(base_num, -exp_num)).ToString();
-                return zoomText;
-            }
-        }
-
-        // 패닝 파라미터
-        public Point PtPanning { get; set; }
-
         // 화면 표시 옵션
         public bool UseDrawPixelValue { get; set; } = true;
         public bool UseDrawInfo { get; set; } = true;
         public bool UseDrawCenterLine { get; set; } = true;
+
+        // 줌 파라미터
+        public int ZoomLevel { get; set; }
+
+        // 패닝 파라미터
+        public Point PtPanning { get; set; }
+
+        // CopyImageBufferZoom() 함수 Native 코드 사용
+        public bool UseNative { get; set; }
+
+        // ZoomLevel = 0 => ZoomFactor = 1;
+        // ..., 1/512, 3/1024, 1/256, 3/512, 1/128, 3/256, 1/64, 3/128, 1/32, 3/64, 1/16, 3/32, 1/8, 3/16, 1/4, 3/8, 1/2, 3/4, 1, 3/2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, ...
+        public float GetZoomFactor () {
+            int base_num = 2;
+            int exp_num = (ZoomLevel >= 0) ? ZoomLevel / 2 : (ZoomLevel - 1) / 2;
+            if (ZoomLevel % 2 != 0)
+                exp_num--;
+            int c = (ZoomLevel % 2 != 0) ? 3 : 1;
+            float zoomFactor = c * (float)Math.Pow(base_num, exp_num);
+            return zoomFactor;
+        }
+        private string GetZoomText() {
+            int base_num = 2;
+            int exp_num = (ZoomLevel >= 0) ? ZoomLevel / 2 : (ZoomLevel - 1) / 2;
+            if (ZoomLevel % 2 != 0)
+                exp_num--;
+            int c = (ZoomLevel % 2 != 0) ? 3 : 1;
+            string zoomText = (exp_num >= 0) ? (c * (int)Math.Pow(base_num, exp_num)).ToString() : c.ToString() + "/" + ((int)Math.Pow(base_num, -exp_num)).ToString();
+            return zoomText;
+        }
 
         // 생성자
         public ZoomPictureBox() {
@@ -134,14 +132,14 @@ namespace ShimLib {
         private void WheelZoom(MouseEventArgs e) {
             var ptImg = DispToImg(e.Location);
 
-            var zoomFacotrOld = ZoomFactor;
+            var zoomFacotrOld = GetZoomFactor();
             ZoomLevel = (e.Delta > 0) ? ZoomLevel + 1 : ZoomLevel - 1;
             if (ZoomLevel > 20)
                 ZoomLevel = 20;
             if (ZoomLevel < -20)
                 ZoomLevel = -20;
 
-            var zoomFactorNew = ZoomFactor;
+            var zoomFactorNew = GetZoomFactor();
             int sizeX = (int)Math.Floor(ptImg.X * (zoomFacotrOld - zoomFactorNew));
             int sizeY = (int)Math.Floor(ptImg.Y * (zoomFacotrOld - zoomFactorNew));
             PtPanning += new Size(sizeX, sizeY);
@@ -244,6 +242,7 @@ namespace ShimLib {
         // 이미지 다시 그림
         public void RedrawImage() {
             memset(dispBuf, 128, (ulong)dispBW * (ulong)dispBH);
+            float ZoomFactor = GetZoomFactor();
             if (UseNative)
                 NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor);
             else
@@ -289,6 +288,7 @@ namespace ShimLib {
             Brushes.Black,      // 224~255
         };
         private void DrawPixelValue(Graphics g) {
+            float ZoomFactor = GetZoomFactor();
             if (ZoomFactor < 16)
                 return;
 
@@ -332,7 +332,7 @@ namespace ShimLib {
             int imgX = (int)Math.Floor(ptImg.X);
             int imgY = (int)Math.Floor(ptImg.Y);
             int pixelVal = GetImagePixelValue(imgX, imgY);
-            string info = $"zoom={ZoomText} ({imgX},{imgY})={pixelVal}";
+            string info = $"zoom={GetZoomText()} ({imgX},{imgY})={pixelVal}";
             var rect = g.MeasureString(info, SystemFonts.DefaultFont);
             g.FillRectangle(Brushes.White, 0, 0, rect.Width, rect.Height);
             g.DrawString(info, SystemFonts.DefaultFont, Brushes.Black, 0, 0);
@@ -340,18 +340,21 @@ namespace ShimLib {
 
         // 표시 픽셀 좌표를 이미지 좌표로 변환
         public PointF DispToImg(Point pt) {
+            float ZoomFactor = GetZoomFactor();
             var pt2 = pt - (Size)PtPanning;
             return new PointF(pt2.X / ZoomFactor, pt2.Y / ZoomFactor);
         }
 
         // 이미지 좌표를 표시 픽셀 좌표로 변환
         public Point ImgToDisp(PointF pt) {
+            float ZoomFactor = GetZoomFactor();
             var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
             return new Point((int)Math.Floor(pt2.X + PtPanning.X), (int)Math.Floor(pt2.Y + PtPanning.Y));
         }
 
         // 이미지 사각형을 픽셀 사각형으로 변환
         public Rectangle ImgToDisp(RectangleF rect) {
+            float ZoomFactor = GetZoomFactor();
             var pt = rect.Location;
             var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
             var size = rect.Size;
