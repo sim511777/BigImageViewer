@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ShimLib;
 
 namespace BigImageViewer {
     public partial class FormMain : Form {
@@ -58,7 +59,7 @@ namespace BigImageViewer {
             imgBW = (frmW - fwdOvlp) * fwdNum + fwdOvlp;
             imgBH = frmH * frmNum;
             imgBuf = Marshal.AllocHGlobal((IntPtr)((long)imgBW * imgBH));
-            MsvcrtDll.memset(imgBuf, 0, (ulong)((long)imgBW * imgBH));
+            Msvcrt.memset(imgBuf, 0, (ulong)((long)imgBW * imgBH));
         }
 
         // 포워드 이미지 로드
@@ -76,7 +77,7 @@ namespace BigImageViewer {
                 if (r) {
                     succNum++;
                 } else {
-                    MsvcrtDll.memset(buf, 0, (ulong)frmSize);
+                    Msvcrt.memset(buf, 0, (ulong)frmSize);
                 }
             }
             Log($"Fwd_{ifwd} 이미지 {frmNum}개 중 {succNum}개 이미지 로드 성공");
@@ -346,7 +347,7 @@ namespace BigImageViewer {
             FreeImgBuf();
             AllocImgBuf();
             Log("End Alloc Buffer");
-            pbxDraw.SetImgBuf(imgBW, imgBH, imgBuf);
+            pbxDraw.SetImgBuf(imgBuf, imgBW, imgBH, 1);
         }
 
         private void btnLoadFwd_Click(object sender, EventArgs e) {

@@ -121,7 +121,7 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     return TRUE;
 }
 
-NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom) {
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom, int bytepp) {
     // dst 인덱스의 범위를 구함
     int y1 = min(max(pany, 0), dbh);
     int y2 = max(min((int)floor(sbh * zoom + pany), dbh), 0);
@@ -133,7 +133,7 @@ NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, in
     int *sixs = new int[dbw];
 
     // 버퍼에 값 구해서 넣음
-    for (int y = y1; y < y2;  y++) {
+    for (int y = y1; y < y2; y++) {
         siys[y] = (int)floor((y - pany) / zoom);
     }
     for (int x = x1; x < x2; x++) {
@@ -141,14 +141,28 @@ NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, in
     }
 
     // dst 인덱스의 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
-    for (int y = y1; y < y2; y++) {
-        BYTE *dp = dbuf + (size_t)dbw * y + x1;
+    if (bytepp == 1) {
+        for (int y = y1; y < y2; y++) {
+            BYTE *dp = dbuf + (size_t)dbw * y + x1;
 
-        int siy = siys[y];
-        BYTE *sp = sbuf + (size_t)sbw * siy;
-        for (int x = x1; x < x2; x++, dp++) {
-            int six = sixs[x];
-            *dp = *(sp + six);
+            int siy = siys[y];
+            BYTE *sp = sbuf + (size_t)sbw * siy;
+            for (int x = x1; x < x2; x++, dp++) {
+                int six = sixs[x];
+                *dp = *(sp + six);
+            }
+        }
+    }
+    else {
+        for (int y = y1; y < y2; y++) {
+            DWORD *dp = (DWORD*)dbuf + (size_t)dbw * y + x1;
+
+            int siy = siys[y];
+            DWORD *sp = (DWORD*)sbuf + (size_t)sbw * siy;
+            for (int x = x1; x < x2; x++, dp++) {
+                int six = sixs[x];
+                *dp = *(sp + six);
+            }
         }
     }
 
