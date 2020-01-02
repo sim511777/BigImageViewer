@@ -15,9 +15,6 @@ namespace BigImageViewer {
     public partial class FormMain : Form {
         public FormMain() {
             InitializeComponent();
-            pbxDraw.Clear = chkClear.Checked;
-            pbxDraw.ClearColor = (int)numClearColor.Value;
-            pbxDraw.ClearFull = chkClearFull.Checked;
             pbxDraw.UseNative = chkUseNative.Checked;
         }
 
@@ -429,18 +426,6 @@ namespace BigImageViewer {
 
         private void pbxDraw_MouseMove(object sender, MouseEventArgs e) {
             GetCursorHole();
-        }
-
-        private void chkClear_CheckedChanged(object sender, EventArgs e) {
-            pbxDraw.Clear = chkClear.Checked;
-        }
-
-        private void numClearColor_ValueChanged(object sender, EventArgs e) {
-            pbxDraw.ClearColor = (int)numClearColor.Value;
-        }
-
-        private void chkClearFull_CheckedChanged(object sender, EventArgs e) {
-            pbxDraw.ClearFull = chkClearFull.Checked;
         }
 
         private void chkUseNative_CheckedChanged(object sender, EventArgs e) {

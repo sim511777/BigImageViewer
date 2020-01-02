@@ -121,43 +121,12 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     return TRUE;
 }
 
-NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom, BOOL clear, int clearColor, BOOL clearFull) {
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom) {
     // dst 인덱스의 범위를 구함
     int y1 = min(max(pany, 0), dbh);
     int y2 = max(min((int)floor(sbh * zoom + pany), dbh), 0);
     int x1 = min(max(panx, 0), dbw);
     int x2 = max(min((int)floor(sbw * zoom + panx), dbw), 0);
-
-    // 디스플레이 영역 클리어
-    if (clear) {
-        if (clearFull) {
-            memset(dbuf, clearColor, (size_t)dbw * dbh);
-        } else {
-            BYTE clearColorByte = (BYTE)clearColor;
-            for (int y = 0; y < y1; y++) {
-                BYTE* dp = (BYTE*)dbuf + (long)dbw * y;
-                for (int x = 0; x < dbw; x++, dp++) {
-                    *dp = clearColorByte;
-                }
-            }
-            for (int y = y1; y < y2; y++) {
-                BYTE* dp = (BYTE*)dbuf + (long)dbw * y;
-                for (int x = 0; x < x1; x++, dp++) {
-                    *dp = clearColorByte;
-                }
-                dp = (BYTE*)dbuf + (long)dbw * y + x2;
-                for (int x = x2; x < dbw; x++, dp++) {
-                    *dp = clearColorByte;
-                }
-            }
-            for (int y = y2; y < dbh; y++) {
-                BYTE* dp = (BYTE*)dbuf + (long)dbw * y;
-                for (int x = 0; x < dbw; x++, dp++) {
-                    *dp = clearColorByte;
-                }
-            }
-        }
-    }
 
     // dst 인덱스에 해당하는 src 인덱스를 담을 버퍼 생성
     int *siys = new int[dbh];

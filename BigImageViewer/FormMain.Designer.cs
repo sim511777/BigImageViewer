@@ -62,21 +62,18 @@
             this.rdoHoleInfoIndexX = new System.Windows.Forms.RadioButton();
             this.rdoHoleInfoNone = new System.Windows.Forms.RadioButton();
             this.chkDrawFrame = new System.Windows.Forms.CheckBox();
-            this.chkUseNative = new System.Windows.Forms.CheckBox();
-            this.chkClearFull = new System.Windows.Forms.CheckBox();
-            this.chkClear = new System.Windows.Forms.CheckBox();
             this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
             this.chkDrawCursorHole = new System.Windows.Forms.CheckBox();
             this.chkDrawHoles = new System.Windows.Forms.CheckBox();
             this.chkDrawCenterLine = new System.Windows.Forms.CheckBox();
             this.chkDrawInfo = new System.Windows.Forms.CheckBox();
             this.btnResetZoom = new System.Windows.Forms.Button();
-            this.numClearColor = new System.Windows.Forms.NumericUpDown();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.tbxLog = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.pbxDraw = new ShimLib.ZoomPictureBox();
+            this.chkUseNative = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -95,7 +92,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numFNum)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numClearColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).BeginInit();
             this.SuspendLayout();
             // 
@@ -541,15 +537,12 @@
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.chkDrawFrame);
             this.groupBox1.Controls.Add(this.chkUseNative);
-            this.groupBox1.Controls.Add(this.chkClearFull);
-            this.groupBox1.Controls.Add(this.chkClear);
             this.groupBox1.Controls.Add(this.chkDrawPixelValue);
             this.groupBox1.Controls.Add(this.chkDrawCursorHole);
             this.groupBox1.Controls.Add(this.chkDrawHoles);
             this.groupBox1.Controls.Add(this.chkDrawCenterLine);
             this.groupBox1.Controls.Add(this.chkDrawInfo);
             this.groupBox1.Controls.Add(this.btnResetZoom);
-            this.groupBox1.Controls.Add(this.numClearColor);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(5, 5);
             this.groupBox1.Name = "groupBox1";
@@ -630,41 +623,6 @@
             this.chkDrawFrame.UseVisualStyleBackColor = true;
             this.chkDrawFrame.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
-            // chkUseNative
-            // 
-            this.chkUseNative.AutoSize = true;
-            this.chkUseNative.Location = new System.Drawing.Point(286, 42);
-            this.chkUseNative.Name = "chkUseNative";
-            this.chkUseNative.Size = new System.Drawing.Size(85, 16);
-            this.chkUseNative.TabIndex = 5;
-            this.chkUseNative.Text = "Use Native";
-            this.chkUseNative.UseVisualStyleBackColor = true;
-            this.chkUseNative.CheckedChanged += new System.EventHandler(this.chkUseNative_CheckedChanged);
-            // 
-            // chkClearFull
-            // 
-            this.chkClearFull.AutoSize = true;
-            this.chkClearFull.Location = new System.Drawing.Point(200, 42);
-            this.chkClearFull.Name = "chkClearFull";
-            this.chkClearFull.Size = new System.Drawing.Size(78, 16);
-            this.chkClearFull.TabIndex = 5;
-            this.chkClearFull.Text = "Clear Full";
-            this.chkClearFull.UseVisualStyleBackColor = true;
-            this.chkClearFull.CheckedChanged += new System.EventHandler(this.chkClearFull_CheckedChanged);
-            // 
-            // chkClear
-            // 
-            this.chkClear.AutoSize = true;
-            this.chkClear.Checked = true;
-            this.chkClear.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkClear.Location = new System.Drawing.Point(14, 42);
-            this.chkClear.Name = "chkClear";
-            this.chkClear.Size = new System.Drawing.Size(54, 16);
-            this.chkClear.TabIndex = 5;
-            this.chkClear.Text = "Clear";
-            this.chkClear.UseVisualStyleBackColor = true;
-            this.chkClear.CheckedChanged += new System.EventHandler(this.chkClear_CheckedChanged);
-            // 
             // chkDrawPixelValue
             // 
             this.chkDrawPixelValue.AutoSize = true;
@@ -740,24 +698,6 @@
             this.btnResetZoom.UseVisualStyleBackColor = true;
             this.btnResetZoom.Click += new System.EventHandler(this.btnResetZoom_Click);
             // 
-            // numClearColor
-            // 
-            this.numClearColor.Location = new System.Drawing.Point(108, 41);
-            this.numClearColor.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.numClearColor.Name = "numClearColor";
-            this.numClearColor.Size = new System.Drawing.Size(55, 21);
-            this.numClearColor.TabIndex = 3;
-            this.numClearColor.Value = new decimal(new int[] {
-            128,
-            0,
-            0,
-            0});
-            this.numClearColor.ValueChanged += new System.EventHandler(this.numClearColor_ValueChanged);
-            // 
             // btnClearLog
             // 
             this.btnClearLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -801,9 +741,6 @@
             // 
             // pbxDraw
             // 
-            this.pbxDraw.Clear = false;
-            this.pbxDraw.ClearColor = 128;
-            this.pbxDraw.ClearFull = false;
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
@@ -818,6 +755,17 @@
             this.pbxDraw.ZoomLevel = -10;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
+            // 
+            // chkUseNative
+            // 
+            this.chkUseNative.AutoSize = true;
+            this.chkUseNative.Location = new System.Drawing.Point(14, 42);
+            this.chkUseNative.Name = "chkUseNative";
+            this.chkUseNative.Size = new System.Drawing.Size(85, 16);
+            this.chkUseNative.TabIndex = 5;
+            this.chkUseNative.Text = "Use Native";
+            this.chkUseNative.UseVisualStyleBackColor = true;
+            this.chkUseNative.CheckedChanged += new System.EventHandler(this.chkUseNative_CheckedChanged);
             // 
             // FormMain
             // 
@@ -851,7 +799,6 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numClearColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).EndInit();
             this.ResumeLayout(false);
 
@@ -909,9 +856,6 @@
         private System.Windows.Forms.Label label2;
         private ShimLib.ZoomPictureBox pbxDraw;
         private System.Windows.Forms.CheckBox chkDrawCenterLine;
-        private System.Windows.Forms.CheckBox chkClearFull;
-        private System.Windows.Forms.CheckBox chkClear;
-        private System.Windows.Forms.NumericUpDown numClearColor;
         private System.Windows.Forms.CheckBox chkUseNative;
     }
 }
