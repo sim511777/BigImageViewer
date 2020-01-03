@@ -43,8 +43,8 @@ namespace ShimLib {
         public Point PtPanning { get; set; }
 
         static readonly string[] zoomTexts   = { "1/1024", "3/2048", "1/512", "3/1024", "1/256", "3/512", "1/128", "3/256", "1/64", "3/128", "1/32", "3/64", "1/16", "3/32", "1/8", "3/16", "1/4", "3/8", "1/2", "3/4", "1", "3/2", "2", "3", "4", "6", "8", "12", "16", "24", "32", "48", "64", "96", "128", "192", "256", "384", "512", "768", "1024", };
-        static readonly float[]  zoomFactors = {  1/1024f,  3/2048f,  1/512f,  3/1024f,  1/256f,  3/512f,  1/128f,  3/256f,  1/64f,  3/128f,  1/32f,  3/64f,  1/16f,  3/32f,  1/8f,  3/16f,  1/4f,  3/8f,  1/2f,  3/4f,  1f,  3/2f,  2f,  3f,  4f,  6f,  8f,  12f,  16f,  24f,  32f,  48f,  64f,  96f,  128f,  192f,  256f,  384f,  512f,  768f,  1024f, };
-        public float GetZoomFactor() => zoomFactors[ZoomLevel];
+        static readonly double[] zoomFactors = {  1/1024d,  3/2048d,  1/512d,  3/1024d,  1/256d,  3/512d,  1/128d,  3/256d,  1/64d,  3/128d,  1/32d,  3/64d,  1/16d,  3/32d,  1/8d,  3/16d,  1/4d,  3/8d,  1/2d,  3/4d,  1d,  3/2d,  2d,  3d,  4d,  6d,  8d,  12d,  16d,  24d,  32d,  48d,  64d,  96d,  128d,  192d,  256d,  384d,  512d,  768d,  1024d, };
+        public double GetZoomFactor() => zoomFactors[ZoomLevel];
         private string GetZoomText() => zoomTexts[ZoomLevel];
 
         // 소멸자
@@ -198,7 +198,7 @@ namespace ShimLib {
                 Marshal.FreeHGlobal(dispBuf);
         }
 
-        unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, int bytepp) {
+        unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp) {
             // 인덱스 버퍼 생성
             int[] siys = new int[dbh];
             int[] sixs = new int[dbw];
@@ -276,7 +276,7 @@ namespace ShimLib {
         };
         private void DrawPixelValue(Graphics g) {
             int colorNum = bytepp == 1 ? 1 : 3;
-            float ZoomFactor = GetZoomFactor();
+            double ZoomFactor = GetZoomFactor();
             if (ZoomFactor < 16 * colorNum)
                 return;
 
@@ -289,7 +289,7 @@ namespace ShimLib {
             int imgX2 = IntClamp((int)Math.Floor(ptImg2.X), 0, imgBW-1);
             int imgY2 = IntClamp((int)Math.Floor(ptImg2.Y), 0, imgBH-1);
 
-            float fontSize = ZoomFactor / 16 * 6 / colorNum;
+            float fontSize = (float)(ZoomFactor / 16 * 6 / colorNum);
             if (fontSize > 12)
                 fontSize = 12;
             Font font = new Font("돋움체", fontSize);
@@ -321,26 +321,28 @@ namespace ShimLib {
 
         // 표시 픽셀 좌표를 이미지 좌표로 변환
         public PointF DispToImg(Point pt) {
-            float ZoomFactor = GetZoomFactor();
-            var pt2 = pt - (Size)PtPanning;
-            return new PointF(pt2.X / ZoomFactor, pt2.Y / ZoomFactor);
+            double ZoomFactor = GetZoomFactor();
+            float x = (float)((pt.X - PtPanning.X) / ZoomFactor);
+            float y = (float)((pt.Y - PtPanning.Y) / ZoomFactor);
+            return new PointF(x, y);
         }
 
         // 이미지 좌표를 표시 픽셀 좌표로 변환
         public Point ImgToDisp(PointF pt) {
-            float ZoomFactor = GetZoomFactor();
-            var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
-            return new Point((int)Math.Floor(pt2.X + PtPanning.X), (int)Math.Floor(pt2.Y + PtPanning.Y));
+            double ZoomFactor = GetZoomFactor();
+            int x = (int)Math.Floor(pt.X * ZoomFactor + PtPanning.X);
+            int y = (int)Math.Floor(pt.Y * ZoomFactor + PtPanning.Y);
+            return new Point(x, y);
         }
 
         // 이미지 사각형을 픽셀 사각형으로 변환
         public Rectangle ImgToDisp(RectangleF rect) {
-            float ZoomFactor = GetZoomFactor();
-            var pt = rect.Location;
-            var pt2 = new PointF(pt.X * ZoomFactor, pt.Y * ZoomFactor);
-            var size = rect.Size;
-            var size2 = new SizeF(size.Width * ZoomFactor, size.Height * ZoomFactor);
-            return new Rectangle((int)Math.Floor(pt2.X + PtPanning.X), (int)Math.Floor(pt2.Y + PtPanning.Y), (int)Math.Floor(size2.Width), (int)Math.Floor(size2.Height));
+            double ZoomFactor = GetZoomFactor();
+            int x = (int)Math.Floor(rect.X * ZoomFactor + PtPanning.X);
+            int y = (int)Math.Floor(rect.Y * ZoomFactor + PtPanning.Y);
+            int width = (int)Math.Floor(rect.Width * ZoomFactor);
+            int height = (int)Math.Floor(rect.Height * ZoomFactor);
+            return new Rectangle(x, y, width, height);
         }
 
         // 이미지 픽셀값 리턴

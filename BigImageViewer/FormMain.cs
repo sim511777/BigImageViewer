@@ -158,7 +158,7 @@ namespace BigImageViewer {
             float imgX2 = (float)Math.Floor(ptImg2.X);
             float imgY2 = (float)Math.Floor(ptImg2.Y);
 
-            float zoomFactor = pbxDraw.GetZoomFactor();
+            double zoomFactor = pbxDraw.GetZoomFactor();
             float panX = pbxDraw.PtPanning.X;
             float panY = pbxDraw.PtPanning.Y;
 
@@ -167,7 +167,7 @@ namespace BigImageViewer {
             Font infoFont = SystemFonts.DefaultFont;
 
             float holePitch = 32.0f;
-            bool holeDrawCircle = zoomFactor > (4.0f / holePitch);
+            bool holeDrawCircle = zoomFactor > (4.0 / holePitch);
 
             HoleInfoItemType infoItemType = HoleInfoItemType.None;
             if (rdoHoleInfoIndexX.Checked)
@@ -269,13 +269,13 @@ namespace BigImageViewer {
         }
 
         // 노드 홀 그리기
-        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, Graphics g, float zoomFactor, float panX, float panY, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, Graphics g, double zoomFactor, float panX, float panY, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
             // 뷰 영역에 벗어난 노드는 리턴
             if (node.x1 > imgX2 || node.y1 > imgY2 || node.x2 < imgX1 || node.y2 < imgY1)
                 return;
 
             // 현재 레벨에서 드로우
-            if ((node.x2 - node.x1) * zoomFactor <= 4.0f) {
+            if ((node.x2 - node.x1) * zoomFactor <= 4.0) {
                 DrawHole(g, zoomFactor, panX, panY, node.holeFront, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
                 return;
             }
@@ -299,7 +299,7 @@ namespace BigImageViewer {
         }
 
         // 홀그리기
-        private void DrawHole(Graphics g, float zoomFactor, float panX, float panY, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawHole(Graphics g, double zoomFactor, float panX, float panY, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
             if (holeDrawCircle)
                 DrawHoleCircle(g, zoomFactor, panX, panY, hole, linePen);
             else
@@ -319,25 +319,25 @@ namespace BigImageViewer {
         }
 
         // 개별 홀 써클 드로우
-        private void DrawHoleCircle(Graphics g, float zoomFactor, float panX, float panY, Hole hole, Pen pen) {
-            float x = (hole.x - hole.w / 2f) * zoomFactor + panX;
-            float y = (hole.y - hole.h / 2f) * zoomFactor + panY;
-            float width = hole.w * zoomFactor;
-            float height = hole.h * zoomFactor;
+        private void DrawHoleCircle(Graphics g, double zoomFactor, float panX, float panY, Hole hole, Pen pen) {
+            float x = (float)((hole.x - hole.w / 2) * zoomFactor + panX);
+            float y = (float)((hole.y - hole.h / 2) * zoomFactor + panY);
+            float width = (float)(hole.w * zoomFactor);
+            float height = (float)(hole.h * zoomFactor);
             g.DrawEllipse(pen, x, y, width, height);
         }
 
         // 개별 홀 포인트 드로우
-        private void DrawHolePoint(Graphics g, float zoomFactor, float panX, float panY, Hole hole, Pen linePen) {
+        private void DrawHolePoint(Graphics g, double zoomFactor, float panX, float panY, Hole hole, Pen linePen) {
             float x = (int)(hole.x * zoomFactor + panX) - 0.5f;
             float y = (int)(hole.y * zoomFactor + panY) - 0.5f;
             g.DrawLine(linePen, x, y, x + 1, y + 1);
         }
 
         // 홀 정보 표시
-        private void DrawHoleInfo(Graphics g, float zoomFactor, float panX, float panY, Hole hole, string infoText, Font font, Brush brush) {
-            float x = hole.x * zoomFactor + panX;
-            float y = hole.y * zoomFactor + panY;
+        private void DrawHoleInfo(Graphics g, double zoomFactor, float panX, float panY, Hole hole, string infoText, Font font, Brush brush) {
+            float x = (float)(hole.x * zoomFactor + panX);
+            float y = (float)(hole.y * zoomFactor + panY);
             g.DrawString(infoText, font, brush, x, y);
         }
 

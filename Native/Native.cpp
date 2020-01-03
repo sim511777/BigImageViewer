@@ -121,7 +121,7 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     return TRUE;
 }
 
-NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom, int bytepp) {
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp) {
     // 인덱스 버퍼 생성
     int* siys = new int[dbh];
     int* sixs = new int[dbw];

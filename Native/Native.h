@@ -12,4 +12,4 @@
 
 NATIVE_API BOOL Load8BitBmp(BYTE *buf, int bw, int bh, char *filePath);
 NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath);
-NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom, int bytepp);
+NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp);
