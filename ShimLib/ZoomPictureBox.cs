@@ -124,16 +124,22 @@ namespace ShimLib {
             PtPanning += new Size(scroll, 0);
         }
 
+        // 범휘 제한 함수
+        private static int IntClamp(int value, int min, int max) {
+            if (value < min)
+                value = min;
+            if (value > max)
+                value = max;
+            return value;
+        }
+
         // 휠 줌
         private void WheelZoom(MouseEventArgs e) {
             var ptImg = DispToImg(e.Location);
 
             var zoomFacotrOld = GetZoomFactor();
             ZoomLevel = (e.Delta > 0) ? ZoomLevel + 1 : ZoomLevel - 1;
-            if (ZoomLevel > 20)
-                ZoomLevel = 20;
-            if (ZoomLevel < -20)
-                ZoomLevel = -20;
+            ZoomLevel = IntClamp(ZoomLevel, -20, 20);
 
             var zoomFactorNew = GetZoomFactor();
             int sizeX = (int)Math.Floor(ptImg.X * (zoomFacotrOld - zoomFactorNew));
@@ -309,18 +315,10 @@ namespace ShimLib {
             var ptDisp2 = (Point)this.ClientSize;
             var ptImg1 = DispToImg(ptDisp1);
             var ptImg2 = DispToImg(ptDisp2);
-            int imgX1 = (int)Math.Floor(ptImg1.X);
-            int imgY1 = (int)Math.Floor(ptImg1.Y);
-            int imgX2 = (int)Math.Floor(ptImg2.X);
-            int imgY2 = (int)Math.Floor(ptImg2.Y);
-            if (imgX1 < 0)
-                imgX1 = 0;
-            if (imgY1 < 0)
-                imgY1 = 0;
-            if (imgX2 >= imgBW)
-                imgX2 = imgBW - 1;
-            if (imgY2 >= imgBH)
-                imgY2 = imgBH - 1;
+            int imgX1 = IntClamp((int)Math.Floor(ptImg1.X), 0, imgBW-1);
+            int imgY1 = IntClamp((int)Math.Floor(ptImg1.Y), 0, imgBH-1);
+            int imgX2 = IntClamp((int)Math.Floor(ptImg2.X), 0, imgBW-1);
+            int imgY2 = IntClamp((int)Math.Floor(ptImg2.Y), 0, imgBH-1);
 
             float fontSize = ZoomFactor / 16 * 6 / colorNum;
             if (fontSize > 12)
