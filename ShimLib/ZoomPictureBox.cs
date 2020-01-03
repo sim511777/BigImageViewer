@@ -12,18 +12,24 @@ using System.Windows.Forms;
 
 namespace ShimLib {
     public class ZoomPictureBox : PictureBox {
+        // 범위 제한 함수
+        private static int IntClamp(int value, int min, int max) {
+            if (value < min) return min;
+            if (value > max) return max;
+            return value;
+        }
+
         // 디스플레이용 버퍼
         private int dispBW;
         private int dispBH;
         private IntPtr dispBuf;
         private Bitmap dispBmp;
 
-        private int bytepp = 1;
-
         // 이미지용 버퍼
         private int imgBW;
         private int imgBH;
         private IntPtr imgBuf;
+        private int bytepp = 1;
 
         // 화면 표시 옵션
         public bool UseDrawPixelValue { get; set; } = true;
@@ -36,19 +42,13 @@ namespace ShimLib {
             get { return zoomLevel; }
             set { zoomLevel = IntClamp(value, 0, zoomTexts.Length-1);}
         }
-
-        // 패닝 파라미터
-        public Point PtPanning { get; set; }
-
         static readonly string[] zoomTexts   = { "1/1024", "3/2048", "1/512", "3/1024", "1/256", "3/512", "1/128", "3/256", "1/64", "3/128", "1/32", "3/64", "1/16", "3/32", "1/8", "3/16", "1/4", "3/8", "1/2", "3/4", "1", "3/2", "2", "3", "4", "6", "8", "12", "16", "24", "32", "48", "64", "96", "128", "192", "256", "384", "512", "768", "1024", };
         static readonly double[] zoomFactors = {  1/1024d,  3/2048d,  1/512d,  3/1024d,  1/256d,  3/512d,  1/128d,  3/256d,  1/64d,  3/128d,  1/32d,  3/64d,  1/16d,  3/32d,  1/8d,  3/16d,  1/4d,  3/8d,  1/2d,  3/4d,  1d,  3/2d,  2d,  3d,  4d,  6d,  8d,  12d,  16d,  24d,  32d,  48d,  64d,  96d,  128d,  192d,  256d,  384d,  512d,  768d,  1024d, };
         public double GetZoomFactor() => zoomFactors[ZoomLevel];
         private string GetZoomText() => zoomTexts[ZoomLevel];
 
-        // 소멸자
-        ~ZoomPictureBox() {
-            FreeDispBuf();
-        }
+        // 패닝 파라미터
+        public Point PtPanning { get; set; }
 
         // 이미지 버퍼 세팅
         public void SetImgBuf(IntPtr buf, int bw, int bh, int bytepp) {
@@ -56,8 +56,14 @@ namespace ShimLib {
             imgBW = bw;
             imgBH = bh;
             this.bytepp = bytepp;
+
             AllocDispBuf();
             Invalidate();
+        }
+        
+        // 소멸자
+        ~ZoomPictureBox() {
+            FreeDispBuf();
         }
 
         // 리사이즈 할때
@@ -85,8 +91,6 @@ namespace ShimLib {
         }
 
         // 마우스 휠
-        bool mouseDown = false;
-        Point ptOld;
         protected override void OnMouseWheel(MouseEventArgs e) {
             base.OnMouseWheel(e);
 
@@ -110,15 +114,6 @@ namespace ShimLib {
             PtPanning += new Size(scroll, 0);
         }
 
-        // 범위 제한 함수
-        private static int IntClamp(int value, int min, int max) {
-            if (value < min)
-                value = min;
-            if (value > max)
-                value = max;
-            return value;
-        }
-
         // 휠 줌
         private void WheelZoom(MouseEventArgs e) {
             var ptImg = DispToImg(e.Location);
@@ -133,6 +128,8 @@ namespace ShimLib {
         }
 
         // 마우스 다운
+        bool mouseDown = false;
+        Point ptOld;
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
 
@@ -163,6 +160,7 @@ namespace ShimLib {
                 mouseDown = false;
         }
 
+        // 표시 버퍼 생성
         private void AllocDispBuf() {
             FreeDispBuf();
 
@@ -196,6 +194,7 @@ namespace ShimLib {
                 Marshal.FreeHGlobal(dispBuf);
         }
 
+        // 이미지 버퍼를 디스플레이 버퍼에 복사
         unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp) {
             // 인덱스 버퍼 생성
             int[] siys = new int[dbh];
@@ -340,7 +339,7 @@ namespace ShimLib {
             return new Rectangle(x, y, width, height);
         }
 
-        // 이미지 픽셀값 리턴
+        // 이미지 픽셀값 문자열 리턴 byte
         private string GetImagePixelValueText(int x, int y) {
             if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH)
                 return string.Empty;
@@ -354,6 +353,7 @@ namespace ShimLib {
             }
         }
 
+        // 이미지 픽셀값 리턴 (0~255)
         private int GetImagePixelValue(int x, int y) {
             if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH)
                 return -1;
