@@ -71,7 +71,7 @@ namespace ShimLib {
             imgBH = bh;
             this.bytepp = bytepp;
             AllocDispBuf();
-            RedrawImage();
+            Invalidate();
         }
 
         // 리사이즈 할때
@@ -79,14 +79,14 @@ namespace ShimLib {
             base.OnLayout(e);
 
             AllocDispBuf();
-            RedrawImage();
+            Invalidate();
         }
 
         // 페인트 할때
         protected override void OnPaint(PaintEventArgs e) {
             var g = e.Graphics;
 
-            g.DrawImage(dispBmp, 0, 0);
+            DrawImage(g);
             if (UseDrawPixelValue)
                 DrawPixelValue(g);
             if (UseDrawCenterLine)
@@ -111,7 +111,7 @@ namespace ShimLib {
             } else {
                 WheelZoom(e);
             }
-            RedrawImage();
+            Invalidate();
         }
 
         // 휠 스크롤
@@ -164,7 +164,7 @@ namespace ShimLib {
             if (mouseDown) {
                 PtPanning += ((Size)e.Location - (Size)ptOld);
                 ptOld = e.Location;
-                RedrawImage();
+                Invalidate();
             } else {
                 this.Invalidate();
             }
@@ -258,14 +258,15 @@ namespace ShimLib {
             }
         }
 
-        // 이미지 다시 그림
-        public void RedrawImage() {
+        // 이미지 버퍼 그림
+        private void DrawImage(Graphics g) {
             float ZoomFactor = GetZoomFactor();
             if (UseNative)
                 NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, bytepp);
             else
                 CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, bytepp);
-            this.Invalidate();
+
+            g.DrawImage(dispBmp, 0, 0);
         }
 
         // 중심선 표시

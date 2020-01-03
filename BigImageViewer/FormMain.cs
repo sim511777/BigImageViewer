@@ -352,7 +352,7 @@ namespace BigImageViewer {
 
         private void btnLoadFwd_Click(object sender, EventArgs e) {
             LoadFwdImg(tbxFwdDir.Text, 0);
-            pbxDraw.RedrawImage();
+            pbxDraw.Invalidate();
         }
 
         private void btnClearLog_Click(object sender, EventArgs e) {
@@ -380,7 +380,7 @@ namespace BigImageViewer {
         private void btnResetZoom_Click(object sender, EventArgs e) {
             pbxDraw.ZoomLevel = -10;
             pbxDraw.PtPanning = Point.Empty;
-            pbxDraw.RedrawImage();
+            pbxDraw.Invalidate();
         }
 
         private void btnInitHoles_Click(object sender, EventArgs e) {
@@ -422,7 +422,7 @@ namespace BigImageViewer {
                 string dir = tbxSurfDir.Text + "\\Fwd" + fwd.ToString();
                 LoadFwdImg(dir, fwd);
             }
-            pbxDraw.RedrawImage();
+            pbxDraw.Invalidate();
         }
 
         private void pbxDraw_MouseMove(object sender, MouseEventArgs e) {
@@ -431,7 +431,7 @@ namespace BigImageViewer {
 
         private void chkUseNative_CheckedChanged(object sender, EventArgs e) {
             pbxDraw.UseNative = chkUseNative.Checked;
-            pbxDraw.RedrawImage();
+            pbxDraw.Invalidate();
         }
     }
 }
