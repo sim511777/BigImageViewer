@@ -110,7 +110,7 @@ namespace ShimLib {
             PtPanning += new Size(scroll, 0);
         }
 
-        // 범휘 제한 함수
+        // 범위 제한 함수
         private static int IntClamp(int value, int min, int max) {
             if (value < min)
                 value = min;
@@ -234,7 +234,7 @@ namespace ShimLib {
 
         // 중심선 표시
         private void DrawCenterLine(Graphics g) {
-            if (imgBuf == null)
+            if (imgBuf == IntPtr.Zero)
                 return;
 
             Pen pen = new Pen(Color.Yellow);
