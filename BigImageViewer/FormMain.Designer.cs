@@ -62,7 +62,6 @@
             this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
             this.chkDrawInfo = new System.Windows.Forms.CheckBox();
             this.chkDrawCenterLine = new System.Windows.Forms.CheckBox();
-            this.chkUseNative = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chkDrawFrame = new System.Windows.Forms.CheckBox();
             this.chkDrawHoles = new System.Windows.Forms.CheckBox();
@@ -575,7 +574,6 @@
             this.groupBox5.Controls.Add(this.chkDrawPixelValue);
             this.groupBox5.Controls.Add(this.chkDrawInfo);
             this.groupBox5.Controls.Add(this.chkDrawCenterLine);
-            this.groupBox5.Controls.Add(this.chkUseNative);
             this.groupBox5.Location = new System.Drawing.Point(6, 20);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(412, 44);
@@ -621,17 +619,6 @@
             this.chkDrawCenterLine.Text = "Center Line";
             this.chkDrawCenterLine.UseVisualStyleBackColor = true;
             this.chkDrawCenterLine.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
-            // 
-            // chkUseNative
-            // 
-            this.chkUseNative.AutoSize = true;
-            this.chkUseNative.Location = new System.Drawing.Point(287, 20);
-            this.chkUseNative.Name = "chkUseNative";
-            this.chkUseNative.Size = new System.Drawing.Size(85, 16);
-            this.chkUseNative.TabIndex = 5;
-            this.chkUseNative.Text = "Use Native";
-            this.chkUseNative.UseVisualStyleBackColor = true;
-            this.chkUseNative.CheckedChanged += new System.EventHandler(this.chkUseNative_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -786,7 +773,6 @@
             this.pbxDraw.UseDrawCenterLine = true;
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
-            this.pbxDraw.UseNative = false;
             this.pbxDraw.ZoomLevel = 10;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
@@ -883,7 +869,6 @@
         private System.Windows.Forms.Label label2;
         private ShimLib.ZoomPictureBox pbxDraw;
         private System.Windows.Forms.CheckBox chkDrawCenterLine;
-        private System.Windows.Forms.CheckBox chkUseNative;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox4;
     }

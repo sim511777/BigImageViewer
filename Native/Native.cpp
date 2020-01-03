@@ -120,37 +120,3 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
     CloseHandle(hFile);
     return TRUE;
 }
-
-NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp) {
-    // 인덱스 버퍼 생성
-    int* siys = new int[dbh];
-    int* sixs = new int[dbw];
-    for (int y = 0; y < dbh; y++) {
-        int siy = (int)floor((y - pany) / zoom);
-        siys[y] = (sbuf == NULL || siy < 0 || siy >= sbh) ? -1 : siy;
-    }
-    for (int x = 0; x < dbw; x++) {
-        int six = (int)floor((x - panx) / zoom);
-        sixs[x] = (sbuf == NULL || six < 0 || six >= sbw) ? -1 : six;
-    }
-
-    // dst 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
-    BOOL oneChannel = (bytepp == 1);
-    for (int y = 0; y < dbh; y++) {
-        int siy = siys[y];
-        BYTE* sp = sbuf + (__int64)sbw * siy * bytepp;
-        BYTE* dp = dbuf + (__int64)dbw * y * bytepp;
-        BOOL yClear = (siy == -1);
-        for (int x = 0; x < dbw; x++, dp += bytepp) {
-            int six = sixs[x];
-            if (oneChannel)
-                *dp = (yClear || six == -1) ? 0x80 : sp[six];
-            else
-                *(UINT*)dp = (yClear || six == -1) ? 0xff808080 : ((UINT*)sp)[six];
-        }
-    }
-
-    // 인덱스 버퍼 삭제
-    delete[] sixs;
-    delete[] siys;
-}

@@ -16,7 +16,6 @@ namespace BigImageViewer {
     public partial class FormMain : Form {
         public FormMain() {
             InitializeComponent();
-            pbxDraw.UseNative = chkUseNative.Checked;
         }
 
         // 로그 출력
@@ -427,11 +426,6 @@ namespace BigImageViewer {
 
         private void pbxDraw_MouseMove(object sender, MouseEventArgs e) {
             GetCursorHole();
-        }
-
-        private void chkUseNative_CheckedChanged(object sender, EventArgs e) {
-            pbxDraw.UseNative = chkUseNative.Checked;
-            pbxDraw.Invalidate();
         }
     }
 }

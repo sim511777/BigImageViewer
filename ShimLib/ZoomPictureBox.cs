@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using NativeImport;
 
 namespace ShimLib {
     public class ZoomPictureBox : PictureBox {
@@ -26,7 +25,6 @@ namespace ShimLib {
         private int imgBH;
         private IntPtr imgBuf;
 
-        public bool UseNative { get; set; }
         // 화면 표시 옵션
         public bool UseDrawPixelValue { get; set; } = true;
         public bool UseDrawInfo { get; set; } = true;
@@ -230,10 +228,7 @@ namespace ShimLib {
 
         // 이미지 버퍼 그림
         private void DrawImage(Graphics g) {
-            if (UseNative)
-                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), bytepp);
-            else
-                CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), bytepp);
+            CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), bytepp);
             g.DrawImage(dispBmp, 0, 0);
         }
 

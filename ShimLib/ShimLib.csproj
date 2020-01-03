@@ -51,11 +51,5 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NativeImport\NativeImport.csproj">
-      <Project>{60a7ec83-e6f7-40f7-8424-2568695a6fef}</Project>
-      <Name>NativeImport</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
