@@ -24,6 +24,8 @@
         /// </summary>
         private void InitializeComponent() {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.tbxLog = new System.Windows.Forms.TextBox();
+            this.splitter2 = new System.Windows.Forms.Splitter();
             this.panel2 = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.btnAlloc = new System.Windows.Forms.Button();
@@ -72,8 +74,6 @@
             this.chkDrawCursorHole = new System.Windows.Forms.CheckBox();
             this.btnResetZoom = new System.Windows.Forms.Button();
             this.btnClearLog = new System.Windows.Forms.Button();
-            this.splitter2 = new System.Windows.Forms.Splitter();
-            this.tbxLog = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.pbxDraw = new ShimLib.ZoomPictureBox();
             this.panel1.SuspendLayout();
@@ -109,6 +109,27 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(435, 666);
             this.panel1.TabIndex = 0;
+            // 
+            // tbxLog
+            // 
+            this.tbxLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbxLog.Font = new System.Drawing.Font("굴림체", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.tbxLog.Location = new System.Drawing.Point(0, 483);
+            this.tbxLog.Multiline = true;
+            this.tbxLog.Name = "tbxLog";
+            this.tbxLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.tbxLog.Size = new System.Drawing.Size(435, 183);
+            this.tbxLog.TabIndex = 0;
+            this.tbxLog.WordWrap = false;
+            // 
+            // splitter2
+            // 
+            this.splitter2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitter2.Location = new System.Drawing.Point(0, 480);
+            this.splitter2.Name = "splitter2";
+            this.splitter2.Size = new System.Drawing.Size(435, 3);
+            this.splitter2.TabIndex = 6;
+            this.splitter2.TabStop = false;
             // 
             // panel2
             // 
@@ -744,27 +765,6 @@
             this.btnClearLog.UseVisualStyleBackColor = true;
             this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
             // 
-            // splitter2
-            // 
-            this.splitter2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitter2.Location = new System.Drawing.Point(0, 480);
-            this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(435, 3);
-            this.splitter2.TabIndex = 6;
-            this.splitter2.TabStop = false;
-            // 
-            // tbxLog
-            // 
-            this.tbxLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbxLog.Font = new System.Drawing.Font("굴림체", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.tbxLog.Location = new System.Drawing.Point(0, 483);
-            this.tbxLog.Multiline = true;
-            this.tbxLog.Name = "tbxLog";
-            this.tbxLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbxLog.Size = new System.Drawing.Size(435, 183);
-            this.tbxLog.TabIndex = 0;
-            this.tbxLog.WordWrap = false;
-            // 
             // splitter1
             // 
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -787,7 +787,7 @@
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
             this.pbxDraw.UseNative = false;
-            this.pbxDraw.ZoomLevel = -10;
+            this.pbxDraw.ZoomLevel = 10;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
             // 

@@ -33,31 +33,19 @@ namespace ShimLib {
         public bool UseDrawCenterLine { get; set; } = true;
 
         // 줌 파라미터
-        public int ZoomLevel { get; set; }
+        private int zoomLevel;
+        public int ZoomLevel {
+            get { return zoomLevel; }
+            set { zoomLevel = IntClamp(value, 0, zoomTexts.Length-1);}
+        }
 
         // 패닝 파라미터
         public Point PtPanning { get; set; }
 
-        // ZoomLevel = 0 => ZoomFactor = 1;
-        // ..., 1/512, 3/1024, 1/256, 3/512, 1/128, 3/256, 1/64, 3/128, 1/32, 3/64, 1/16, 3/32, 1/8, 3/16, 1/4, 3/8, 1/2, 3/4, 1, 3/2, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, ...
-        public float GetZoomFactor() {
-            int base_num = 2;
-            int exp_num = (ZoomLevel >= 0) ? ZoomLevel / 2 : (ZoomLevel - 1) / 2;
-            if (ZoomLevel % 2 != 0)
-                exp_num--;
-            int c = (ZoomLevel % 2 != 0) ? 3 : 1;
-            float zoomFactor = c * (float)Math.Pow(base_num, exp_num);
-            return zoomFactor;
-        }
-        private string GetZoomText() {
-            int base_num = 2;
-            int exp_num = (ZoomLevel >= 0) ? ZoomLevel / 2 : (ZoomLevel - 1) / 2;
-            if (ZoomLevel % 2 != 0)
-                exp_num--;
-            int c = (ZoomLevel % 2 != 0) ? 3 : 1;
-            string zoomText = (exp_num >= 0) ? (c * (int)Math.Pow(base_num, exp_num)).ToString() : c.ToString() + "/" + ((int)Math.Pow(base_num, -exp_num)).ToString();
-            return zoomText;
-        }
+        static readonly string[] zoomTexts   = { "1/1024", "3/2048", "1/512", "3/1024", "1/256", "3/512", "1/128", "3/256", "1/64", "3/128", "1/32", "3/64", "1/16", "3/32", "1/8", "3/16", "1/4", "3/8", "1/2", "3/4", "1", "3/2", "2", "3", "4", "6", "8", "12", "16", "24", "32", "48", "64", "96", "128", "192", "256", "384", "512", "768", "1024", };
+        static readonly float[]  zoomFactors = {  1/1024f,  3/2048f,  1/512f,  3/1024f,  1/256f,  3/512f,  1/128f,  3/256f,  1/64f,  3/128f,  1/32f,  3/64f,  1/16f,  3/32f,  1/8f,  3/16f,  1/4f,  3/8f,  1/2f,  3/4f,  1f,  3/2f,  2f,  3f,  4f,  6f,  8f,  12f,  16f,  24f,  32f,  48f,  64f,  96f,  128f,  192f,  256f,  384f,  512f,  768f,  1024f, };
+        public float GetZoomFactor() => zoomFactors[ZoomLevel];
+        private string GetZoomText() => zoomTexts[ZoomLevel];
 
         // 소멸자
         ~ZoomPictureBox() {
@@ -139,7 +127,6 @@ namespace ShimLib {
 
             var zoomFacotrOld = GetZoomFactor();
             ZoomLevel = (e.Delta > 0) ? ZoomLevel + 1 : ZoomLevel - 1;
-            ZoomLevel = IntClamp(ZoomLevel, -20, 20);
 
             var zoomFactorNew = GetZoomFactor();
             int sizeX = (int)Math.Floor(ptImg.X * (zoomFacotrOld - zoomFactorNew));
