@@ -206,55 +206,54 @@ namespace ShimLib {
         }
 
         unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, float zoom, int bytepp) {
-            // dst 인덱스의 범위를 구함
-            int y1 = Math.Min(Math.Max(pany, 0), dbh);
-            int y2 = Math.Max(Math.Min((int)Math.Floor(sbh * zoom + pany), dbh), 0);
-            int x1 = Math.Min(Math.Max(panx, 0), dbw);
-            int x2 = Math.Max(Math.Min((int)Math.Floor(sbw * zoom + panx), dbw), 0);
-
-            // dst 인덱스에 해당하는 src 인덱스를 담을 버퍼 생성
+            // 인덱스 버퍼 생성
             int[] siys = new int[dbh];
             int[] sixs = new int[dbw];
-
-            // 버퍼에 값 구해서 넣음
-            for (int y = y1; y < y2; y++) {
-                siys[y] = (int)Math.Floor((y - pany) / zoom);
+            for (int y = 0; y < dbh; y++) {
+                int siy = (int)Math.Floor((y - pany) / zoom);
+                siys[y] = (sbuf == IntPtr.Zero || siy < 0 || siy >= sbh) ? -1 : siy;
             }
-            for (int x = x1; x < x2; x++) {
-                sixs[x] = (int)Math.Floor((x - panx) / zoom);
+            for (int x = 0; x < dbw; x++) {
+                int six = (int)Math.Floor((x - panx) / zoom);
+                sixs[x] = (sbuf == IntPtr.Zero || six < 0 || six >= sbw) ? -1 : six;
             }
 
-            // dst 인덱스의 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
+            // dst 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
             if (bytepp == 1) {
-                for (int y = y1; y < y2; y++) {
-                    byte* dp = (byte*)dbuf.ToPointer() + (long)dbw * y + x1;
-
+                byte clearValue = 0x80;
+                byte* sptr = (byte*)sbuf.ToPointer();
+                byte* dptr = (byte*)dbuf.ToPointer();
+                byte* sp;
+                byte* dp;
+                for (int y = 0; y < dbh; y++) {
                     int siy = siys[y];
-                    byte* sp = (byte*)sbuf.ToPointer() + (long)sbw * siy;
-                    for (int x = x1; x < x2; x++, dp++) {
+                    sp = sptr + (Int64)sbw * siy;
+                    dp = dptr + (Int64)dbw * y;
+                    for (int x = 0; x < dbw; x++, dp++) {
                         int six = sixs[x];
-                        *dp = *(sp + six);
+                        *dp = (siy == -1 || six == -1) ? clearValue :  sp[six];
                     }
                 }
-            } else { // bytepp = 4
-                for (int y = y1; y < y2; y++) {
-                    uint* dp = (uint*)dbuf.ToPointer() + (long)dbw * y + x1;
-
+            } else { // if (bytepp == 4)
+                uint clearValue = 0xff808080;
+                uint* sptr = (uint*)sbuf.ToPointer();
+                uint* dptr = (uint*)dbuf.ToPointer();
+                uint* sp;
+                uint* dp;
+                for (int y = 0; y < dbh; y++) {
                     int siy = siys[y];
-                    uint* sp = (uint*)sbuf.ToPointer() + (long)sbw * siy;
-                    for (int x = x1; x < x2; x++, dp++) {
+                    sp = sptr + (Int64)sbw * siy;
+                    dp = dptr + (Int64)dbw * y;
+                    for (int x = 0; x < dbw; x++, dp++) {
                         int six = sixs[x];
-                        *dp = *(sp + six);
+                        *dp = (siy == -1 || six == -1) ? clearValue : sp[six];
                     }
                 }
             }
-
-            // 버퍼 삭제
         }
 
         // 이미지 다시 그림
         public void RedrawImage() {
-            Msvcrt.memset(dispBuf, 128, (ulong)dispBW * (ulong)dispBH * (ulong)bytepp);
             float ZoomFactor = GetZoomFactor();
             if (UseNative)
                 NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, bytepp);

@@ -122,51 +122,53 @@ NATIVE_API BOOL Save8BitBmp(BYTE *buf, int bw, int bh, char *filePath) {
 }
 
 NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, int dbw, int dbh, int panx, int pany, float zoom, int bytepp) {
-    // dst 인덱스의 범위를 구함
-    int y1 = min(max(pany, 0), dbh);
-    int y2 = max(min((int)floor(sbh * zoom + pany), dbh), 0);
-    int x1 = min(max(panx, 0), dbw);
-    int x2 = max(min((int)floor(sbw * zoom + panx), dbw), 0);
-
-    // dst 인덱스에 해당하는 src 인덱스를 담을 버퍼 생성
-    int *siys = new int[dbh];
-    int *sixs = new int[dbw];
-
-    // 버퍼에 값 구해서 넣음
-    for (int y = y1; y < y2; y++) {
-        siys[y] = (int)floor((y - pany) / zoom);
+    // 인덱스 버퍼 생성
+    int* siys = new int[dbh];
+    int* sixs = new int[dbw];
+    for (int y = 0; y < dbh; y++) {
+        int siy = (int)floor((y - pany) / zoom);
+        siys[y] = (sbuf == NULL || siy < 0 || siy >= sbh) ? -1 : siy;
     }
-    for (int x = x1; x < x2; x++) {
-        sixs[x] = (int)floor((x - panx) / zoom);
+    for (int x = 0; x < dbw; x++) {
+        int six = (int)floor((x - panx) / zoom);
+        sixs[x] = (sbuf == NULL || six < 0 || six >= sbw) ? -1 : six;
     }
 
-    // dst 인덱스의 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
+    // dst 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
     if (bytepp == 1) {
-        for (int y = y1; y < y2; y++) {
-            BYTE *dp = dbuf + (size_t)dbw * y + x1;
-
+        BYTE clearValue = 0x80;
+        BYTE* sptr = (BYTE*)sbuf;
+        BYTE* dptr = (BYTE*)dbuf;
+        BYTE* sp;
+        BYTE* dp;
+        for (int y = 0; y < dbh; y++) {
             int siy = siys[y];
-            BYTE *sp = sbuf + (size_t)sbw * siy;
-            for (int x = x1; x < x2; x++, dp++) {
+            sp = sptr + (__int64)sbw * siy;
+            dp = dptr + (__int64)dbw * y;
+            for (int x = 0; x < dbw; x++, dp++) {
                 int six = sixs[x];
-                *dp = *(sp + six);
+                *dp = (siy == -1 || six == -1) ? clearValue : sp[six];
             }
         }
     }
-    else {
-        for (int y = y1; y < y2; y++) {
-            DWORD *dp = (DWORD*)dbuf + (size_t)dbw * y + x1;
-
+    else { // if (bytepp == 4)
+        UINT clearValue = 0xff808080;
+        UINT* sptr = (UINT*)sbuf;
+        UINT* dptr = (UINT*)dbuf;
+        UINT* sp;
+        UINT* dp;
+        for (int y = 0; y < dbh; y++) {
             int siy = siys[y];
-            DWORD *sp = (DWORD*)sbuf + (size_t)sbw * siy;
-            for (int x = x1; x < x2; x++, dp++) {
+            sp = sptr + (__int64)sbw * siy;
+            dp = dptr + (__int64)dbw * y;
+            for (int x = 0; x < dbw; x++, dp++) {
                 int six = sixs[x];
-                *dp = *(sp + six);
+                *dp = (siy == -1 || six == -1) ? clearValue : sp[six];
             }
         }
     }
 
-    // 버퍼 삭제
+    // 인덱스 버퍼 삭제
     delete[] sixs;
     delete[] siys;
 }

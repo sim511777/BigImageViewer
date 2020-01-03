@@ -431,6 +431,7 @@ namespace BigImageViewer {
 
         private void chkUseNative_CheckedChanged(object sender, EventArgs e) {
             pbxDraw.UseNative = chkUseNative.Checked;
+            pbxDraw.RedrawImage();
         }
     }
 }
