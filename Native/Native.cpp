@@ -135,36 +135,18 @@ NATIVE_API void CopyImageBufferZoom(BYTE *sbuf, int sbw, int sbh, BYTE *dbuf, in
     }
 
     // dst 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
-    if (bytepp == 1) {
-        BYTE clearValue = 0x80;
-        BYTE* sptr = (BYTE*)sbuf;
-        BYTE* dptr = (BYTE*)dbuf;
-        BYTE* sp;
-        BYTE* dp;
-        for (int y = 0; y < dbh; y++) {
-            int siy = siys[y];
-            sp = sptr + (__int64)sbw * siy;
-            dp = dptr + (__int64)dbw * y;
-            for (int x = 0; x < dbw; x++, dp++) {
-                int six = sixs[x];
-                *dp = (siy == -1 || six == -1) ? clearValue : sp[six];
-            }
-        }
-    }
-    else { // if (bytepp == 4)
-        UINT clearValue = 0xff808080;
-        UINT* sptr = (UINT*)sbuf;
-        UINT* dptr = (UINT*)dbuf;
-        UINT* sp;
-        UINT* dp;
-        for (int y = 0; y < dbh; y++) {
-            int siy = siys[y];
-            sp = sptr + (__int64)sbw * siy;
-            dp = dptr + (__int64)dbw * y;
-            for (int x = 0; x < dbw; x++, dp++) {
-                int six = sixs[x];
-                *dp = (siy == -1 || six == -1) ? clearValue : sp[six];
-            }
+    BOOL oneChannel = (bytepp == 1);
+    for (int y = 0; y < dbh; y++) {
+        int siy = siys[y];
+        BYTE* sp = sbuf + (__int64)sbw * siy * bytepp;
+        BYTE* dp = dbuf + (__int64)dbw * y * bytepp;
+        BOOL yClear = (siy == -1);
+        for (int x = 0; x < dbw; x++, dp += bytepp) {
+            int six = sixs[x];
+            if (oneChannel)
+                *dp = (yClear || six == -1) ? 0x80 : sp[six];
+            else
+                *(UINT*)dp = (yClear || six == -1) ? 0xff808080 : ((UINT*)sp)[six];
         }
     }
 

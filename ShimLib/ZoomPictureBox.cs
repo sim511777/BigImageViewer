@@ -212,47 +212,28 @@ namespace ShimLib {
             }
 
             // dst 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
-            if (bytepp == 1) {
-                byte clearValue = 0x80;
-                byte* sptr = (byte*)sbuf.ToPointer();
-                byte* dptr = (byte*)dbuf.ToPointer();
-                byte* sp;
-                byte* dp;
-                for (int y = 0; y < dbh; y++) {
-                    int siy = siys[y];
-                    sp = sptr + (Int64)sbw * siy;
-                    dp = dptr + (Int64)dbw * y;
-                    for (int x = 0; x < dbw; x++, dp++) {
-                        int six = sixs[x];
-                        *dp = (siy == -1 || six == -1) ? clearValue :  sp[six];
-                    }
-                }
-            } else { // if (bytepp == 4)
-                uint clearValue = 0xff808080;
-                uint* sptr = (uint*)sbuf.ToPointer();
-                uint* dptr = (uint*)dbuf.ToPointer();
-                uint* sp;
-                uint* dp;
-                for (int y = 0; y < dbh; y++) {
-                    int siy = siys[y];
-                    sp = sptr + (Int64)sbw * siy;
-                    dp = dptr + (Int64)dbw * y;
-                    for (int x = 0; x < dbw; x++, dp++) {
-                        int six = sixs[x];
-                        *dp = (siy == -1 || six == -1) ? clearValue : sp[six];
-                    }
+            bool oneChannel = (bytepp == 1);
+            for (int y = 0; y < dbh; y++) {
+                int siy = siys[y];
+                byte* sp = (byte*)sbuf.ToPointer() + (Int64)sbw * siy * bytepp;
+                byte* dp = (byte*)dbuf.ToPointer() + (Int64)dbw * y * bytepp;
+                bool yClear = (siy == -1);
+                for (int x = 0; x < dbw; x++, dp += bytepp) {
+                    int six = sixs[x];
+                    if (oneChannel)
+                        *dp = (yClear || six == -1) ? (byte)0x80 : sp[six];
+                    else
+                        *(uint*)dp = (yClear || six == -1) ? 0xff808080 : ((uint*)sp)[six];
                 }
             }
         }
 
         // 이미지 버퍼 그림
         private void DrawImage(Graphics g) {
-            float ZoomFactor = GetZoomFactor();
             if (UseNative)
-                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, bytepp);
+                NativeDll.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), bytepp);
             else
-                CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, ZoomFactor, bytepp);
-
+                CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), bytepp);
             g.DrawImage(dispBmp, 0, 0);
         }
 
