@@ -167,7 +167,7 @@ namespace ShimLib {
                 dispBH = Math.Max(this.ClientSize.Height, 64);
 
                 dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH));
-                Msvcrt.memset(dispBuf, 0, dispBW * dispBH);
+                MsvcrtDll.memset(dispBuf, 0, dispBW * dispBH);
                 dispBmp = new Bitmap(dispBW, dispBH, dispBW, PixelFormat.Format8bppIndexed, dispBuf);
                 var pal = dispBmp.Palette;
                 for (int i = 0; i < 256; i++) {
@@ -179,7 +179,7 @@ namespace ShimLib {
                 dispBH = Math.Max(this.ClientSize.Height, 64);
 
                 dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH * bytepp));
-                Msvcrt.memset(dispBuf, 0, dispBW * dispBH * bytepp);
+                MsvcrtDll.memset(dispBuf, 0, dispBW * dispBH * bytepp);
                 dispBmp = new Bitmap(dispBW, dispBH, dispBW * bytepp, PixelFormat.Format32bppRgb, dispBuf);
             }
         }
