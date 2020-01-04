@@ -95,7 +95,6 @@
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -769,7 +768,7 @@
             this.pbxDraw.PtPanning = new System.Drawing.Point(0, 0);
             this.pbxDraw.Size = new System.Drawing.Size(563, 666);
             this.pbxDraw.TabIndex = 3;
-            this.pbxDraw.TabStop = false;
+            this.pbxDraw.Text = "zoomPictureBox1";
             this.pbxDraw.UseDrawCenterLine = true;
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
@@ -812,7 +811,6 @@
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbxDraw)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -867,10 +865,10 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label2;
-        private ShimLib.ZoomPictureBox pbxDraw;
         private System.Windows.Forms.CheckBox chkDrawCenterLine;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox4;
+        private ShimLib.ZoomPictureBox pbxDraw;
     }
 }
 
