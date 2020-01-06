@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MsvcrtDll.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="ZoomPictureBox.cs">
       <SubType>Component</SubType>

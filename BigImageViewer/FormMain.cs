@@ -57,7 +57,7 @@ namespace BigImageViewer {
             imgBW = (frmW - fwdOvlp) * fwdNum + fwdOvlp;
             imgBH = frmH * frmNum;
             imgBuf = Marshal.AllocHGlobal((IntPtr)((long)imgBW * imgBH));
-            MsvcrtDll.memset(imgBuf, 0, (long)imgBW * imgBH);
+            Util.memset(imgBuf, 0, (long)imgBW * imgBH);
         }
 
         // 포워드 이미지 로드
@@ -75,7 +75,7 @@ namespace BigImageViewer {
                 if (r) {
                     succNum++;
                 } else {
-                    MsvcrtDll.memset(buf, 0, frmSize);
+                    Util.memset(buf, 0, frmSize);
                 }
             }
             Log($"Fwd_{ifwd} 이미지 {frmNum}개 중 {succNum}개 이미지 로드 성공");

@@ -12,5 +12,23 @@ namespace ShimLib {
             if (value > max) return max;
             return value;
         }
+
+        public unsafe static IntPtr memset(IntPtr _Dst, int _Val, long _Size) {
+            byte valByte = (byte)_Val;
+            byte* pdst = (byte*)_Dst.ToPointer();
+            for (long i = 0; i < _Size; i++, pdst++) {
+                *pdst = valByte;
+            }
+            return _Dst;
+        }
+
+        public unsafe static IntPtr memcpy(IntPtr _Dst, IntPtr _Src, long _Size) {
+            byte* psrc = (byte*)_Src.ToPointer();
+            byte* pdst = (byte*)_Dst.ToPointer();
+            for (long i = 0; i < _Size; i++, psrc++, pdst++) {
+                *pdst = *psrc;
+            }
+            return _Dst;
+        }
     }
 }
