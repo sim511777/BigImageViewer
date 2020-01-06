@@ -127,27 +127,27 @@ namespace ShimLib {
 
         // 마우스 다운
         bool mouseDown = false;
-        Point ptOld;
+        Point ptPanOld;
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
 
             if (e.Button == MouseButtons.Left) {
                 mouseDown = true;
-                ptOld = e.Location;
+                ptPanOld = e.Location;
             }
         }
 
         // 마우스 무브
+        Point ptMove;
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
 
+            ptMove = e.Location;
             if (mouseDown) {
-                PtPanning += ((Size)e.Location - (Size)ptOld);
-                ptOld = e.Location;
-                Invalidate();
-            } else {
-                this.Invalidate();
+                PtPanning += ((Size)ptMove - (Size)ptPanOld);
+                ptPanOld = ptMove;
             }
+            Invalidate();
         }
 
         // 마우스 업
@@ -300,7 +300,7 @@ namespace ShimLib {
 
         // 좌상단 정보 표시
         private void DrawInfo(Graphics g) {
-            Point ptCur = this.PointToClient(Cursor.Position);
+            Point ptCur = ptMove;//this.PointToClient(Cursor.Position);
             PointF ptImg = DispToImg(ptCur);
             int imgX = (int)Math.Floor(ptImg.X);
             int imgY = (int)Math.Floor(ptImg.Y);
