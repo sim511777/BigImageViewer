@@ -92,7 +92,7 @@ namespace ShimLib {
                 DrawInfo(g);
 
             if (UseDrawDrawTime) {
-                long et = Stopwatch.GetTimestamp();
+            long et = Stopwatch.GetTimestamp();
                 var drawingMs = (double)(et-st) / Stopwatch.Frequency * 1000;
                 DrawDrawTime(g, drawingMs);
             }
@@ -169,29 +169,19 @@ namespace ShimLib {
         }
 
         // 표시 버퍼 생성
-        private void AllocDispBuf() {
+        private unsafe void AllocDispBuf() {
             FreeDispBuf();
 
-            if (bytepp == 1) {
-                dispBW = Math.Max((this.ClientSize.Width + 3) / 4 * 4, 64);
-                dispBH = Math.Max(this.ClientSize.Height, 64);
-
-                dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH));
-                MsvcrtDll.memset(dispBuf, 0, dispBW * dispBH);
-                dispBmp = new Bitmap(dispBW, dispBH, dispBW, PixelFormat.Format8bppIndexed, dispBuf);
-                var pal = dispBmp.Palette;
-                for (int i = 0; i < 256; i++) {
-                    pal.Entries[i] = Color.FromArgb(i, i, i);
+            dispBW = Math.Max(this.ClientSize.Width, 64);
+            dispBH = Math.Max(this.ClientSize.Height, 64);
+            dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH * 4));
+            for (int y = 0; y < dispBH; y++) {
+                uint* ptr = (uint*)dispBuf.ToPointer() + (Int64)dispBW * y;
+                for (int x = 0; x < dispBW; x++, ptr++) {
+                    *ptr = 0xff808080;
                 }
-                dispBmp.Palette = pal;
-            } else { // bytepp = 4;
-                dispBW = Math.Max(this.ClientSize.Width, 64);
-                dispBH = Math.Max(this.ClientSize.Height, 64);
-
-                dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH * bytepp));
-                MsvcrtDll.memset(dispBuf, 0, dispBW * dispBH * bytepp);
-                dispBmp = new Bitmap(dispBW, dispBH, dispBW * bytepp, PixelFormat.Format32bppRgb, dispBuf);
             }
+            dispBmp = new Bitmap(dispBW, dispBH, dispBW * 4, PixelFormat.Format32bppPArgb, dispBuf);
         }
 
         // 표시 버퍼 해제
@@ -217,18 +207,21 @@ namespace ShimLib {
             }
 
             // dst 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
-            bool oneChannel = (bytepp == 1);
             for (int y = 0; y < dbh; y++) {
                 int siy = siys[y];
                 byte* sp = (byte*)sbuf.ToPointer() + (Int64)sbw * siy * bytepp;
-                byte* dp = (byte*)dbuf.ToPointer() + (Int64)dbw * y * bytepp;
-                bool yClear = (siy == -1);
-                for (int x = 0; x < dbw; x++, dp += bytepp) {
+                byte* dp = (byte*)dbuf.ToPointer() + (Int64)dbw * y * 4;
+                for (int x = 0; x < dbw; x++, dp += 4) {
                     int six = sixs[x];
-                    if (oneChannel)
-                        *dp = (yClear || six == -1) ? (byte)0x80 : sp[six];
-                    else
-                        *(uint*)dp = (yClear || six == -1) ? 0xff808080 : ((uint*)sp)[six];
+                    if (siy == -1 || six == -1) {
+                        *(uint*)dp = 0xff808080;
+                    } else {
+                        if (bytepp == 1) {
+                            dp[0] = dp[1] = dp[2] = sp[six];
+                        } else {
+                            *(uint*)dp = ((uint*)sp)[six];
+                        }
+                    }
                 }
             }
         }
@@ -318,7 +311,7 @@ namespace ShimLib {
             int imgY = (int)Math.Floor(ptImg.Y);
             string pixelVal = GetImagePixelValueText(imgX, imgY);
             string info = $"zoom={GetZoomText()} ({imgX},{imgY})={pixelVal}";
-            
+
             var rect = g.MeasureString(info, font);
             g.FillRectangle(Brushes.White, 0, 0, rect.Width, rect.Height);
             g.DrawString(info, font, Brushes.Black, 0, 0);
@@ -331,7 +324,7 @@ namespace ShimLib {
             var font = SystemFonts.DefaultFont;
 
             var info = $"Draw Time : {drawingMs:0.000}ms";
-
+            
             var rect = g.MeasureString(info, font);
             int x = ClientSize.Width - 150;
             g.FillRectangle(Brushes.White, x, 0, rect.Width, rect.Height);
