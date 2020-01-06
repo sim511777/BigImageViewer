@@ -242,15 +242,15 @@ namespace ShimLib {
             var ptImgR = new PointF(imgBW, imgBH / 2);
             var ptDispL = ImgToDisp(ptImgL);
             var ptDispR = ImgToDisp(ptImgR);
-            ptDispL.X = Math.Max(ptDispL.X, 0);
-            ptDispR.X = Math.Min(ptDispR.X, rect.Width);
+            ptDispL.X = Util.IntClamp(ptDispL.X, -1, rect.Width);
+            ptDispR.X = Util.IntClamp(ptDispR.X, -1, rect.Width);
             g.DrawLine(pen, ptDispL, ptDispR);
             var ptImgT = new PointF(imgBW / 2, 0);
             var ptImgB = new PointF(imgBW / 2, imgBH);
             var ptDispT = ImgToDisp(ptImgT);
             var ptDispB = ImgToDisp(ptImgB);
-            ptDispT.Y = Math.Max(ptDispT.Y, 0);
-            ptDispB.Y = Math.Min(ptDispB.Y, rect.Height);
+            ptDispT.Y = Util.IntClamp(ptDispT.Y, -1, rect.Height);
+            ptDispB.Y = Util.IntClamp(ptDispB.Y, -1, rect.Height);
             g.DrawLine(pen, ptDispT, ptDispB);
             pen.Dispose();
         }
