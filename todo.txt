@@ -57,3 +57,9 @@ ok    - Paint시에 DrawImage(g, dispBuf), Draw PixelValue, Draw PixelInfo, Draw C
 
 Load/Save C#코드로 처리
 Native.DLL 프로젝트 삭제
+
+CopyImageBufferZoom() 함수 속도 개선
+  - OnPaint 이벤트의 더블 버퍼링 기본적으로 vid_sync 사용하여 60fps 미만은 30fps로 강제됨
+  - imgbuf -> dispbuf 로직 수정 : 버퍼 인덱스 처리 방식이 아닌 ptr++ 연산 사용
+DrawPixelValues() 함수 속도 개선
+  - GDI ExTextOut 사용
