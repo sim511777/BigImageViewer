@@ -55,7 +55,5 @@ ok    - SetImgBuf(IntPtr imgBuf, int BW, int BH);
 ok    - RedrawImage : imgBuf -> dispBuf 디스프버퍼 생성시, 이미지 버퍼 생성시, 삭제시, 이미지 로드시, 줌시, Panning시, Layout변경시, 
 ok    - Paint시에 DrawImage(g, dispBuf), Draw PixelValue, Draw PixelInfo, Draw CrossLine 한 후 User Draw
 
-CopyImageBuf C#코드로 정리
 Load/Save C#코드로 처리
 Native.DLL 프로젝트 삭제
-컬러 이미지 표시 기능
