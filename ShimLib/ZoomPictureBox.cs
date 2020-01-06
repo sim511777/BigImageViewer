@@ -169,18 +169,13 @@ namespace ShimLib {
         }
 
         // 표시 버퍼 생성
-        private unsafe void AllocDispBuf() {
+        private void AllocDispBuf() {
             FreeDispBuf();
 
             dispBW = Math.Max(this.ClientSize.Width, 64);
             dispBH = Math.Max(this.ClientSize.Height, 64);
             dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH * 4));
-            for (int y = 0; y < dispBH; y++) {
-                uint* ptr = (uint*)dispBuf.ToPointer() + (Int64)dispBW * y;
-                for (int x = 0; x < dispBW; x++, ptr++) {
-                    *ptr = 0xff808080;
-                }
-            }
+            Util.memset4(dispBuf, 0xff808080, (long)dispBW * dispBH);
             dispBmp = new Bitmap(dispBW, dispBH, dispBW * 4, PixelFormat.Format32bppPArgb, dispBuf);
         }
 
@@ -192,43 +187,9 @@ namespace ShimLib {
                 Marshal.FreeHGlobal(dispBuf);
         }
 
-        // 이미지 버퍼를 디스플레이 버퍼에 복사
-        unsafe private static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp) {
-            // 인덱스 버퍼 생성
-            int[] siys = new int[dbh];
-            int[] sixs = new int[dbw];
-            for (int y = 0; y < dbh; y++) {
-                int siy = (int)Math.Floor((y - pany) / zoom);
-                siys[y] = (sbuf == IntPtr.Zero || siy < 0 || siy >= sbh) ? -1 : siy;
-            }
-            for (int x = 0; x < dbw; x++) {
-                int six = (int)Math.Floor((x - panx) / zoom);
-                sixs[x] = (sbuf == IntPtr.Zero || six < 0 || six >= sbw) ? -1 : six;
-            }
-
-            // dst 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
-            for (int y = 0; y < dbh; y++) {
-                int siy = siys[y];
-                byte* sp = (byte*)sbuf.ToPointer() + (Int64)sbw * siy * bytepp;
-                byte* dp = (byte*)dbuf.ToPointer() + (Int64)dbw * y * 4;
-                for (int x = 0; x < dbw; x++, dp += 4) {
-                    int six = sixs[x];
-                    if (siy == -1 || six == -1) {
-                        *(uint*)dp = 0xff808080;
-                    } else {
-                        if (bytepp == 1) {
-                            dp[0] = dp[1] = dp[2] = sp[six];
-                        } else {
-                            *(uint*)dp = ((uint*)sp)[six];
-                        }
-                    }
-                }
-            }
-        }
-
         // 이미지 버퍼 그림
         private void DrawImage(Graphics g) {
-            CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), bytepp);
+            Util.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), bytepp);
             g.DrawImageUnscaledAndClipped(dispBmp, new Rectangle(0, 0, dispBW, dispBH));
         }
 
