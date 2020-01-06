@@ -229,7 +229,7 @@ namespace ShimLib {
         // 이미지 버퍼 그림
         private void DrawImage(Graphics g) {
             CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), bytepp);
-            g.DrawImage(dispBmp, 0, 0);
+            g.DrawImageUnscaledAndClipped(dispBmp, new Rectangle(0, 0, dispBW, dispBH));
         }
 
         // 중심선 표시
