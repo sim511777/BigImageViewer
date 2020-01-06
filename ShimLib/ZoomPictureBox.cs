@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ShimLib {
     public class ZoomPictureBox : Control {
@@ -38,6 +39,7 @@ namespace ShimLib {
         public bool UseDrawPixelValue { get; set; } = true;
         public bool UseDrawInfo { get; set; } = true;
         public bool UseDrawCenterLine { get; set; } = true;
+        public bool UseDrawDrawTime { get; set; } = true;
 
         // 줌 파라미터
         private int zoomLevel;
@@ -74,6 +76,8 @@ namespace ShimLib {
 
         // 페인트 할때
         protected override void OnPaint(PaintEventArgs e) {
+            long st = Stopwatch.GetTimestamp();
+            
             var g = e.Graphics;
 
             DrawImage(g);
@@ -86,6 +90,12 @@ namespace ShimLib {
 
             if (UseDrawInfo)
                 DrawInfo(g);
+
+            if (UseDrawDrawTime) {
+                long et = Stopwatch.GetTimestamp();
+                var drawingMs = (double)(et-st) / Stopwatch.Frequency * 1000;
+                DrawDrawTime(g, drawingMs);
+            }
         }
 
         // 마우스 휠
@@ -300,15 +310,34 @@ namespace ShimLib {
 
         // 좌상단 정보 표시
         private void DrawInfo(Graphics g) {
+            var font = SystemFonts.DefaultFont;
+
             Point ptCur = ptMove;//this.PointToClient(Cursor.Position);
             PointF ptImg = DispToImg(ptCur);
             int imgX = (int)Math.Floor(ptImg.X);
             int imgY = (int)Math.Floor(ptImg.Y);
             string pixelVal = GetImagePixelValueText(imgX, imgY);
             string info = $"zoom={GetZoomText()} ({imgX},{imgY})={pixelVal}";
-            var rect = g.MeasureString(info, SystemFonts.DefaultFont);
+            
+            var rect = g.MeasureString(info, font);
             g.FillRectangle(Brushes.White, 0, 0, rect.Width, rect.Height);
-            g.DrawString(info, SystemFonts.DefaultFont, Brushes.Black, 0, 0);
+            g.DrawString(info, font, Brushes.Black, 0, 0);
+
+            font.Dispose();
+        }
+
+        // 렌더링 시간 표시
+        private void DrawDrawTime(Graphics g, double drawingMs) {
+            var font = SystemFonts.DefaultFont;
+
+            var info = $"Draw Time : {drawingMs:0.000}ms";
+
+            var rect = g.MeasureString(info, font);
+            int x = ClientSize.Width - 150;
+            g.FillRectangle(Brushes.White, x, 0, rect.Width, rect.Height);
+            g.DrawString(info, font, Brushes.Black, x, 0);
+            
+            font.Dispose();
         }
 
         // 표시 픽셀 좌표를 이미지 좌표로 변환
