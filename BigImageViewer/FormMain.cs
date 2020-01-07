@@ -71,7 +71,7 @@ namespace BigImageViewer {
                 string filePath = $"{dir}\\Frame_{i:000}.BMP";
                 IntPtr buf = (IntPtr)(imgBuf.ToInt64() + frmSize * i + ifwd * (frmW - fwdOvlp));
 
-                var r = NativeDll.Load8BitBmp(buf, imgBW, frmH, filePath);
+                var r = Util.Load8BitBmp(buf, imgBW, frmH, filePath);
                 if (r) {
                     succNum++;
                 } else {
