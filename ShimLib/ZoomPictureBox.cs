@@ -102,31 +102,33 @@ namespace ShimLib {
             base.OnMouseWheel(e);
 
             if (Control.ModifierKeys == Keys.Control) {
-                WheelScrollV(e);
+                WheelScroll(e, true);
             } else if (Control.ModifierKeys == Keys.Shift) {
-                WheelScrollH(e);
+                WheelScroll(e, false);
             } else {
-                WheelZoom(e);
+                bool fixPanning = (Control.ModifierKeys == Keys.Alt);
+                WheelZoom(e, fixPanning);
             }
             Invalidate();
         }
 
         // 휠 스크롤
-        private void WheelScrollV(MouseEventArgs e) {
+        private void WheelScroll(MouseEventArgs e, bool vertical) {
             int scroll = (e.Delta > 0) ? 128 : -128;
-            PtPanning += new Size(0, scroll);
-        }
-        private void WheelScrollH(MouseEventArgs e) {
-            int scroll = (e.Delta > 0) ? 128 : -128;
-            PtPanning += new Size(scroll, 0);
+            if (vertical)
+                PtPanning += new Size(0, scroll);
+            else
+                PtPanning += new Size(scroll, 0);
         }
 
         // 휠 줌
-        private void WheelZoom(MouseEventArgs e) {
+        private void WheelZoom(MouseEventArgs e, bool fixPanning) {
             var ptImg = DispToImg(e.Location);
 
             var zoomFacotrOld = GetZoomFactor();
             ZoomLevel = (e.Delta > 0) ? ZoomLevel + 1 : ZoomLevel - 1;
+            if (fixPanning)
+                return;
 
             var zoomFactorNew = GetZoomFactor();
             int sizeX = (int)Math.Floor(ptImg.X * (zoomFacotrOld - zoomFactorNew));
