@@ -189,7 +189,7 @@ namespace ShimLib {
 
         // 이미지 버퍼 그림
         private void DrawImage(Graphics g) {
-            uint bgColor = (uint)this.BackColor.ToArgb();
+            int bgColor = this.BackColor.ToArgb();
             Util.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), imgBytepp, bgColor);
             g.DrawImageUnscaledAndClipped(dispBmp, new Rectangle(0, 0, dispBW, dispBH));
         }
@@ -232,9 +232,9 @@ namespace ShimLib {
             Brushes.Black,      // 224~255
         };
         private void DrawPixelValue(Graphics g) {
-            int colorNum = imgBytepp == 1 ? 1 : 3;
             double ZoomFactor = GetZoomFactor();
-            if (ZoomFactor < 16 * colorNum)
+            double pixeValFactor = (imgBytepp == 1) ? 1 : ((imgBytepp == 2 ? 5.0/3 : 3));
+            if (ZoomFactor < 20 * pixeValFactor)
                 return;
 
             var ptDisp1 = Point.Empty;
@@ -246,10 +246,7 @@ namespace ShimLib {
             int imgX2 = Util.IntClamp((int)Math.Floor(ptImg2.X), 0, imgBW-1);
             int imgY2 = Util.IntClamp((int)Math.Floor(ptImg2.Y), 0, imgBH-1);
 
-            float fontSize = (float)(ZoomFactor / 16 * 6 / colorNum);
-            if (fontSize > 12)
-                fontSize = 12;
-            Font font = new Font("돋움체", fontSize);
+            Font font = new Font("돋움", 8);
             for (int imgY = imgY1; imgY <= imgY2; imgY++) {
                 for (int imgX = imgX1; imgX <= imgX2; imgX++) {
                     var ptImg = new PointF(imgX, imgY);
@@ -321,32 +318,28 @@ namespace ShimLib {
             return new Rectangle(x, y, width, height);
         }
 
-        // 이미지 픽셀값 리턴
-        private int[] GetImagePixelValues(int x, int y) {
-            if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH) {
-                if (imgBytepp == 1)
-                    return new int[] { -1 };
-                else
-                    return new int[] { -1, -1, -1 };
-            } else {
-                IntPtr ptr = (IntPtr)(imgBuf.ToInt64() + ((long)imgBW * y + x) * imgBytepp);
-                if (imgBytepp == 1)
-                    return new int[] { Marshal.ReadByte(ptr) };
-                else
-                    return new int[] { Marshal.ReadByte(ptr, 2), Marshal.ReadByte(ptr, 1), Marshal.ReadByte(ptr, 0) };
-            }
-        }
-
-        // 이미지 픽셀값 문자열 리턴 byte
+        // 이미지 픽셀값 문자열 리턴
         private string GetImagePixelValueText(int x, int y) {
-            int[] values = GetImagePixelValues(x, y);
-            return string.Join(",", values);
+            if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH)
+                return "";
+            IntPtr ptr = (IntPtr)(imgBuf.ToInt64() + ((long)imgBW * y + x) * imgBytepp);
+            if (imgBytepp == 1)
+                return Marshal.ReadByte(ptr).ToString();
+            if (imgBytepp == 2)
+                return ((ushort)Marshal.ReadInt16(ptr)).ToString();
+            return $"{Marshal.ReadByte(ptr, 2)},{Marshal.ReadByte(ptr, 1)},{Marshal.ReadByte(ptr, 0)}";
         }
 
         // 이미지 픽셀값 평균 리턴 (0~255)
         private int GetImagePixelValueAverage(int x, int y) {
-            int[] values = GetImagePixelValues(x, y);
-            return Util.IntClamp((int)values.Average(), 0, 255);
+            if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH)
+                return 0;
+            IntPtr ptr = (IntPtr)(imgBuf.ToInt64() + ((long)imgBW * y + x) * imgBytepp);
+            if (imgBytepp == 1)
+                return Marshal.ReadByte(ptr);
+            if (imgBytepp == 2)
+                return Marshal.ReadByte(ptr + 1);
+            return ((int)Marshal.ReadByte(ptr, 2) + (int)Marshal.ReadByte(ptr, 1) + (int)Marshal.ReadByte(ptr, 0)) / 3;
         }
     }
 }

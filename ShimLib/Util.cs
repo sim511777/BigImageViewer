@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -162,8 +164,74 @@ namespace ShimLib {
             return true;
         }
 
+        // 이미지 파일 로드
+        public unsafe static void LoadImageFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh) {
+            string ext = Path.GetExtension(fileName).ToLower();
+            if (ext == ".bmp" || ext == ".jpg" || ext == ".png") {
+                LoadBitmapFile(fileName, ref imgBuf, ref bw, ref bh);
+            } else if (ext == ".hra") {
+                LoadHraFile(fileName, ref imgBuf, ref bw, ref bh);
+            }
+        }
+
+        // bmp, jpg, png
+        public unsafe static void LoadBitmapFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh) {
+            int bytepp = 4;
+            using(var bmp = new Bitmap(fileName)) {
+                PixelFormat pixelFormat = PixelFormat.Format32bppRgb;
+                bw = bmp.Width;
+                bh = bmp.Height;
+                
+                long bufSize = (long)bw * bh * bytepp;
+                imgBuf = Marshal.AllocHGlobal(new IntPtr(bufSize));
+                
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bw, bh), ImageLockMode.ReadOnly, pixelFormat);
+                int copySize = bw * bytepp;
+                for (int y = 0; y < bh; y++) {
+                    IntPtr dstPtr = imgBuf + bw * y * bytepp;
+                    IntPtr srcPtr = bmpData.Scan0 + bmpData.Stride * y;
+                    Util.memcpy(dstPtr, srcPtr, copySize);
+                }
+                
+                bmp.UnlockBits(bmpData);
+            }
+        }
+        
+        // hra
+        public unsafe static void LoadHraFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh) {
+            int bytepp = 4;
+            FileStream sr;
+            try {
+                sr = File.OpenRead(fileName);
+            } catch {
+                return;
+            }
+
+            BinaryReader br = new BinaryReader(sr);
+            sr.Position = 252;
+            int hraBytepp = br.ReadInt32();
+            bw = br.ReadInt32();
+            bh = br.ReadInt32();
+
+            long bufSize = (long)bw * bh * bytepp;
+            imgBuf = Marshal.AllocHGlobal(new IntPtr(bufSize));
+
+            byte[] fbuf = br.ReadBytes(hraBytepp * bw * bh);
+            for (int y = 0; y < bh; y++) {
+                byte* ptr = (byte*)imgBuf.ToPointer() + (Int64)y * bw * bytepp;
+                for (int x = 0; x < bw; x++, ptr += 4) {
+                    byte val = fbuf[(y * bw + x) * hraBytepp];
+                    ptr[0] = ptr[1] = ptr[2] = val;
+                    ptr[3] = 0xff;
+                }
+            }
+
+            br.Dispose();
+            sr.Dispose();
+        }
+
         // 이미지 버퍼를 디스플레이 버퍼에 복사
-        public unsafe static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp, uint bgColor) {
+        public unsafe static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp, int bgColor) {
             // 인덱스 버퍼 생성
             int[] siys = new int[dbh];
             int[] sixs = new int[dbw];
@@ -180,17 +248,20 @@ namespace ShimLib {
             for (int y = 0; y < dbh; y++) {
                 int siy = siys[y];
                 byte* sp = (byte*)sbuf.ToPointer() + (Int64)sbw * siy * bytepp;
-                uint* dp = (uint*)dbuf.ToPointer() + (Int64)dbw * y;
+                int* dp = (int*)dbuf.ToPointer() + (Int64)dbw * y;
                 for (int x = 0; x < dbw; x++, dp++) {
                     int six = sixs[x];
                     if (siy == -1 || six == -1) {
                         *dp = bgColor;
                     } else {
                         if (bytepp == 1) {
-                            uint val = sp[six];
-                            *dp = val | val << 8 | val << 16 | 0xffu << 24;
-                        } else {
-                            *dp = ((uint*)sp)[six];
+                            int gray8 = sp[six];
+                            *dp = gray8 | gray8 << 8 | gray8 << 16 | 0xff << 24;
+                        } else if (bytepp == 2) {
+                            int gray8 = ((ushort*)sp)[six] >> 8;
+                            *dp = gray8 | gray8 << 8 | gray8 << 16 | 0xff << 24;
+                        } else {  // byte == 4
+                            *dp = ((int*)sp)[six];
                         }
                     }
                 }
