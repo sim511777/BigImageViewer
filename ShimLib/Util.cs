@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -8,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace ShimLib {
     public class Util {
+        public static double GetPastTimeMs(long tickStart) {
+            long tickEnd = Stopwatch.GetTimestamp();
+            return (tickEnd - tickStart) * 1000.0 / Stopwatch.Frequency;
+        }
+
         // 범위 제한 함수
         public static int IntClamp(int value, int min, int max) {
             if (value < min) return min;

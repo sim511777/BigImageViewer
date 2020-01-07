@@ -92,8 +92,7 @@ namespace ShimLib {
                 DrawInfo(g);
 
             if (UseDrawDrawTime) {
-            long et = Stopwatch.GetTimestamp();
-                var drawingMs = (double)(et-st) / Stopwatch.Frequency * 1000;
+                double drawingMs = Util.GetPastTimeMs(st);
                 DrawDrawTime(g, drawingMs);
             }
         }
