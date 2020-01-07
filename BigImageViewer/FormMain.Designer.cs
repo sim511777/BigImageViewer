@@ -762,6 +762,7 @@
             // 
             // pbxDraw
             // 
+            this.pbxDraw.BackColor = System.Drawing.Color.Gray;
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
@@ -770,6 +771,7 @@
             this.pbxDraw.TabIndex = 3;
             this.pbxDraw.Text = "zoomPictureBox1";
             this.pbxDraw.UseDrawCenterLine = true;
+            this.pbxDraw.UseDrawDrawTime = true;
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
             this.pbxDraw.ZoomLevel = 10;

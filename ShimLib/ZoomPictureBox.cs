@@ -189,7 +189,8 @@ namespace ShimLib {
 
         // 이미지 버퍼 그림
         private void DrawImage(Graphics g) {
-            Util.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), imgBytepp);
+            uint bgColor = (uint)this.BackColor.ToArgb();
+            Util.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), imgBytepp, bgColor);
             g.DrawImageUnscaledAndClipped(dispBmp, new Rectangle(0, 0, dispBW, dispBH));
         }
 

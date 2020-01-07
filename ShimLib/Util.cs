@@ -163,7 +163,7 @@ namespace ShimLib {
         }
 
         // 이미지 버퍼를 디스플레이 버퍼에 복사
-        public unsafe static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp) {
+        public unsafe static void CopyImageBufferZoom(IntPtr sbuf, int sbw, int sbh, IntPtr dbuf, int dbw, int dbh, int panx, int pany, double zoom, int bytepp, uint bgColor) {
             // 인덱스 버퍼 생성
             int[] siys = new int[dbh];
             int[] sixs = new int[dbw];
@@ -180,16 +180,17 @@ namespace ShimLib {
             for (int y = 0; y < dbh; y++) {
                 int siy = siys[y];
                 byte* sp = (byte*)sbuf.ToPointer() + (Int64)sbw * siy * bytepp;
-                byte* dp = (byte*)dbuf.ToPointer() + (Int64)dbw * y * 4;
-                for (int x = 0; x < dbw; x++, dp += 4) {
+                uint* dp = (uint*)dbuf.ToPointer() + (Int64)dbw * y;
+                for (int x = 0; x < dbw; x++, dp++) {
                     int six = sixs[x];
                     if (siy == -1 || six == -1) {
-                        *(uint*)dp = 0xff808080;
+                        *dp = bgColor;
                     } else {
                         if (bytepp == 1) {
-                            dp[0] = dp[1] = dp[2] = sp[six];
+                            uint val = sp[six];
+                            *dp = val | val << 8 | val << 16 | 0xffu << 24;
                         } else {
-                            *(uint*)dp = ((uint*)sp)[six];
+                            *dp = ((uint*)sp)[six];
                         }
                     }
                 }
