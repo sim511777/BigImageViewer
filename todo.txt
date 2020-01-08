@@ -59,13 +59,13 @@ ok CopyImageBufferZoom() 함수 속도 개선
 ok   - dispBmp 무조건 PixelFormat.Format32bppPArgb 로 하도록 변경
 ok   - DrawImageUnscaledAndClipped() 함수 사용
 
+ok Load/Save C#코드로 처리
+ok  - C#에 BITMAPFILEHEADER, BITMAPINFOHEADER 구조체 만들어서 사용
+
+ok Native.Dll 은 만들어 놓긴 하되 사용 하지 않음
+ok  - Load*bitBmp()
+ok  - Save8BitBmp()
+ok  - CopyImageBufferZoom()
+
 ing DrawPixelValues() 함수 속도 개선
   - GDI ExTextOut 사용 -> 속도 향상 없슴
-
-ing Load/Save C#코드로 처리
-  - C#에 BITMAPFILEHEADER, BITMAPINFOHEADER 구조체 만들어서 사용
-
-Native.Dll 은 만들어 놓긴 하되 사용 하지 않음
-  - Load*bitBmp()
-  - Save8BitBmp()
-  - CopyImageBufferZoom()
