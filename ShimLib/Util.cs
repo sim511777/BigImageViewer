@@ -208,65 +208,62 @@ namespace ShimLib {
         // bmp, jpg, png Load
         public unsafe static void LoadBitmapFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
             using(var bmp = new Bitmap(fileName)) {
-                bw = bmp.Width;
-                bh = bmp.Height;
-                if (bmp.PixelFormat == PixelFormat.Format8bppIndexed)
-                    bytepp = 1;
-                else if (bmp.PixelFormat == PixelFormat.Format16bppGrayScale)
-                    bytepp = 2;
-                else if (bmp.PixelFormat == PixelFormat.Format24bppRgb)
-                    bytepp = 3;
-                else if (bmp.PixelFormat == PixelFormat.Format32bppRgb || bmp.PixelFormat == PixelFormat.Format32bppArgb || bmp.PixelFormat == PixelFormat.Format32bppPArgb)
-                    bytepp = 4;
-                long bufSize = (long)bw * bh * bytepp;
-                imgBuf = Marshal.AllocHGlobal(new IntPtr(bufSize));
-                
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bw, bh), ImageLockMode.ReadOnly, bmp.PixelFormat);
-                int copySize = bw * bytepp;
-                for (int y = 0; y < bh; y++) {
-                    IntPtr dstPtr = imgBuf + bw * y * bytepp;
-                    IntPtr srcPtr = bmpData.Scan0 + bmpData.Stride * y;
-                    Util.memcpy(dstPtr, srcPtr, copySize);
-                }
-                
-                bmp.UnlockBits(bmpData);
+                LoadBitmap(bmp, ref imgBuf, ref bw, ref bh, ref bytepp);
             }
+        }
+
+        // Bitmap class
+        public unsafe static void LoadBitmap(Bitmap bmp, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
+            bw = bmp.Width;
+            bh = bmp.Height;
+            if (bmp.PixelFormat == PixelFormat.Format8bppIndexed)
+                bytepp = 1;
+            else if (bmp.PixelFormat == PixelFormat.Format16bppGrayScale)
+                bytepp = 2;
+            else if (bmp.PixelFormat == PixelFormat.Format24bppRgb)
+                bytepp = 3;
+            else if (bmp.PixelFormat == PixelFormat.Format32bppRgb || bmp.PixelFormat == PixelFormat.Format32bppArgb || bmp.PixelFormat == PixelFormat.Format32bppPArgb)
+                bytepp = 4;
+            long bufSize = (long)bw * bh * bytepp;
+            imgBuf = Marshal.AllocHGlobal(new IntPtr(bufSize));
+                
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bw, bh), ImageLockMode.ReadOnly, bmp.PixelFormat);
+            int copySize = bw * bytepp;
+            for (int y = 0; y < bh; y++) {
+                IntPtr dstPtr = imgBuf + bw * y * bytepp;
+                IntPtr srcPtr = bmpData.Scan0 + bmpData.Stride * y;
+                Util.memcpy(dstPtr, srcPtr, copySize);
+            }
+                
+            bmp.UnlockBits(bmpData);
         }
         
         // hra Lolad
         public unsafe static void LoadHraFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
-            FileStream sr;
-            try {
-                sr = File.OpenRead(fileName);
-            } catch {
-                return;
-            }
+            using (var sr = File.OpenRead(fileName))
+            using (var br = new BinaryReader(sr)) {
+                sr.Position = 252;
+                bytepp = br.ReadInt32();
+                bw = br.ReadInt32();
+                bh = br.ReadInt32();
 
-            BinaryReader br = new BinaryReader(sr);
-            sr.Position = 252;
-            bytepp = br.ReadInt32();
-            bw = br.ReadInt32();
-            bh = br.ReadInt32();
+                int bufSize = bw * bh * bytepp;
+                imgBuf = Marshal.AllocHGlobal(bufSize);
 
-            int bufSize = bw * bh * bytepp;
-            imgBuf = Marshal.AllocHGlobal(bufSize);
-
-            byte[] fbuf = br.ReadBytes(bufSize);
-            for (int y = 0; y < bh; y++) {
-                byte *dp = (byte*)imgBuf.ToPointer() + bw * bytepp * y;
-                int idx = bw * bytepp * y;
-                for (int x = 0; x < bw; x++, dp += bytepp, idx += bytepp) {
-                    if (bytepp == 1)
-                        dp[0] = fbuf[idx];
-                    else if (bytepp == 2) {
-                        dp[0] = fbuf[idx + 1];
-                        dp[1] = fbuf[idx];
+                byte[] fbuf = br.ReadBytes(bufSize);
+                for (int y = 0; y < bh; y++) {
+                    byte* dp = (byte*)imgBuf.ToPointer() + bw * bytepp * y;
+                    int idx = bw * bytepp * y;
+                    for (int x = 0; x < bw; x++, dp += bytepp, idx += bytepp) {
+                        if (bytepp == 1)
+                            dp[0] = fbuf[idx];
+                        else if (bytepp == 2) {
+                            dp[0] = fbuf[idx + 1];
+                            dp[1] = fbuf[idx];
+                        }
                     }
                 }
             }
-
-            br.Dispose();
-            sr.Dispose();
         }
 
         // 이미지 버퍼를 디스플레이 버퍼에 복사
