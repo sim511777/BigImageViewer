@@ -165,27 +165,32 @@ namespace ShimLib {
         }
 
         // 이미지 파일 로드
-        public unsafe static void LoadImageFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh) {
+        public unsafe static void LoadImageFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
             string ext = Path.GetExtension(fileName).ToLower();
             if (ext == ".bmp" || ext == ".jpg" || ext == ".png") {
-                LoadBitmapFile(fileName, ref imgBuf, ref bw, ref bh);
+                LoadBitmapFile(fileName, ref imgBuf, ref bw, ref bh, ref bytepp);
             } else if (ext == ".hra") {
-                LoadHraFile(fileName, ref imgBuf, ref bw, ref bh);
+                LoadHraFile(fileName, ref imgBuf, ref bw, ref bh, ref bytepp);
             }
         }
 
         // bmp, jpg, png
-        public unsafe static void LoadBitmapFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh) {
-            int bytepp = 4;
+        public unsafe static void LoadBitmapFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
             using(var bmp = new Bitmap(fileName)) {
-                PixelFormat pixelFormat = PixelFormat.Format32bppRgb;
                 bw = bmp.Width;
                 bh = bmp.Height;
-                
+                if (bmp.PixelFormat == PixelFormat.Format8bppIndexed)
+                    bytepp = 1;
+                else if (bmp.PixelFormat == PixelFormat.Format16bppGrayScale)
+                    bytepp = 2;
+                else if (bmp.PixelFormat == PixelFormat.Format24bppRgb)
+                    bytepp = 3;
+                else if (bmp.PixelFormat == PixelFormat.Format32bppRgb || bmp.PixelFormat == PixelFormat.Format32bppArgb || bmp.PixelFormat == PixelFormat.Format32bppPArgb)
+                    bytepp = 4;
                 long bufSize = (long)bw * bh * bytepp;
                 imgBuf = Marshal.AllocHGlobal(new IntPtr(bufSize));
                 
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bw, bh), ImageLockMode.ReadOnly, pixelFormat);
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bw, bh), ImageLockMode.ReadOnly, bmp.PixelFormat);
                 int copySize = bw * bytepp;
                 for (int y = 0; y < bh; y++) {
                     IntPtr dstPtr = imgBuf + bw * y * bytepp;
@@ -198,8 +203,7 @@ namespace ShimLib {
         }
         
         // hra
-        public unsafe static void LoadHraFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh) {
-            int bytepp = 4;
+        public unsafe static void LoadHraFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
             FileStream sr;
             try {
                 sr = File.OpenRead(fileName);
@@ -209,20 +213,24 @@ namespace ShimLib {
 
             BinaryReader br = new BinaryReader(sr);
             sr.Position = 252;
-            int hraBytepp = br.ReadInt32();
+            bytepp = br.ReadInt32();
             bw = br.ReadInt32();
             bh = br.ReadInt32();
 
-            long bufSize = (long)bw * bh * bytepp;
-            imgBuf = Marshal.AllocHGlobal(new IntPtr(bufSize));
+            int bufSize = bw * bh * bytepp;
+            imgBuf = Marshal.AllocHGlobal(bufSize);
 
-            byte[] fbuf = br.ReadBytes(hraBytepp * bw * bh);
+            byte[] fbuf = br.ReadBytes(bufSize);
             for (int y = 0; y < bh; y++) {
-                byte* ptr = (byte*)imgBuf.ToPointer() + (Int64)y * bw * bytepp;
-                for (int x = 0; x < bw; x++, ptr += 4) {
-                    byte val = fbuf[(y * bw + x) * hraBytepp];
-                    ptr[0] = ptr[1] = ptr[2] = val;
-                    ptr[3] = 0xff;
+                byte *dp = (byte*)imgBuf.ToPointer() + bw * bytepp * y;
+                int idx = bw * bytepp * y;
+                for (int x = 0; x < bw; x++, dp += bytepp, idx += bytepp) {
+                    if (bytepp == 1)
+                        dp[0] = fbuf[idx];
+                    else if (bytepp == 2) {
+                        dp[0] = fbuf[idx + 1];
+                        dp[1] = fbuf[idx];
+                    }
                 }
             }
 
@@ -260,6 +268,12 @@ namespace ShimLib {
                         } else if (bytepp == 2) {
                             int gray8 = ((ushort*)sp)[six] >> 8;
                             *dp = gray8 | gray8 << 8 | gray8 << 16 | 0xff << 24;
+                        } else if (bytepp == 3) {
+                            byte* sptr = sp + six * 3;
+                            byte* dptr = (byte*)dp;
+                            dptr[2] = sptr[2];
+                            dptr[1] = sptr[1];
+                            dptr[0] = sptr[0];
                         } else {  // byte == 4
                             *dp = ((int*)sp)[six];
                         }
