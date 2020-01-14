@@ -348,7 +348,7 @@ namespace ShimLib {
             if (imgBytepp == 1)
                 return Marshal.ReadByte(ptr).ToString();
             if (imgBytepp == 2)
-                return ((ushort)Marshal.ReadInt16(ptr)).ToString();
+                return (Marshal.ReadByte(ptr, 1) | Marshal.ReadByte(ptr) << 8).ToString();
             return $"{Marshal.ReadByte(ptr, 2)},{Marshal.ReadByte(ptr, 1)},{Marshal.ReadByte(ptr, 0)}";
         }
 
@@ -360,7 +360,7 @@ namespace ShimLib {
             if (imgBytepp == 1)
                 return Marshal.ReadByte(ptr);
             if (imgBytepp == 2)
-                return Marshal.ReadByte(ptr + 1);
+                return Marshal.ReadByte(ptr);
             return ((int)Marshal.ReadByte(ptr, 2) + (int)Marshal.ReadByte(ptr, 1) + (int)Marshal.ReadByte(ptr, 0)) / 3;
         }
     }

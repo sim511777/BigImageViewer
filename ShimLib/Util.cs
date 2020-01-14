@@ -258,11 +258,40 @@ namespace ShimLib {
                         if (bytepp == 1)
                             dp[0] = fbuf[idx];
                         else if (bytepp == 2) {
-                            dp[0] = fbuf[idx + 1];
-                            dp[1] = fbuf[idx];
+                            dp[0] = fbuf[idx];
+                            dp[1] = fbuf[idx + 1];
                         }
                     }
                 }
+            }
+        }
+
+        // hra save
+        public unsafe static void SaveHraFile(string fileName, IntPtr imgBuf, int bw, int bh, int bytepp) {
+            using (var sr = File.OpenWrite(fileName))
+            using (var bwr = new BinaryWriter(sr)) {
+                for (int i = 0; i < 252; i++)
+                    bwr.Write((byte)0);
+                bwr.Write(bytepp);
+                bwr.Write(bw);
+                bwr.Write(bh);
+
+                int bufSize = bw * bh * bytepp;
+                byte[] fbuf = new byte[bufSize];
+
+                for (int y = 0; y < bh; y++) {
+                    byte* sp = (byte*)imgBuf.ToPointer() + bw * bytepp * y;
+                    int idx = bw * bytepp * y;
+                    for (int x = 0; x < bw; x++, sp += bytepp, idx += bytepp) {
+                        if (bytepp == 1)
+                            fbuf[idx] = sp[0];
+                        else if (bytepp == 2) {
+                            fbuf[idx] = sp[0];
+                            fbuf[idx + 1] = sp[1];
+                        }
+                    }
+                }
+                bwr.Write(fbuf);
             }
         }
 
@@ -283,27 +312,22 @@ namespace ShimLib {
             // dst 범위만큼 루프를 돌면서 해당 픽셀값 쓰기
             for (int y = 0; y < dbh; y++) {
                 int siy = siys[y];
-                byte* sp = (byte*)sbuf.ToPointer() + (Int64)sbw * siy * bytepp;
+                byte* sptr = (byte*)sbuf.ToPointer() + (Int64)sbw * siy * bytepp;
                 int* dp = (int*)dbuf.ToPointer() + (Int64)dbw * y;
                 for (int x = 0; x < dbw; x++, dp++) {
                     int six = sixs[x];
-                    if (siy == -1 || six == -1) {
+                    if (siy == -1 || six == -1) {   // out of boundary of image
                         *dp = bgColor;
                     } else {
-                        if (bytepp == 1) {
-                            int gray8 = sp[six];
-                            *dp = gray8 | gray8 << 8 | gray8 << 16 | 0xff << 24;
-                        } else if (bytepp == 2) {
-                            int gray8 = ((ushort*)sp)[six] >> 8;
-                            *dp = gray8 | gray8 << 8 | gray8 << 16 | 0xff << 24;
-                        } else if (bytepp == 3) {
-                            byte* sptr = sp + six * 3;
-                            byte* dptr = (byte*)dp;
-                            dptr[2] = sptr[2];
-                            dptr[1] = sptr[1];
-                            dptr[0] = sptr[0];
-                        } else {  // byte == 4
-                            *dp = ((int*)sp)[six];
+                        byte *sp = &sptr[six * bytepp];
+                        if (bytepp == 1) {          // 8bit gray
+                            *dp = sp[0] | sp[0] << 8 | sp[0] << 16 | 0xff << 24;
+                        } else if (bytepp == 2) {   // 16bit gray (*.hra)
+                            *dp = sp[0] | sp[0] << 8 | sp[0] << 16 | 0xff << 24;
+                        } else if (bytepp == 3) {   // 24bit bgr
+                            *dp = sp[0] | sp[1] << 8 | sp[2] << 16 | 0xff << 24;
+                        } else if (bytepp == 4) {   // 32bit bgra
+                            *dp = sp[0] | sp[1] << 8 | sp[2] << 16 | 0xff << 24;
                         }
                     }
                 }

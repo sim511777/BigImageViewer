@@ -376,7 +376,7 @@ namespace BigImageViewer {
         }
 
         private void btnResetZoom_Click(object sender, EventArgs e) {
-            pbxDraw.ZoomLevel = 10;
+            pbxDraw.ZoomLevel = -10;
             pbxDraw.PtPanning = Point.Empty;
             pbxDraw.Invalidate();
         }

@@ -774,7 +774,9 @@
             this.pbxDraw.UseDrawDrawTime = true;
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
-            this.pbxDraw.ZoomLevel = 10;
+            this.pbxDraw.UseMouseMove = true;
+            this.pbxDraw.UseMouseWheelZoom = true;
+            this.pbxDraw.ZoomLevel = -10;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
             // 
