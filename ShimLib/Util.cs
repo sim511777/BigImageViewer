@@ -204,16 +204,8 @@ namespace ShimLib {
             return true;
         }
 
-        // 이미지 파일 로드
-        // bmp, jpg, png Load
-        public unsafe static void LoadBitmapFile(string fileName, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
-            using(var bmp = new Bitmap(fileName)) {
-                LoadBitmap(bmp, ref imgBuf, ref bw, ref bh, ref bytepp);
-            }
-        }
-
-        // Bitmap class
-        public unsafe static void LoadBitmap(Bitmap bmp, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
+        // Load Bitmap to buffer
+        public unsafe static void BitmapToImageBuffer(Bitmap bmp, ref IntPtr imgBuf, ref int bw, ref int bh, ref int bytepp) {
             bw = bmp.Width;
             bh = bmp.Height;
             if (bmp.PixelFormat == PixelFormat.Format8bppIndexed)
@@ -236,6 +228,41 @@ namespace ShimLib {
             }
                 
             bmp.UnlockBits(bmpData);
+        }
+
+        // Save Bitmap from Buffer
+        public unsafe static Bitmap ImageBufferToBitmap(IntPtr imgBuf, int bw, int bh, int bytepp) {
+            PixelFormat pixelFormat;
+            if (bytepp == 1)
+                pixelFormat = PixelFormat.Format8bppIndexed;
+            else if (bytepp == 3)
+                pixelFormat = PixelFormat.Format24bppRgb;
+            else if (bytepp == 4)
+                pixelFormat = PixelFormat.Format32bppRgb;
+            else
+                return null;
+
+            Bitmap bmp = new Bitmap(bw, bh, pixelFormat);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bw, bh), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            int copySize = bw * bytepp;
+            int paddingSize = bmpData.Stride - bw * bytepp;
+            byte[] paddingBuf = Enumerable.Repeat((byte)0, 4).ToArray();
+            for (int y = 0; y < bh; y++) {
+                IntPtr srcPtr = imgBuf + bw * y * bytepp;
+                IntPtr dstPtr = bmpData.Scan0 + bmpData.Stride * y;
+                Util.memcpy(dstPtr, srcPtr, copySize);
+                if (paddingSize > 0)
+                    Marshal.Copy(paddingBuf, 0, dstPtr + copySize, paddingSize);
+            }
+            bmp.UnlockBits(bmpData);
+            if (bmp.PixelFormat == PixelFormat.Format8bppIndexed) {
+                var pal = bmp.Palette;
+                for (int i = 0; i < pal.Entries.Length; i++) {
+                    pal.Entries[i] = Color.FromArgb(i, i, i);
+                }
+                bmp.Palette = pal;
+            }
+            return bmp;
         }
         
         // hra Lolad

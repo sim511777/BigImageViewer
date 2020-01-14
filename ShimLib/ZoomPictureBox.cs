@@ -20,10 +20,14 @@ namespace ShimLib {
         private Bitmap dispBmp;
 
         // 이미지용 버퍼
-        private int imgBW;
-        private int imgBH;
-        private IntPtr imgBuf;
-        private int imgBytepp = 1;
+        [Browsable(false)]
+        public int ImgBW { get; private set; } = 0;
+        [Browsable(false)]
+        public int ImgBH { get; private set; } = 0;
+        [Browsable(false)]
+        public IntPtr ImgBuf { get; private set; } = IntPtr.Zero;
+        [Browsable(false)]
+        public int ImgBytepp { get; private set; } = 1;
 
         // 생성자
         public ZoomPictureBox() {
@@ -69,10 +73,10 @@ namespace ShimLib {
 
         // 이미지 버퍼 세팅
         public void SetImgBuf(IntPtr buf, int bw, int bh, int bytepp) {
-            imgBuf = buf;
-            imgBW = bw;
-            imgBH = bh;
-            imgBytepp = bytepp;
+            ImgBuf = buf;
+            ImgBW = bw;
+            ImgBH = bh;
+            ImgBytepp = bytepp;
 
             Invalidate();
         }
@@ -202,28 +206,28 @@ namespace ShimLib {
         // 이미지 버퍼 그림
         private void DrawImage(Graphics g) {
             int bgColor = this.BackColor.ToArgb();
-            Util.CopyImageBufferZoom(imgBuf, imgBW, imgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), imgBytepp, bgColor);
+            Util.CopyImageBufferZoom(ImgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), ImgBytepp, bgColor);
             g.DrawImageUnscaledAndClipped(dispBmp, new Rectangle(0, 0, dispBW, dispBH));
         }
 
         // 중심선 표시
         private void DrawCenterLine(Graphics g) {
-            if (imgBuf == IntPtr.Zero)
+            if (ImgBuf == IntPtr.Zero)
                 return;
 
             Pen pen = new Pen(Color.Yellow);
             pen.DashStyle = DashStyle.Dot;
 
             var rect = ClientRectangle;
-            var ptImgL = new PointF(0, imgBH / 2);
-            var ptImgR = new PointF(imgBW, imgBH / 2);
+            var ptImgL = new PointF(0, ImgBH / 2);
+            var ptImgR = new PointF(ImgBW, ImgBH / 2);
             var ptDispL = ImgToDisp(ptImgL);
             var ptDispR = ImgToDisp(ptImgR);
             ptDispL.X = Util.IntClamp(ptDispL.X, -1, rect.Width);
             ptDispR.X = Util.IntClamp(ptDispR.X, -1, rect.Width);
             g.DrawLine(pen, ptDispL, ptDispR);
-            var ptImgT = new PointF(imgBW / 2, 0);
-            var ptImgB = new PointF(imgBW / 2, imgBH);
+            var ptImgT = new PointF(ImgBW / 2, 0);
+            var ptImgB = new PointF(ImgBW / 2, ImgBH);
             var ptDispT = ImgToDisp(ptImgT);
             var ptDispB = ImgToDisp(ptImgB);
             ptDispT.Y = Util.IntClamp(ptDispT.Y, -1, rect.Height);
@@ -245,7 +249,7 @@ namespace ShimLib {
         };
         private void DrawPixelValue(Graphics g) {
             double ZoomFactor = GetZoomFactor();
-            double pixeValFactor = (imgBytepp == 1) ? 1 : ((imgBytepp == 2 ? 5.0/3 : 3));
+            double pixeValFactor = (ImgBytepp == 1) ? 1 : ((ImgBytepp == 2 ? 5.0/3 : 3));
             if (ZoomFactor < 20 * pixeValFactor)
                 return;
 
@@ -253,10 +257,10 @@ namespace ShimLib {
             var ptDisp2 = (Point)ClientSize;
             var ptImg1 = DispToImg(ptDisp1);
             var ptImg2 = DispToImg(ptDisp2);
-            int imgX1 = Util.IntClamp((int)Math.Floor(ptImg1.X), 0, imgBW-1);
-            int imgY1 = Util.IntClamp((int)Math.Floor(ptImg1.Y), 0, imgBH-1);
-            int imgX2 = Util.IntClamp((int)Math.Floor(ptImg2.X), 0, imgBW-1);
-            int imgY2 = Util.IntClamp((int)Math.Floor(ptImg2.Y), 0, imgBH-1);
+            int imgX1 = Util.IntClamp((int)Math.Floor(ptImg1.X), 0, ImgBW-1);
+            int imgY1 = Util.IntClamp((int)Math.Floor(ptImg1.Y), 0, ImgBH-1);
+            int imgX2 = Util.IntClamp((int)Math.Floor(ptImg2.X), 0, ImgBW-1);
+            int imgY2 = Util.IntClamp((int)Math.Floor(ptImg2.Y), 0, ImgBH-1);
 
             Font font = new Font("돋움", 8);
             for (int imgY = imgY1; imgY <= imgY2; imgY++) {
@@ -342,24 +346,24 @@ namespace ShimLib {
 
         // 이미지 픽셀값 문자열 리턴
         private string GetImagePixelValueText(int x, int y) {
-            if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH)
+            if (ImgBuf == IntPtr.Zero || x < 0 || x >= ImgBW || y < 0 || y >= ImgBH)
                 return "";
-            IntPtr ptr = (IntPtr)(imgBuf.ToInt64() + ((long)imgBW * y + x) * imgBytepp);
-            if (imgBytepp == 1)
+            IntPtr ptr = (IntPtr)(ImgBuf.ToInt64() + ((long)ImgBW * y + x) * ImgBytepp);
+            if (ImgBytepp == 1)
                 return Marshal.ReadByte(ptr).ToString();
-            if (imgBytepp == 2)
+            if (ImgBytepp == 2)
                 return (Marshal.ReadByte(ptr, 1) | Marshal.ReadByte(ptr) << 8).ToString();
             return $"{Marshal.ReadByte(ptr, 2)},{Marshal.ReadByte(ptr, 1)},{Marshal.ReadByte(ptr, 0)}";
         }
 
         // 이미지 픽셀값 평균 리턴 (0~255)
         private int GetImagePixelValueAverage(int x, int y) {
-            if (imgBuf == IntPtr.Zero || x < 0 || x >= imgBW || y < 0 || y >= imgBH)
+            if (ImgBuf == IntPtr.Zero || x < 0 || x >= ImgBW || y < 0 || y >= ImgBH)
                 return 0;
-            IntPtr ptr = (IntPtr)(imgBuf.ToInt64() + ((long)imgBW * y + x) * imgBytepp);
-            if (imgBytepp == 1)
+            IntPtr ptr = (IntPtr)(ImgBuf.ToInt64() + ((long)ImgBW * y + x) * ImgBytepp);
+            if (ImgBytepp == 1)
                 return Marshal.ReadByte(ptr);
-            if (imgBytepp == 2)
+            if (ImgBytepp == 2)
                 return Marshal.ReadByte(ptr);
             return ((int)Marshal.ReadByte(ptr, 2) + (int)Marshal.ReadByte(ptr, 1) + (int)Marshal.ReadByte(ptr, 0)) / 3;
         }
