@@ -230,7 +230,7 @@
             this.numFwd.Size = new System.Drawing.Size(55, 21);
             this.numFwd.TabIndex = 3;
             this.numFwd.Value = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
             0});
