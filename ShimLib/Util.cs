@@ -35,9 +35,10 @@ namespace ShimLib {
     }
 
     public class Util {
-        public static double GetPastTimeMs(long tickStart) {
-            long tickEnd = Stopwatch.GetTimestamp();
-            return (tickEnd - tickStart) * 1000.0 / Stopwatch.Frequency;
+        // 시간 측정 함수
+        public static double GetPastTimeMs(long timeStampStart) {
+            long timeStampEnd = Stopwatch.GetTimestamp();
+            return (timeStampEnd - timeStampStart) * 1000.0 / Stopwatch.Frequency;
         }
 
         // 범위 제한 함수
@@ -47,6 +48,7 @@ namespace ShimLib {
             return value;
         }
 
+        // memset
         public unsafe static IntPtr memset(IntPtr _Dst, int _Val, long _Size) {
             byte valByte = (byte)_Val;
             byte* pdst = (byte*)_Dst.ToPointer();
@@ -56,14 +58,7 @@ namespace ShimLib {
             return _Dst;
         }
 
-        public unsafe static IntPtr memset4(IntPtr _Dst, uint _Val, long _Size) {
-            uint* pdst = (uint*)_Dst.ToPointer();
-            for (long i = 0; i < _Size; i++, pdst++) {
-                *pdst = _Val;
-            }
-            return _Dst;
-        }
-
+        // memcpy
         public unsafe static IntPtr memcpy(IntPtr _Dst, IntPtr _Src, long _Size) {
             byte* psrc = (byte*)_Src.ToPointer();
             byte* pdst = (byte*)_Dst.ToPointer();
@@ -73,6 +68,16 @@ namespace ShimLib {
             return _Dst;
         }
 
+        // memset 4byte
+        public unsafe static IntPtr memset4(IntPtr _Dst, uint _Val, long _Size) {
+            uint* pdst = (uint*)_Dst.ToPointer();
+            for (long i = 0; i < _Size; i++, pdst++) {
+                *pdst = _Val;
+            }
+            return _Dst;
+        }
+
+        // memcpy 4byte
         public unsafe static IntPtr memcpy4(IntPtr _Dst, IntPtr _Src, long _Size) {
             uint* psrc = (uint*)_Src.ToPointer();
             uint* pdst = (uint*)_Dst.ToPointer();
