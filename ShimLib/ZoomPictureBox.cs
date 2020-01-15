@@ -19,6 +19,10 @@ namespace ShimLib {
         private IntPtr dispBuf;
         private Bitmap dispBmp;
 
+        // 기본 폰트
+        private Font defaultFont = SystemFonts.DefaultFont;
+        private Font pixelFont = new Font("돋움", 8);
+
         // 이미지용 버퍼
         [Browsable(false)]
         public int ImgBW { get; private set; } = 0;
@@ -272,7 +276,6 @@ Total : {(t6-t0)*freqMs:0.0}ms";
             int imgX2 = Util.IntClamp((int)Math.Floor(ptImg2.X), 0, ImgBW-1);
             int imgY2 = Util.IntClamp((int)Math.Floor(ptImg2.Y), 0, ImgBH-1);
 
-            Font font = new Font("돋움", 8);
             for (int imgY = imgY1; imgY <= imgY2; imgY++) {
                 for (int imgX = imgX1; imgX <= imgX2; imgX++) {
                     var ptImg = new PointF(imgX, imgY);
@@ -280,16 +283,13 @@ Total : {(t6-t0)*freqMs:0.0}ms";
                     string pixelValText = GetImagePixelValueText(imgX, imgY);
                     int pixelVal = GetImagePixelValueAverage(imgX, imgY);
                     var brush = pseudo[pixelVal / 32];
-                    g.DrawString(pixelValText.ToString(), font, brush, ptDisp.X, ptDisp.Y);
+                    g.DrawString(pixelValText.ToString(), pixelFont, brush, ptDisp.X, ptDisp.Y);
                 }
             }
-            font.Dispose();
         }
 
         // 좌상단 정보 표시
         private void DrawInfo(Graphics g) {
-            var font = SystemFonts.DefaultFont;
-
             Point ptCur = ptMouseLast;
             PointF ptImg = DispToImg(ptCur);
             int imgX = (int)Math.Floor(ptImg.X);
@@ -297,22 +297,16 @@ Total : {(t6-t0)*freqMs:0.0}ms";
             string pixelVal = GetImagePixelValueText(imgX, imgY);
             string info = $"zoom={GetZoomText()} ({imgX},{imgY})={pixelVal}";
 
-            var rect = g.MeasureString(info, font);
+            var rect = g.MeasureString(info, defaultFont);
             g.FillRectangle(Brushes.White, 0, 0, rect.Width, rect.Height);
-            g.DrawString(info, font, Brushes.Black, 0, 0);
-
-            font.Dispose();
+            g.DrawString(info, defaultFont, Brushes.Black, 0, 0);
         }
 
         // 렌더링 시간 표시
         private void DrawDrawTime(Graphics g, string info) {
-            var font = SystemFonts.DefaultFont;
-
-            var rect = g.MeasureString(info, font);
+            var rect = g.MeasureString(info, defaultFont);
             g.FillRectangle(Brushes.White, ClientSize.Width - 150, 0, rect.Width, rect.Height);
-            g.DrawString(info, font, Brushes.Black, ClientSize.Width - 150, 0);
-            
-            font.Dispose();
+            g.DrawString(info, defaultFont, Brushes.Black, ClientSize.Width - 150, 0);
         }
 
         // 표시 픽셀 좌표를 이미지 좌표로 변환
