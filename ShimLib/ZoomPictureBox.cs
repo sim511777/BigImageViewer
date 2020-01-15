@@ -85,6 +85,24 @@ namespace ShimLib {
             Invalidate();
         }
 
+        // 사각형을 피팅 되도록 줌 변경
+        public void ZoomToRect(int x, int y, int width, int height) {
+            double scale1 = (double)ClientRectangle.Width / width;
+            double scale2 = (double)ClientRectangle.Height / height;
+            double wantedZoomFactor = Math.Min(scale1, scale2);
+            ZoomLevel = Util.IntClamp((int)Math.Floor(Math.Log(wantedZoomFactor) / Math.Log(Math.Sqrt(2))), -20, 20);
+            double ZoomFactor = GetZoomFactor();
+            int panX = (int)Math.Floor((ClientRectangle.Width - width * ZoomFactor) / 2 - x * ZoomFactor);
+            int panY = (int)Math.Floor((ClientRectangle.Height - height * ZoomFactor) / 2 - y * ZoomFactor);
+            PtPanning = new System.Drawing.Point(panX, panY);
+        }
+
+        // 줌 리셋
+        public void ZoomReset() {
+            ZoomLevel = 0;
+            PtPanning = Point.Empty;
+        }
+
         // 리사이즈 할때
         protected override void OnLayout(LayoutEventArgs e) {
             base.OnLayout(e);
