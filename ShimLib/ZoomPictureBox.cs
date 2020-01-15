@@ -212,7 +212,6 @@ Total : {(t6-t0)*freqMs:0.0}ms";
             dispBW = Math.Max(ClientSize.Width, 64);
             dispBH = Math.Max(ClientSize.Height, 64);
             dispBuf = Marshal.AllocHGlobal((IntPtr)(dispBW * dispBH * 4));
-            Util.memset4(dispBuf, 0xff808080, (long)dispBW * dispBH);
             dispBmp = new Bitmap(dispBW, dispBH, dispBW * 4, PixelFormat.Format32bppPArgb, dispBuf);
         }
 
