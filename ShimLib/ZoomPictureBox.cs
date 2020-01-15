@@ -91,24 +91,41 @@ namespace ShimLib {
 
         // 페인트 할때
         protected override void OnPaint(PaintEventArgs e) {
-            long st = Stopwatch.GetTimestamp();
-            
             var g = e.Graphics;
+            var t0 = Stopwatch.GetTimestamp();
 
-            DrawImage(g);
+            Util.CopyImageBufferZoom(ImgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), ImgBytepp, this.BackColor.ToArgb());
+            var t1 = Stopwatch.GetTimestamp();
+
+            g.DrawImageUnscaledAndClipped(dispBmp, new Rectangle(0, 0, dispBW, dispBH));
+            var t2 = Stopwatch.GetTimestamp();
+
             if (UseDrawPixelValue)
                 DrawPixelValue(g);
+            var t3 = Stopwatch.GetTimestamp();
+
             if (UseDrawCenterLine)
                 DrawCenterLine(g);
+            var t4 = Stopwatch.GetTimestamp();
 
             base.OnPaint(e);
+            var t5 = Stopwatch.GetTimestamp();
 
             if (UseDrawInfo)
                 DrawInfo(g);
-
+            var t6 = Stopwatch.GetTimestamp();
+            
             if (UseDrawDrawTime) {
-                double drawingMs = Util.GetPastTimeMs(st);
-                DrawDrawTime(g, drawingMs);
+                var freqMs = 1000.0/Stopwatch.Frequency;
+                string info =
+$@"CopyImage : {(t1-t0)*freqMs:0.0}ms
+DrawImage : {(t2-t1)*freqMs:0.0}ms
+PixelValue : {(t3-t2)*freqMs:0.0}ms
+CenterLine : {(t4-t3)*freqMs:0.0}ms
+OnPaint : {(t5-t4)*freqMs:0.0}ms
+CursorInfo : {(t6-t5)*freqMs:0.0}ms
+Total : {(t6-t0)*freqMs:0.0}ms";
+                DrawDrawTime(g, info);
             }
         }
 
@@ -203,13 +220,6 @@ namespace ShimLib {
                 Marshal.FreeHGlobal(dispBuf);
         }
 
-        // 이미지 버퍼 그림
-        private void DrawImage(Graphics g) {
-            int bgColor = this.BackColor.ToArgb();
-            Util.CopyImageBufferZoom(ImgBuf, ImgBW, ImgBH, dispBuf, dispBW, dispBH, PtPanning.X, PtPanning.Y, GetZoomFactor(), ImgBytepp, bgColor);
-            g.DrawImageUnscaledAndClipped(dispBmp, new Rectangle(0, 0, dispBW, dispBH));
-        }
-
         // 중심선 표시
         private void DrawCenterLine(Graphics g) {
             if (ImgBuf == IntPtr.Zero)
@@ -295,15 +305,12 @@ namespace ShimLib {
         }
 
         // 렌더링 시간 표시
-        private void DrawDrawTime(Graphics g, double drawingMs) {
+        private void DrawDrawTime(Graphics g, string info) {
             var font = SystemFonts.DefaultFont;
 
-            var info = $"Draw Time : {drawingMs:0.000}ms";
-            
             var rect = g.MeasureString(info, font);
-            int x = ClientSize.Width - 150;
-            g.FillRectangle(Brushes.White, x, 0, rect.Width, rect.Height);
-            g.DrawString(info, font, Brushes.Black, x, 0);
+            g.FillRectangle(Brushes.White, ClientSize.Width - 150, 0, rect.Width, rect.Height);
+            g.DrawString(info, font, Brushes.Black, ClientSize.Width - 150, 0);
             
             font.Dispose();
         }
