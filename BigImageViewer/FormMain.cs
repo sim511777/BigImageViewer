@@ -372,6 +372,7 @@ namespace BigImageViewer {
             pbxDraw.UseDrawPixelValue = chkDrawPixelValue.Checked;
             pbxDraw.UseDrawInfo = chkDrawInfo.Checked;
             pbxDraw.UseDrawCenterLine = chkDrawCenterLine.Checked;
+            pbxDraw.UseInterPorlation = chkUseInterpolation.Checked;
             pbxDraw.Invalidate();
         }
 

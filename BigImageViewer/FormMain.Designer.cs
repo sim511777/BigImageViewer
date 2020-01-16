@@ -75,6 +75,7 @@
             this.btnClearLog = new System.Windows.Forms.Button();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.pbxDraw = new ShimLib.ZoomPictureBox();
+            this.chkUseInterpolation = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -572,6 +573,7 @@
             // 
             this.groupBox5.Controls.Add(this.chkDrawPixelValue);
             this.groupBox5.Controls.Add(this.chkDrawInfo);
+            this.groupBox5.Controls.Add(this.chkUseInterpolation);
             this.groupBox5.Controls.Add(this.chkDrawCenterLine);
             this.groupBox5.Location = new System.Drawing.Point(6, 20);
             this.groupBox5.Name = "groupBox5";
@@ -774,11 +776,23 @@
             this.pbxDraw.UseDrawDrawTime = true;
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
+            this.pbxDraw.UseInterPorlation = false;
             this.pbxDraw.UseMouseMove = true;
             this.pbxDraw.UseMouseWheelZoom = true;
             this.pbxDraw.ZoomLevel = -10;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
+            // 
+            // chkUseInterpolation
+            // 
+            this.chkUseInterpolation.AutoSize = true;
+            this.chkUseInterpolation.Location = new System.Drawing.Point(287, 20);
+            this.chkUseInterpolation.Name = "chkUseInterpolation";
+            this.chkUseInterpolation.Size = new System.Drawing.Size(89, 16);
+            this.chkUseInterpolation.TabIndex = 5;
+            this.chkUseInterpolation.Text = "Center Line";
+            this.chkUseInterpolation.UseVisualStyleBackColor = true;
+            this.chkUseInterpolation.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
             // FormMain
             // 
@@ -873,6 +887,7 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox4;
         private ShimLib.ZoomPictureBox pbxDraw;
+        private System.Windows.Forms.CheckBox chkUseInterpolation;
     }
 }
 
