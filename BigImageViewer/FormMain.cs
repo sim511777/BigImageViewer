@@ -345,7 +345,7 @@ namespace BigImageViewer {
             FreeImgBuf();
             AllocImgBuf();
             Log("End Alloc Buffer");
-            pbxDraw.SetImgBuf(imgBuf, imgBW, imgBH, 1);
+            pbxDraw.SetImgBuf(imgBuf, imgBW, imgBH, 1, true);
         }
 
         private void btnLoadFwd_Click(object sender, EventArgs e) {

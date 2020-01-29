@@ -23,6 +23,7 @@
         /// 이 메서드의 내용을 코드 편집기로 수정하지 마세요.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.panel1 = new System.Windows.Forms.Panel();
             this.tbxLog = new System.Windows.Forms.TextBox();
             this.splitter2 = new System.Windows.Forms.Splitter();
@@ -61,6 +62,7 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
             this.chkDrawInfo = new System.Windows.Forms.CheckBox();
+            this.chkUseInterpolation = new System.Windows.Forms.CheckBox();
             this.chkDrawCenterLine = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chkDrawFrame = new System.Windows.Forms.CheckBox();
@@ -75,7 +77,6 @@
             this.btnClearLog = new System.Windows.Forms.Button();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.pbxDraw = new ShimLib.ZoomPictureBox();
-            this.chkUseInterpolation = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -608,6 +609,17 @@
             this.chkDrawInfo.UseVisualStyleBackColor = true;
             this.chkDrawInfo.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
+            // chkUseInterpolation
+            // 
+            this.chkUseInterpolation.AutoSize = true;
+            this.chkUseInterpolation.Location = new System.Drawing.Point(287, 20);
+            this.chkUseInterpolation.Name = "chkUseInterpolation";
+            this.chkUseInterpolation.Size = new System.Drawing.Size(92, 16);
+            this.chkUseInterpolation.TabIndex = 5;
+            this.chkUseInterpolation.Text = "Interpolation";
+            this.chkUseInterpolation.UseVisualStyleBackColor = true;
+            this.chkUseInterpolation.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
+            // 
             // chkDrawCenterLine
             // 
             this.chkDrawCenterLine.AutoSize = true;
@@ -768,7 +780,7 @@
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
-            this.pbxDraw.PtPanning = new System.Drawing.Point(0, 0);
+            this.pbxDraw.PtPanning = ((System.Drawing.PointF)(resources.GetObject("pbxDraw.PtPanning")));
             this.pbxDraw.Size = new System.Drawing.Size(563, 666);
             this.pbxDraw.TabIndex = 3;
             this.pbxDraw.Text = "zoomPictureBox1";
@@ -779,20 +791,10 @@
             this.pbxDraw.UseInterPorlation = false;
             this.pbxDraw.UseMouseMove = true;
             this.pbxDraw.UseMouseWheelZoom = true;
+            this.pbxDraw.UseParallel = false;
             this.pbxDraw.ZoomLevel = -10;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
-            // 
-            // chkUseInterpolation
-            // 
-            this.chkUseInterpolation.AutoSize = true;
-            this.chkUseInterpolation.Location = new System.Drawing.Point(287, 20);
-            this.chkUseInterpolation.Name = "chkUseInterpolation";
-            this.chkUseInterpolation.Size = new System.Drawing.Size(89, 16);
-            this.chkUseInterpolation.TabIndex = 5;
-            this.chkUseInterpolation.Text = "Center Line";
-            this.chkUseInterpolation.UseVisualStyleBackColor = true;
-            this.chkUseInterpolation.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
             // FormMain
             // 
