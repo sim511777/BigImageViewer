@@ -57,7 +57,7 @@ namespace BigImageViewer {
             imgBW = (frmW - fwdOvlp) * fwdNum + fwdOvlp;
             imgBH = frmH * frmNum;
             imgBuf = Marshal.AllocHGlobal((IntPtr)((long)imgBW * imgBH));
-            Util.memset(imgBuf, 0, (long)imgBW * imgBH);
+            Util.Memset(imgBuf, 0, (long)imgBW * imgBH);
         }
 
         // 포워드 이미지 로드
@@ -75,7 +75,7 @@ namespace BigImageViewer {
                 if (r) {
                     succNum++;
                 } else {
-                    Util.memset(buf, 0, frmSize);
+                    Util.Memset(buf, 0, frmSize);
                 }
             }
             Log($"Fwd_{ifwd} 이미지 {frmNum}개 중 {succNum}개 이미지 로드 성공");
@@ -157,8 +157,8 @@ namespace BigImageViewer {
             float imgY2 = (float)Math.Floor(ptImg2.Y);
 
             double zoomFactor = pbxDraw.GetZoomFactor();
-            float panX = pbxDraw.PtPanning.X;
-            float panY = pbxDraw.PtPanning.Y;
+            double panX = pbxDraw.PanX;
+            double panY = pbxDraw.PanY;
 
             Pen linePen = Pens.Red;
             Brush infoBrush = Brushes.Yellow;
@@ -267,7 +267,7 @@ namespace BigImageViewer {
         }
 
         // 노드 홀 그리기
-        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, Graphics g, double zoomFactor, float panX, float panY, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, Graphics g, double zoomFactor, double panX, double panY, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
             // 뷰 영역에 벗어난 노드는 리턴
             if (node.x1 > imgX2 || node.y1 > imgY2 || node.x2 < imgX1 || node.y2 < imgY1)
                 return;
@@ -297,7 +297,7 @@ namespace BigImageViewer {
         }
 
         // 홀그리기
-        private void DrawHole(Graphics g, double zoomFactor, float panX, float panY, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawHole(Graphics g, double zoomFactor, double panX, double panY, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
             if (holeDrawCircle)
                 DrawHoleCircle(g, zoomFactor, panX, panY, hole, linePen);
             else
@@ -317,7 +317,7 @@ namespace BigImageViewer {
         }
 
         // 개별 홀 써클 드로우
-        private void DrawHoleCircle(Graphics g, double zoomFactor, float panX, float panY, Hole hole, Pen pen) {
+        private void DrawHoleCircle(Graphics g, double zoomFactor, double panX, double panY, Hole hole, Pen pen) {
             float x = (float)((hole.x - hole.w / 2) * zoomFactor + panX);
             float y = (float)((hole.y - hole.h / 2) * zoomFactor + panY);
             float width = (float)(hole.w * zoomFactor);
@@ -326,14 +326,14 @@ namespace BigImageViewer {
         }
 
         // 개별 홀 포인트 드로우
-        private void DrawHolePoint(Graphics g, double zoomFactor, float panX, float panY, Hole hole, Pen linePen) {
+        private void DrawHolePoint(Graphics g, double zoomFactor, double panX, double panY, Hole hole, Pen linePen) {
             float x = (int)(hole.x * zoomFactor + panX) - 0.5f;
             float y = (int)(hole.y * zoomFactor + panY) - 0.5f;
             g.DrawLine(linePen, x, y, x + 1, y + 1);
         }
 
         // 홀 정보 표시
-        private void DrawHoleInfo(Graphics g, double zoomFactor, float panX, float panY, Hole hole, string infoText, Font font, Brush brush) {
+        private void DrawHoleInfo(Graphics g, double zoomFactor, double panX, double panY, Hole hole, string infoText, Font font, Brush brush) {
             float x = (float)(hole.x * zoomFactor + panX);
             float y = (float)(hole.y * zoomFactor + panY);
             g.DrawString(infoText, font, brush, x, y);
@@ -377,8 +377,8 @@ namespace BigImageViewer {
         }
 
         private void btnResetZoom_Click(object sender, EventArgs e) {
+            pbxDraw.ZoomReset();
             pbxDraw.ZoomLevel = -10;
-            pbxDraw.PtPanning = Point.Empty;
             pbxDraw.Invalidate();
         }
 
