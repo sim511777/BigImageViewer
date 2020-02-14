@@ -23,7 +23,6 @@
         /// 이 메서드의 내용을 코드 편집기로 수정하지 마세요.
         /// </summary>
         private void InitializeComponent() {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.panel1 = new System.Windows.Forms.Panel();
             this.tbxLog = new System.Windows.Forms.TextBox();
             this.splitter2 = new System.Windows.Forms.Splitter();
@@ -76,7 +75,7 @@
             this.btnResetZoom = new System.Windows.Forms.Button();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.pbxDraw = new ShimLib.ZoomPictureBox();
+            this.pbxDraw = new ShimLib.ImageBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -782,9 +781,10 @@
             this.pbxDraw.Name = "pbxDraw";
             this.pbxDraw.PanX = 0D;
             this.pbxDraw.PanY = 0D;
+            this.pbxDraw.PixelValueDispZoomFactor = 20;
             this.pbxDraw.Size = new System.Drawing.Size(563, 666);
             this.pbxDraw.TabIndex = 3;
-            this.pbxDraw.Text = "zoomPictureBox1";
+            this.pbxDraw.Text = "pbxDraw";
             this.pbxDraw.UseDrawCenterLine = true;
             this.pbxDraw.UseDrawDrawTime = true;
             this.pbxDraw.UseDrawInfo = true;
@@ -889,8 +889,8 @@
         private System.Windows.Forms.CheckBox chkDrawCenterLine;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox4;
-        private ShimLib.ZoomPictureBox pbxDraw;
         private System.Windows.Forms.CheckBox chkUseInterpolation;
+        private ShimLib.ImageBox pbxDraw;
     }
 }
 

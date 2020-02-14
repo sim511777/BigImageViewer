@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ShimLib;
+using PointD = System.Windows.Point;
 
 namespace BigImageViewer {
     public partial class FormMain : Form {
@@ -94,30 +95,32 @@ namespace BigImageViewer {
         }
 
         // 프레임 표시
-        private void DrawFrame(Graphics g) {
+        private void DrawFrame(ImageGraphics ig) {
             var clientSize = pbxDraw.ClientSize;
             for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
                 int x1 = (frmW - fwdOvlp) * ifwd;
-                var rectImg = new RectangleF(x1, 0, frmW, imgBH);
-                var rectDisp = pbxDraw.ImgToDisp(rectImg);
-                if (rectDisp.Bottom < 0 || rectDisp.Top >= clientSize.Height || rectDisp.Right < 0 || rectDisp.Left >= clientSize.Width)
+                PointD ptLTi = new PointD(x1, 0);
+                PointD ptRBi = new PointD(x1 + frmW, imgBH);
+                PointD ptLTd = pbxDraw.ImgToDisp(ptLTi);
+                PointD ptRBd = pbxDraw.ImgToDisp(ptRBi);
+                if (ptRBd.Y < 0 || ptLTd.Y >= clientSize.Height || ptRBd.X < 0 || ptLTd.X >= clientSize.Width)
                     continue;
 
-                g.DrawRectangle(Pens.PowderBlue, rectDisp);
+                ig.DrawRectangle(ptLTi, ptRBi, Pens.PowderBlue);
 
                 for (int ifrm = 0; ifrm < frmNum; ifrm++) {
-                    var ptImg1 = new PointF(x1, frmH * ifrm);
-                    var ptImg2 = new PointF(x1 + frmW, frmH * ifrm);
+                    var ptImg1 = new PointD(x1, frmH * ifrm);
+                    var ptImg2 = new PointD(x1 + frmW, frmH * ifrm);
                     var ptDisp1 = pbxDraw.ImgToDisp(ptImg1);
                     var ptDisp2 = pbxDraw.ImgToDisp(ptImg2);
 
                     if (ptDisp1.Y < 0 || ptDisp1.Y >= clientSize.Height || ptDisp1.X >= clientSize.Width || ptDisp2.X < 0)
                         continue;
 
-                    g.DrawLine(Pens.PowderBlue, ptDisp1, ptDisp2);
+                    ig.DrawLine(ptImg1, ptImg2, Pens.PowderBlue);
                     if (frmH * pbxDraw.GetZoomFactor() < 20)
                         continue;
-                    g.DrawString($"fwd={ifwd}/frm={ifrm}", defFont, Brushes.LightBlue, ptDisp1.X + 3, ptDisp1.Y + 5);
+                    ig.DrawString($"fwd={ifwd}/frm={ifrm}", ptImg1, Brushes.LightBlue);
                 }
             }
         }
@@ -143,12 +146,13 @@ namespace BigImageViewer {
         enum HoleInfoItemType { None, IndexX, IndexY, Fwd, }
 
         // 홀 드로우
-        private void DrawHoles(Graphics g) {
+        bool skipDrawHoleInfo;
+        private void DrawHoles(ImageGraphics ig) {
             if (holes == null)
                 return;
 
-            var ptDisp1 = Point.Empty;
-            var ptDisp2 = (Point)pbxDraw.ClientSize;
+            var ptDisp1 = new PointD(0, 0);
+            var ptDisp2 = ((Point)pbxDraw.ClientSize).ToDouble();
             var ptImg1 = pbxDraw.DispToImg(ptDisp1);
             var ptImg2 = pbxDraw.DispToImg(ptDisp2);
             float imgX1 = (float)Math.Floor(ptImg1.X);
@@ -157,8 +161,7 @@ namespace BigImageViewer {
             float imgY2 = (float)Math.Floor(ptImg2.Y);
 
             double zoomFactor = pbxDraw.GetZoomFactor();
-            double panX = pbxDraw.PanX;
-            double panY = pbxDraw.PanY;
+            skipDrawHoleInfo = zoomFactor < 0.5;
 
             Pen linePen = Pens.Red;
             Brush infoBrush = Brushes.Yellow;
@@ -175,26 +178,11 @@ namespace BigImageViewer {
             else if (rdoHoleInfoFWD.Checked)
                 infoItemType = HoleInfoItemType.Fwd;
 
-            // 모든 홀을 조회하면 비저블 영역에 포함되는 홀만 그림
-            // zoom이 낮아지면 띄엄띄엄 그림
-            //int step = (int)(2.0f / (zoomLevel * holePitch));
-            //if (step < 1)
-            //    step = 1;
-            //for (int iy = 0; iy < holeH; iy += step) {
-            //    for (int ix = 0; ix < holeW; ix += step) {
-            //        var hole = holes[holeW * iy + ix];
-            //        if (hole.x < imgX1 || hole.x > imgX2 || hole.y < imgY1 || hole.y > imgY2)
-            //            continue;
-
-            //        DrawHole(g, zoomLevel, panX, panY, hole, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
-            //    }
-            //}
-
             // 쿼드트리 사용하여 비저블 역역에 포함되는 노드만 그림
-            DrawNodeHole(tree.root, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            DrawNodeHole(tree.root, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
 
             if (chkDrawCursorHole.Checked && cursorHole != null) {
-                DrawHole(g, zoomFactor, panX, panY, cursorHole, holeDrawCircle, Pens.Lime, infoItemType, infoFont, infoBrush);
+                DrawHole(ig, cursorHole, holeDrawCircle, Pens.Lime, infoItemType, infoFont, infoBrush);
             }
         }
 
@@ -205,14 +193,14 @@ namespace BigImageViewer {
                 return;
             }
 
-            Point ptCur = pbxDraw.PointToClient(Cursor.Position);
-            PointF ptImg = pbxDraw.DispToImg(ptCur);
-            float holePitch = 32.0f;
-            float pickHoleMargin = holePitch * 0.5f;
+            PointD ptCur = pbxDraw.PointToClient(Cursor.Position).ToDouble();
+            PointD ptImg = pbxDraw.DispToImg(ptCur);
+            double holePitch = 32.0;
+            double pickHoleMargin = holePitch * 0.5;
             cursorHole = GetCursorNodeHole(tree.root, ptImg, pickHoleMargin);
         }
 
-        private Hole GetCursorNodeHole(QuadTreeNode node, PointF ptImg, float pickHoleMargin) {
+        private Hole GetCursorNodeHole(QuadTreeNode node, PointD ptImg, double pickHoleMargin) {
             if (node == null)
                 return null;
             
@@ -227,10 +215,10 @@ namespace BigImageViewer {
                     //    return hole;
 
                     // 홀 타원으로 체크
-                    float cx = ptImg.X - hole.x;
-                    float cy = ptImg.Y - hole.y;
-                    float rx = hole.w * 0.5f;
-                    float ry = hole.h * 0.5f;
+                    double cx = ptImg.X - hole.x;
+                    double cy = ptImg.Y - hole.y;
+                    double rx = hole.w * 0.5;
+                    double ry = hole.h * 0.5;
                     if ((cx*cx)/(rx*rx) + (cy*cy)/(ry*ry) <= 1.0f)
                         return hole;
                 }
@@ -267,43 +255,43 @@ namespace BigImageViewer {
         }
 
         // 노드 홀 그리기
-        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, Graphics g, double zoomFactor, double panX, double panY, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, ImageGraphics ig, double zoomFactor, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
             // 뷰 영역에 벗어난 노드는 리턴
             if (node.x1 > imgX2 || node.y1 > imgY2 || node.x2 < imgX1 || node.y2 < imgY1)
                 return;
 
             // 현재 레벨에서 드로우
-            if ((node.x2 - node.x1) * zoomFactor <= 4.0) {
-                DrawHole(g, zoomFactor, panX, panY, node.holeFront, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            if ((node.x2 - node.x1) * zoomFactor <= 8.0) {
+                DrawHole(ig, node.holeFront, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
                 return;
             }
 
             // 노드가 리프 노드 이면 노드에 포함된 홀 그리고 리턴
             if (node.holes != null) {
                 foreach (Hole hole in node.holes)
-                    DrawHole(g, zoomFactor, panX, panY, hole, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                    DrawHole(ig, hole, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
                 return;
             }
 
             // 하위 노드로 내려감
             if (node.childLT != null)
-                DrawNodeHole(node.childLT, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childLT, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
             if (node.childRT != null)
-                DrawNodeHole(node.childRT, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childRT, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
             if (node.childLB != null)
-                DrawNodeHole(node.childLB, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childLB, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
             if (node.childRB != null)
-                DrawNodeHole(node.childRB, imgX1, imgY1, imgX2, imgY2, g, zoomFactor, panX, panY, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childRB, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
         }
 
         // 홀그리기
-        private void DrawHole(Graphics g, double zoomFactor, double panX, double panY, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawHole(ImageGraphics ig, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
             if (holeDrawCircle)
-                DrawHoleCircle(g, zoomFactor, panX, panY, hole, linePen);
+                DrawHoleCircle(ig, hole, linePen);
             else
-                DrawHolePoint(g, zoomFactor, panX, panY, hole, linePen);
+                DrawHolePoint(ig, hole, linePen);
 
-            if (infoItemType == HoleInfoItemType.None || zoomFactor < 0.5f)
+            if (infoItemType == HoleInfoItemType.None || skipDrawHoleInfo)
                 return;
             
             string infoText;
@@ -313,30 +301,26 @@ namespace BigImageViewer {
                 infoText = hole.idxY.ToString();
             else
                 infoText = hole.fwd.ToString();
-            DrawHoleInfo(g, zoomFactor, panX, panY, hole, infoText, infoFont, infoBrush);
+            DrawHoleInfo(ig, hole, infoText, infoFont, infoBrush);
         }
 
         // 개별 홀 써클 드로우
-        private void DrawHoleCircle(Graphics g, double zoomFactor, double panX, double panY, Hole hole, Pen pen) {
-            float x = (float)((hole.x - hole.w / 2) * zoomFactor + panX);
-            float y = (float)((hole.y - hole.h / 2) * zoomFactor + panY);
-            float width = (float)(hole.w * zoomFactor);
-            float height = (float)(hole.h * zoomFactor);
-            g.DrawEllipse(pen, x, y, width, height);
+        private void DrawHoleCircle(ImageGraphics ig, Hole hole, Pen pen) {
+            double x1 = hole.x - hole.w * 0.5;
+            double y1 = hole.y - hole.h * 0.5;
+            double x2 = hole.x + hole.w * 0.5;
+            double y2 = hole.y + hole.h * 0.5;
+            ig.DrawEllipse(x1, y1, x2, y2, pen);
         }
 
         // 개별 홀 포인트 드로우
-        private void DrawHolePoint(Graphics g, double zoomFactor, double panX, double panY, Hole hole, Pen linePen) {
-            float x = (int)(hole.x * zoomFactor + panX) - 0.5f;
-            float y = (int)(hole.y * zoomFactor + panY) - 0.5f;
-            g.DrawLine(linePen, x, y, x + 1, y + 1);
+        private void DrawHolePoint(ImageGraphics ig, Hole hole, Pen linePen) {
+            ig.DrawSquare(hole.x, hole.y, 1, linePen, true);
         }
 
         // 홀 정보 표시
-        private void DrawHoleInfo(Graphics g, double zoomFactor, double panX, double panY, Hole hole, string infoText, Font font, Brush brush) {
-            float x = (float)(hole.x * zoomFactor + panX);
-            float y = (float)(hole.y * zoomFactor + panY);
-            g.DrawString(infoText, font, brush, x, y);
+        private void DrawHoleInfo(ImageGraphics ig, Hole hole, string infoText, Font font, Brush brush) {
+            ig.DrawString(infoText, hole.x, hole.y, brush);
         }
 
         //=============================================================
@@ -360,10 +344,11 @@ namespace BigImageViewer {
         Font defFont = SystemFonts.DefaultFont;
         private void pbxDraw_Paint(object sender, PaintEventArgs e) {
             var g = e.Graphics;
+            var ig = new ImageGraphics(pbxDraw, g);
             if (chkDrawHoles.Checked)
-                DrawHoles(g);
+                DrawHoles(ig);
             if (chkDrawFrame.Checked)
-                DrawFrame(g);
+                DrawFrame(ig);
             if (chkDrawCursorHole.Checked)
                 DrawCursorHoleInfo(g);
         }
@@ -426,6 +411,7 @@ namespace BigImageViewer {
 
         private void pbxDraw_MouseMove(object sender, MouseEventArgs e) {
             GetCursorHole();
+            pbxDraw.Invalidate();
         }
     }
 }
