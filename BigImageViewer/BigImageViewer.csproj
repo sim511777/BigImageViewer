@@ -59,8 +59,14 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ShimLib.Controls">
+      <HintPath>..\libs\ShimLib.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="ShimLib.ImageBox">
       <HintPath>..\libs\ShimLib.ImageBox.dll</HintPath>
+    </Reference>
+    <Reference Include="ShimLib.Util">
+      <HintPath>..\libs\ShimLib.Util.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
