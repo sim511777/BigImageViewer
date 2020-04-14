@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ShimLib;
-using PointD = System.Windows.Point;
 
 namespace BigImageViewer {
     public partial class FormMain : Form {
@@ -120,7 +119,7 @@ namespace BigImageViewer {
                     ig.DrawLine(ptImg1, ptImg2, Pens.PowderBlue);
                     if (frmH * pbxDraw.GetZoomFactor() < 20)
                         continue;
-                    ig.DrawString($"fwd={ifwd}/frm={ifrm}", ptImg1, Brushes.LightBlue);
+                    ig.DrawString($"fwd={ifwd}/frm={ifrm}", ptImg1, true, null, Brushes.LightBlue, null);
                 }
             }
         }
@@ -320,7 +319,7 @@ namespace BigImageViewer {
 
         // 홀 정보 표시
         private void DrawHoleInfo(ImageGraphics ig, Hole hole, string infoText, Font font, Brush brush) {
-            ig.DrawString(infoText, hole.x, hole.y, brush);
+            ig.DrawString(infoText, new PointD(hole.x, hole.y), false, null, brush, null);
         }
 
         //=============================================================
