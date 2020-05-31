@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ShimLib;
+using PointF = System.Drawing.PointF;
 
 namespace BigImageViewer {
     public partial class FormMain : Form {
@@ -98,18 +99,18 @@ namespace BigImageViewer {
             var clientSize = pbxDraw.ClientSize;
             for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
                 int x1 = (frmW - fwdOvlp) * ifwd;
-                PointD ptLTi = new PointD(x1, 0);
-                PointD ptRBi = new PointD(x1 + frmW, imgBH);
-                PointD ptLTd = pbxDraw.ImgToDisp(ptLTi);
-                PointD ptRBd = pbxDraw.ImgToDisp(ptRBi);
+                PointF ptLTi = new PointF(x1, 0);
+                PointF ptRBi = new PointF(x1 + frmW, imgBH);
+                PointF ptLTd = pbxDraw.ImgToDisp(ptLTi);
+                PointF ptRBd = pbxDraw.ImgToDisp(ptRBi);
                 if (ptRBd.Y < 0 || ptLTd.Y >= clientSize.Height || ptRBd.X < 0 || ptLTd.X >= clientSize.Width)
                     continue;
 
                 ig.DrawRectangle(ptLTi, ptRBi, Pens.PowderBlue);
 
                 for (int ifrm = 0; ifrm < frmNum; ifrm++) {
-                    var ptImg1 = new PointD(x1, frmH * ifrm);
-                    var ptImg2 = new PointD(x1 + frmW, frmH * ifrm);
+                    var ptImg1 = new PointF(x1, frmH * ifrm);
+                    var ptImg2 = new PointF(x1 + frmW, frmH * ifrm);
                     var ptDisp1 = pbxDraw.ImgToDisp(ptImg1);
                     var ptDisp2 = pbxDraw.ImgToDisp(ptImg2);
 
@@ -119,7 +120,7 @@ namespace BigImageViewer {
                     ig.DrawLine(ptImg1, ptImg2, Pens.PowderBlue);
                     if (frmH * pbxDraw.GetZoomFactor() < 20)
                         continue;
-                    ig.DrawString($"fwd={ifwd}/frm={ifrm}", ptImg1, true, null, Brushes.LightBlue, null);
+                    ig.DrawString($"fwd={ifwd}/frm={ifrm}", ptImg1, null, Brushes.LightBlue, null);
                 }
             }
         }
@@ -150,8 +151,8 @@ namespace BigImageViewer {
             if (holes == null)
                 return;
 
-            var ptDisp1 = new PointD(0, 0);
-            var ptDisp2 = ((Point)pbxDraw.ClientSize).ToDouble();
+            var ptDisp1 = new Point(0, 0);
+            var ptDisp2 = (Point)pbxDraw.ClientSize;
             var ptImg1 = pbxDraw.DispToImg(ptDisp1);
             var ptImg2 = pbxDraw.DispToImg(ptDisp2);
             float imgX1 = (float)Math.Floor(ptImg1.X);
@@ -192,14 +193,14 @@ namespace BigImageViewer {
                 return;
             }
 
-            PointD ptCur = pbxDraw.PointToClient(Cursor.Position).ToDouble();
-            PointD ptImg = pbxDraw.DispToImg(ptCur);
+            Point ptCur = pbxDraw.PointToClient(Cursor.Position);
+            PointF ptImg = pbxDraw.DispToImg(ptCur);
             double holePitch = 32.0;
             double pickHoleMargin = holePitch * 0.5;
             cursorHole = GetCursorNodeHole(tree.root, ptImg, pickHoleMargin);
         }
 
-        private Hole GetCursorNodeHole(QuadTreeNode node, PointD ptImg, double pickHoleMargin) {
+        private Hole GetCursorNodeHole(QuadTreeNode node, PointF ptImg, double pickHoleMargin) {
             if (node == null)
                 return null;
             
@@ -305,10 +306,10 @@ namespace BigImageViewer {
 
         // 개별 홀 써클 드로우
         private void DrawHoleCircle(ImageGraphics ig, Hole hole, Pen pen) {
-            double x1 = hole.x - hole.w * 0.5;
-            double y1 = hole.y - hole.h * 0.5;
-            double x2 = hole.x + hole.w * 0.5;
-            double y2 = hole.y + hole.h * 0.5;
+            float x1 = hole.x - hole.w * 0.5f;
+            float y1 = hole.y - hole.h * 0.5f;
+            float x2 = hole.x + hole.w * 0.5f;
+            float y2 = hole.y + hole.h * 0.5f;
             ig.DrawEllipse(x1, y1, x2, y2, pen);
         }
 
@@ -319,7 +320,7 @@ namespace BigImageViewer {
 
         // 홀 정보 표시
         private void DrawHoleInfo(ImageGraphics ig, Hole hole, string infoText, Font font, Brush brush) {
-            ig.DrawString(infoText, new PointD(hole.x, hole.y), false, null, brush, null);
+            ig.DrawString(infoText, new PointF(hole.x, hole.y), null, brush, null);
         }
 
         //=============================================================
@@ -356,7 +357,6 @@ namespace BigImageViewer {
             pbxDraw.UseDrawPixelValue = chkDrawPixelValue.Checked;
             pbxDraw.UseDrawInfo = chkDrawInfo.Checked;
             pbxDraw.UseDrawCenterLine = chkDrawCenterLine.Checked;
-            pbxDraw.UseInterPorlation = chkUseInterpolation.Checked;
             pbxDraw.Invalidate();
         }
 

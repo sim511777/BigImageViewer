@@ -61,7 +61,6 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.chkDrawPixelValue = new System.Windows.Forms.CheckBox();
             this.chkDrawInfo = new System.Windows.Forms.CheckBox();
-            this.chkUseInterpolation = new System.Windows.Forms.CheckBox();
             this.chkDrawCenterLine = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chkDrawFrame = new System.Windows.Forms.CheckBox();
@@ -573,7 +572,6 @@
             // 
             this.groupBox5.Controls.Add(this.chkDrawPixelValue);
             this.groupBox5.Controls.Add(this.chkDrawInfo);
-            this.groupBox5.Controls.Add(this.chkUseInterpolation);
             this.groupBox5.Controls.Add(this.chkDrawCenterLine);
             this.groupBox5.Location = new System.Drawing.Point(6, 20);
             this.groupBox5.Name = "groupBox5";
@@ -607,17 +605,6 @@
             this.chkDrawInfo.Text = "Cursur Info";
             this.chkDrawInfo.UseVisualStyleBackColor = true;
             this.chkDrawInfo.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
-            // 
-            // chkUseInterpolation
-            // 
-            this.chkUseInterpolation.AutoSize = true;
-            this.chkUseInterpolation.Location = new System.Drawing.Point(287, 20);
-            this.chkUseInterpolation.Name = "chkUseInterpolation";
-            this.chkUseInterpolation.Size = new System.Drawing.Size(92, 16);
-            this.chkUseInterpolation.TabIndex = 5;
-            this.chkUseInterpolation.Text = "Interpolation";
-            this.chkUseInterpolation.UseVisualStyleBackColor = true;
-            this.chkUseInterpolation.CheckedChanged += new System.EventHandler(this.chkDrawFrame_CheckedChanged);
             // 
             // chkDrawCenterLine
             // 
@@ -777,10 +764,12 @@
             // 
             this.pbxDraw.BackColor = System.Drawing.Color.Gray;
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pbxDraw.DrawPixelValueMode = ShimLib.PixelValueRenderer.FontAscii_5x8;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
-            this.pbxDraw.PanX = 0D;
-            this.pbxDraw.PanY = 0D;
+            this.pbxDraw.PanX = 0;
+            this.pbxDraw.PanY = 0;
+            this.pbxDraw.PixelValueDispFont = new System.Drawing.Font("Arial", 6F);
             this.pbxDraw.PixelValueDispZoomFactor = 20;
             this.pbxDraw.Size = new System.Drawing.Size(563, 666);
             this.pbxDraw.TabIndex = 3;
@@ -789,11 +778,12 @@
             this.pbxDraw.UseDrawDrawTime = true;
             this.pbxDraw.UseDrawInfo = true;
             this.pbxDraw.UseDrawPixelValue = true;
-            this.pbxDraw.UseInterPorlation = false;
             this.pbxDraw.UseMouseMove = true;
+            this.pbxDraw.UseMousePanClamp = true;
             this.pbxDraw.UseMouseWheelZoom = true;
-            this.pbxDraw.UseParallel = false;
             this.pbxDraw.ZoomLevel = -10;
+            this.pbxDraw.ZoomLevelMax = 16;
+            this.pbxDraw.ZoomLevelMin = -16;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
             // 
@@ -889,7 +879,6 @@
         private System.Windows.Forms.CheckBox chkDrawCenterLine;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.CheckBox chkUseInterpolation;
         private ShimLib.ImageBox pbxDraw;
     }
 }
