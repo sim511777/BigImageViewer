@@ -106,7 +106,7 @@ namespace BigImageViewer {
                 if (ptRBd.Y < 0 || ptLTd.Y >= clientSize.Height || ptRBd.X < 0 || ptLTd.X >= clientSize.Width)
                     continue;
 
-                ig.DrawRectangle(ptLTi, ptRBi, Pens.PowderBlue);
+                ig.DrawRectangle(Pens.PowderBlue, ptLTi.X, ptLTi.Y, ptRBi.X - ptLTi.X, ptRBi.Y - ptLTi.Y);
 
                 for (int ifrm = 0; ifrm < frmNum; ifrm++) {
                     var ptImg1 = new PointF(x1, frmH * ifrm);
@@ -117,10 +117,10 @@ namespace BigImageViewer {
                     if (ptDisp1.Y < 0 || ptDisp1.Y >= clientSize.Height || ptDisp1.X >= clientSize.Width || ptDisp2.X < 0)
                         continue;
 
-                    ig.DrawLine(ptImg1, ptImg2, Pens.PowderBlue);
+                    ig.DrawLine(Pens.PowderBlue, ptImg1, ptImg2);
                     if (frmH * pbxDraw.GetZoomFactor() < 20)
                         continue;
-                    ig.DrawString($"fwd={ifwd}/frm={ifrm}", ptImg1, null, Brushes.LightBlue, null);
+                    ig.DrawString($"fwd={ifwd}/frm={ifrm}", Font, Brushes.LightBlue, ptImg1);
                 }
             }
         }
@@ -310,17 +310,17 @@ namespace BigImageViewer {
             float y1 = hole.y - hole.h * 0.5f;
             float x2 = hole.x + hole.w * 0.5f;
             float y2 = hole.y + hole.h * 0.5f;
-            ig.DrawEllipse(x1, y1, x2, y2, pen);
+            ig.DrawEllipse(pen, x1, y1, x2 - x1, y2 - y1);
         }
 
         // 개별 홀 포인트 드로우
         private void DrawHolePoint(ImageGraphics ig, Hole hole, Pen linePen) {
-            ig.DrawSquare(hole.x, hole.y, 1, linePen, true);
+            ig.DrawSquare(linePen, hole.x, hole.y, 1);
         }
 
         // 홀 정보 표시
         private void DrawHoleInfo(ImageGraphics ig, Hole hole, string infoText, Font font, Brush brush) {
-            ig.DrawString(infoText, new PointF(hole.x, hole.y), null, brush, null);
+            ig.DrawString(infoText, Font, brush, new PointF(hole.x, hole.y));
         }
 
         //=============================================================
@@ -329,7 +329,7 @@ namespace BigImageViewer {
             FreeImgBuf();
             AllocImgBuf();
             Log("End Alloc Buffer");
-            pbxDraw.SetImgBuf(imgBuf, imgBW, imgBH, 1, true);
+            pbxDraw.SetImageBuffer(imgBuf, imgBW, imgBH, 1, false);
         }
 
         private void btnLoadFwd_Click(object sender, EventArgs e) {
@@ -354,15 +354,11 @@ namespace BigImageViewer {
         }
 
         private void chkDrawFrame_CheckedChanged(object sender, EventArgs e) {
-            pbxDraw.UseDrawPixelValue = chkDrawPixelValue.Checked;
-            pbxDraw.UseDrawInfo = chkDrawInfo.Checked;
-            pbxDraw.UseDrawCenterLine = chkDrawCenterLine.Checked;
             pbxDraw.Invalidate();
         }
 
         private void btnResetZoom_Click(object sender, EventArgs e) {
-            pbxDraw.ZoomReset();
-            pbxDraw.ZoomLevel = -10;
+            pbxDraw.ResetZoom();
             pbxDraw.Invalidate();
         }
 

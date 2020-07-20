@@ -764,26 +764,11 @@
             // 
             this.pbxDraw.BackColor = System.Drawing.Color.Gray;
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pbxDraw.DrawPixelValueMode = ShimLib.PixelValueRenderer.FontAscii_5x8;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
-            this.pbxDraw.PanX = 0;
-            this.pbxDraw.PanY = 0;
-            this.pbxDraw.PixelValueDispFont = new System.Drawing.Font("Arial", 6F);
-            this.pbxDraw.PixelValueDispZoomFactor = 20;
             this.pbxDraw.Size = new System.Drawing.Size(563, 666);
             this.pbxDraw.TabIndex = 3;
             this.pbxDraw.Text = "pbxDraw";
-            this.pbxDraw.UseDrawCenterLine = true;
-            this.pbxDraw.UseDrawDrawTime = true;
-            this.pbxDraw.UseDrawInfo = true;
-            this.pbxDraw.UseDrawPixelValue = true;
-            this.pbxDraw.UseMouseMove = true;
-            this.pbxDraw.UseMousePanClamp = true;
-            this.pbxDraw.UseMouseWheelZoom = true;
-            this.pbxDraw.ZoomLevel = -10;
-            this.pbxDraw.ZoomLevelMax = 16;
-            this.pbxDraw.ZoomLevelMin = -16;
             this.pbxDraw.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxDraw_Paint);
             this.pbxDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbxDraw_MouseMove);
             // 
