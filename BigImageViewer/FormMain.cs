@@ -84,18 +84,18 @@ namespace BigImageViewer {
         }
 
         // 현재 홀 정보 표시
-        private void DrawCursorHoleInfo(Graphics g) {
+        private void DrawCursorHoleInfo(ImageDrawing id) {
             float y = 23;
             if (cursorHole != null) {
                 string info = cursorHole.ToString();
-                var rect = g.MeasureString(info, defFont);
-                g.FillRectangle(Brushes.White, 0, y, rect.Width, rect.Height);
-                g.DrawString(info, defFont, Brushes.Black, 0, y);
+                //var rect = id.MeasureString(info, defFont);
+                //id.FillRectangle(Color.White, 0, y, rect.Width, rect.Height);
+                id.DrawStringWnd(info, defFont, Color.Black, 0, (int)y, Color.White);
             }
         }
 
         // 프레임 표시
-        private void DrawFrame(ImageGraphics ig) {
+        private void DrawFrame(ImageDrawing id) {
             var clientSize = pbxDraw.ClientSize;
             for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
                 int x1 = (frmW - fwdOvlp) * ifwd;
@@ -106,7 +106,7 @@ namespace BigImageViewer {
                 if (ptRBd.Y < 0 || ptLTd.Y >= clientSize.Height || ptRBd.X < 0 || ptLTd.X >= clientSize.Width)
                     continue;
 
-                ig.DrawRectangle(Pens.PowderBlue, ptLTi.X, ptLTi.Y, ptRBi.X - ptLTi.X, ptRBi.Y - ptLTi.Y);
+                id.DrawRectangle(Color.PowderBlue, ptLTi.X - 0.5f, ptLTi.Y - 0.5f, ptRBi.X - ptLTi.X, ptRBi.Y - ptLTi.Y);
 
                 for (int ifrm = 0; ifrm < frmNum; ifrm++) {
                     var ptImg1 = new PointF(x1, frmH * ifrm);
@@ -117,10 +117,10 @@ namespace BigImageViewer {
                     if (ptDisp1.Y < 0 || ptDisp1.Y >= clientSize.Height || ptDisp1.X >= clientSize.Width || ptDisp2.X < 0)
                         continue;
 
-                    ig.DrawLine(Pens.PowderBlue, ptImg1, ptImg2);
+                    id.DrawLine(Color.PowderBlue, ptImg1, ptImg2);
                     if (frmH * pbxDraw.GetZoomFactor() < 20)
                         continue;
-                    ig.DrawString($"fwd={ifwd}/frm={ifrm}", Font, Brushes.LightBlue, ptImg1);
+                    id.DrawString($"fwd={ifwd}/frm={ifrm}", Fonts.Unicode_16x16_hex, Color.LightBlue, ptImg1);
                 }
             }
         }
@@ -147,7 +147,7 @@ namespace BigImageViewer {
 
         // 홀 드로우
         bool skipDrawHoleInfo;
-        private void DrawHoles(ImageGraphics ig) {
+        private void DrawHoles(ImageDrawing id) {
             if (holes == null)
                 return;
 
@@ -163,9 +163,9 @@ namespace BigImageViewer {
             double zoomFactor = pbxDraw.GetZoomFactor();
             skipDrawHoleInfo = zoomFactor < 0.5;
 
-            Pen linePen = Pens.Red;
-            Brush infoBrush = Brushes.Yellow;
-            Font infoFont = SystemFonts.DefaultFont;
+            Color lineColor = Color.Red;
+            Color infoColor = Color.Yellow;
+            IFont infoFont = Fonts.Unicode_16x16_hex;
 
             float holePitch = 32.0f;
             bool holeDrawCircle = zoomFactor > (4.0 / holePitch);
@@ -179,10 +179,10 @@ namespace BigImageViewer {
                 infoItemType = HoleInfoItemType.Fwd;
 
             // 쿼드트리 사용하여 비저블 역역에 포함되는 노드만 그림
-            DrawNodeHole(tree.root, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+            DrawNodeHole(tree.root, imgX1, imgY1, imgX2, imgY2, id, zoomFactor, holeDrawCircle, lineColor, infoItemType, infoFont, infoColor);
 
             if (chkDrawCursorHole.Checked && cursorHole != null) {
-                DrawHole(ig, cursorHole, holeDrawCircle, Pens.Lime, infoItemType, infoFont, infoBrush);
+                DrawHole(id, cursorHole, holeDrawCircle, Color.Lime, infoItemType, infoFont, infoColor);
             }
         }
 
@@ -255,41 +255,41 @@ namespace BigImageViewer {
         }
 
         // 노드 홀 그리기
-        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, ImageGraphics ig, double zoomFactor, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawNodeHole(QuadTreeNode node, float imgX1, float imgY1, float imgX2, float imgY2, ImageDrawing id, double zoomFactor, bool holeDrawCircle, Color lineColor, HoleInfoItemType infoItemType, IFont infoFont, Color infoColor) {
             // 뷰 영역에 벗어난 노드는 리턴
             if (node.x1 > imgX2 || node.y1 > imgY2 || node.x2 < imgX1 || node.y2 < imgY1)
                 return;
 
             // 현재 레벨에서 드로우
             if ((node.x2 - node.x1) * zoomFactor <= 8.0) {
-                DrawHole(ig, node.holeFront, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawHole(id, node.holeFront, holeDrawCircle, lineColor, infoItemType, infoFont, infoColor);
                 return;
             }
 
             // 노드가 리프 노드 이면 노드에 포함된 홀 그리고 리턴
             if (node.holes != null) {
                 foreach (Hole hole in node.holes)
-                    DrawHole(ig, hole, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                    DrawHole(id, hole, holeDrawCircle, lineColor, infoItemType, infoFont, infoColor);
                 return;
             }
 
             // 하위 노드로 내려감
             if (node.childLT != null)
-                DrawNodeHole(node.childLT, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childLT, imgX1, imgY1, imgX2, imgY2, id, zoomFactor, holeDrawCircle, lineColor, infoItemType, infoFont, infoColor);
             if (node.childRT != null)
-                DrawNodeHole(node.childRT, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childRT, imgX1, imgY1, imgX2, imgY2, id, zoomFactor, holeDrawCircle, lineColor, infoItemType, infoFont, infoColor);
             if (node.childLB != null)
-                DrawNodeHole(node.childLB, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childLB, imgX1, imgY1, imgX2, imgY2, id, zoomFactor, holeDrawCircle, lineColor, infoItemType, infoFont, infoColor);
             if (node.childRB != null)
-                DrawNodeHole(node.childRB, imgX1, imgY1, imgX2, imgY2, ig, zoomFactor, holeDrawCircle, linePen, infoItemType, infoFont, infoBrush);
+                DrawNodeHole(node.childRB, imgX1, imgY1, imgX2, imgY2, id, zoomFactor, holeDrawCircle, lineColor, infoItemType, infoFont, infoColor);
         }
 
         // 홀그리기
-        private void DrawHole(ImageGraphics ig, Hole hole, bool holeDrawCircle, Pen linePen, HoleInfoItemType infoItemType, Font infoFont, Brush infoBrush) {
+        private void DrawHole(ImageDrawing id, Hole hole, bool holeDrawCircle, Color lineColor, HoleInfoItemType infoItemType, IFont infoFont, Color infoColor) {
             if (holeDrawCircle)
-                DrawHoleCircle(ig, hole, linePen);
+                DrawHoleCircle(id, hole, lineColor);
             else
-                DrawHolePoint(ig, hole, linePen);
+                DrawHolePoint(id, hole, lineColor);
 
             if (infoItemType == HoleInfoItemType.None || skipDrawHoleInfo)
                 return;
@@ -301,26 +301,26 @@ namespace BigImageViewer {
                 infoText = hole.idxY.ToString();
             else
                 infoText = hole.fwd.ToString();
-            DrawHoleInfo(ig, hole, infoText, infoFont, infoBrush);
+            DrawHoleInfo(id, hole, infoText, infoFont, infoColor);
         }
 
         // 개별 홀 써클 드로우
-        private void DrawHoleCircle(ImageGraphics ig, Hole hole, Pen pen) {
+        private void DrawHoleCircle(ImageDrawing id, Hole hole, Color color) {
             float x1 = hole.x - hole.w * 0.5f;
             float y1 = hole.y - hole.h * 0.5f;
             float x2 = hole.x + hole.w * 0.5f;
             float y2 = hole.y + hole.h * 0.5f;
-            ig.DrawEllipse(pen, x1, y1, x2 - x1, y2 - y1);
+            id.DrawEllipse(color, x1, y1, x2 - x1, y2 - y1);
         }
 
         // 개별 홀 포인트 드로우
-        private void DrawHolePoint(ImageGraphics ig, Hole hole, Pen linePen) {
-            ig.DrawSquare(linePen, hole.x, hole.y, 1);
+        private void DrawHolePoint(ImageDrawing id, Hole hole, Color lineColor) {
+            id.DrawSquare(lineColor, hole.x, hole.y, 1, false);
         }
 
         // 홀 정보 표시
-        private void DrawHoleInfo(ImageGraphics ig, Hole hole, string infoText, Font font, Brush brush) {
-            ig.DrawString(infoText, Font, brush, new PointF(hole.x, hole.y));
+        private void DrawHoleInfo(ImageDrawing id, Hole hole, string infoText, IFont font, Color color) {
+            id.DrawString(infoText, font, color, new PointF(hole.x, hole.y));
         }
 
         //=============================================================
@@ -330,6 +330,7 @@ namespace BigImageViewer {
             AllocImgBuf();
             Log("End Alloc Buffer");
             pbxDraw.SetImageBuffer(imgBuf, imgBW, imgBH, 1, false);
+            pbxDraw.Invalidate();
         }
 
         private void btnLoadFwd_Click(object sender, EventArgs e) {
@@ -341,16 +342,8 @@ namespace BigImageViewer {
             tbxLog.Clear();
         }
 
-        Font defFont = SystemFonts.DefaultFont;
+        IFont defFont = Fonts.Unicode_16x16_hex;
         private void pbxDraw_Paint(object sender, PaintEventArgs e) {
-            var g = e.Graphics;
-            var ig = new ImageGraphics(pbxDraw, g);
-            if (chkDrawHoles.Checked)
-                DrawHoles(ig);
-            if (chkDrawFrame.Checked)
-                DrawFrame(ig);
-            if (chkDrawCursorHole.Checked)
-                DrawCursorHoleInfo(g);
         }
 
         private void chkDrawFrame_CheckedChanged(object sender, EventArgs e) {
@@ -407,6 +400,16 @@ namespace BigImageViewer {
         private void pbxDraw_MouseMove(object sender, MouseEventArgs e) {
             GetCursorHole();
             pbxDraw.Invalidate();
+        }
+
+        private void pbxDraw_PaintBackBuffer(object sender, IntPtr buf, int bw, int bh) {
+            var id = pbxDraw.GetImageDrawing(buf, bw, bh);
+            if (chkDrawHoles.Checked)
+                DrawHoles(id);
+            if (chkDrawFrame.Checked)
+                DrawFrame(id);
+            if (chkDrawCursorHole.Checked)
+                DrawCursorHoleInfo(id);
         }
     }
 }
