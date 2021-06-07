@@ -98,29 +98,18 @@ namespace BigImageViewer {
         private void DrawFrame(ImageDrawing id) {
             var clientSize = pbxDraw.ClientSize;
             for (int ifwd = 0; ifwd < fwdNum; ifwd++) {
-                int x1 = (frmW - fwdOvlp) * ifwd;
-                PointF ptLTi = new PointF(x1, 0);
-                PointF ptRBi = new PointF(x1 + frmW, imgBH);
-                PointF ptLTd = pbxDraw.ImgToDisp(ptLTi);
-                PointF ptRBd = pbxDraw.ImgToDisp(ptRBi);
-                if (ptRBd.Y < 0 || ptLTd.Y >= clientSize.Height || ptRBd.X < 0 || ptLTd.X >= clientSize.Width)
-                    continue;
+                int xfwd = (frmW - fwdOvlp) * ifwd;
+                int yfwd = 0;
+                id.DrawRectangle(Color.PowderBlue, xfwd - 0.5f, yfwd - 0.5f, frmW, imgBH);
 
-                id.DrawRectangle(Color.PowderBlue, ptLTi.X - 0.5f, ptLTi.Y - 0.5f, ptRBi.X - ptLTi.X, ptRBi.Y - ptLTi.Y);
-
-                for (int ifrm = 0; ifrm < frmNum; ifrm++) {
-                    var ptImg1 = new PointF(x1, frmH * ifrm);
-                    var ptImg2 = new PointF(x1 + frmW, frmH * ifrm);
-                    var ptDisp1 = pbxDraw.ImgToDisp(ptImg1);
-                    var ptDisp2 = pbxDraw.ImgToDisp(ptImg2);
-
-                    if (ptDisp1.Y < 0 || ptDisp1.Y >= clientSize.Height || ptDisp1.X >= clientSize.Width || ptDisp2.X < 0)
-                        continue;
-
-                    id.DrawLine(Color.PowderBlue, ptImg1, ptImg2);
+                for (int ifrm = 1; ifrm < frmNum; ifrm++) {
+                    int xfrm1 = xfwd;
+                    int xfrm2 = xfwd + frmW;
+                    int yfrm = yfwd + ifrm * frmH;
+                    id.DrawLine(Color.PowderBlue, xfrm1 - 0.5f, yfrm - 0.5f, xfrm2 - 0.5f, yfrm - 0.5f);
                     if (frmH * pbxDraw.ZoomFactor < 20)
                         continue;
-                    id.DrawString($"fwd={ifwd}/frm={ifrm}", Fonts.Unicode_16x16_hex, Color.LightBlue, ptImg1);
+                    id.DrawString($"fwd={ifwd}/frm={ifrm}", Fonts.Unicode_16x16_hex, Color.LightBlue, xfrm1 - 0.5f, yfrm - 0.5f);
                 }
             }
         }
