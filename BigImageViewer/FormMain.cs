@@ -90,7 +90,7 @@ namespace BigImageViewer {
                 string info = cursorHole.ToString();
                 //var rect = id.MeasureString(info, defFont);
                 //id.FillRectangle(Color.White, 0, y, rect.Width, rect.Height);
-                id.DrawStringWnd(info, defFont, Color.Black, 0, (int)y, Color.White);
+                id.DrawString(info, defFont, Color.Black, 0, (int)y, Color.White);
             }
         }
 
@@ -118,7 +118,7 @@ namespace BigImageViewer {
                         continue;
 
                     id.DrawLine(Color.PowderBlue, ptImg1, ptImg2);
-                    if (frmH * pbxDraw.GetZoomFactor() < 20)
+                    if (frmH * pbxDraw.ZoomFactor < 20)
                         continue;
                     id.DrawString($"fwd={ifwd}/frm={ifrm}", Fonts.Unicode_16x16_hex, Color.LightBlue, ptImg1);
                 }
@@ -160,7 +160,7 @@ namespace BigImageViewer {
             float imgX2 = (float)Math.Floor(ptImg2.X);
             float imgY2 = (float)Math.Floor(ptImg2.Y);
 
-            double zoomFactor = pbxDraw.GetZoomFactor();
+            double zoomFactor = pbxDraw.ZoomFactor;
             skipDrawHoleInfo = zoomFactor < 0.5;
 
             Color lineColor = Color.Red;
@@ -408,8 +408,9 @@ namespace BigImageViewer {
                 DrawHoles(id);
             if (chkDrawFrame.Checked)
                 DrawFrame(id);
+            var idWnd = new ImageDrawing(buf, bw, bh);
             if (chkDrawCursorHole.Checked)
-                DrawCursorHoleInfo(id);
+                DrawCursorHoleInfo(idWnd);
         }
     }
 }
