@@ -23,7 +23,6 @@
         /// 이 메서드의 내용을 코드 편집기로 수정하지 마세요.
         /// </summary>
         private void InitializeComponent() {
-            ShimLib.ImageBoxOption imageBoxOption2 = new ShimLib.ImageBoxOption();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tbxLog = new System.Windows.Forms.TextBox();
             this.splitter2 = new System.Windows.Forms.Splitter();
@@ -767,18 +766,15 @@
             this.pbxDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbxDraw.Location = new System.Drawing.Point(0, 0);
             this.pbxDraw.Name = "pbxDraw";
-            imageBoxOption2.CenterLineColor = System.Drawing.Color.Yellow;
-            imageBoxOption2.FloatValueDigit = 3;
-            imageBoxOption2.FloatValueMax = 1D;
-            imageBoxOption2.InfoFont = ShimLib.EFont.Unicode_16x16_hex;
-            imageBoxOption2.RoiRectangleColor = System.Drawing.Color.Blue;
-            imageBoxOption2.UseDrawCenterLine = true;
-            imageBoxOption2.UseDrawCursorInfo = true;
-            imageBoxOption2.UseDrawDebugInfo = false;
-            imageBoxOption2.UseDrawPixelValue = true;
-            imageBoxOption2.UseDrawRoiRectangles = true;
-            imageBoxOption2.UseParallelToDraw = true;
-            this.pbxDraw.Option = imageBoxOption2;
+            this.pbxDraw.CenterLineColor = System.Drawing.Color.Yellow;
+            this.pbxDraw.InfoEFont = ShimLib.EFont.unifont_13_0_06_bdf;
+            this.pbxDraw.RoiRectangleColor = System.Drawing.Color.Blue;
+            this.pbxDraw.UseDrawCenterLine = true;
+            this.pbxDraw.UseDrawCursorInfo = true;
+            this.pbxDraw.UseDrawDebugInfo = false;
+            this.pbxDraw.UseDrawPixelValue = true;
+            this.pbxDraw.UseDrawRoiRectangles = true;
+            this.pbxDraw.UseParallelToDraw = true;
             this.pbxDraw.Size = new System.Drawing.Size(563, 666);
             this.pbxDraw.TabIndex = 3;
             this.pbxDraw.Text = "pbxDraw";

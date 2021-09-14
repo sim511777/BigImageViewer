@@ -61,8 +61,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ShimLib.ImageBox">
-      <HintPath>..\libs\ShimLib.ImageBox.dll</HintPath>
+    <Reference Include="ShimLib.ImageBox, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\_lib\ImageBox_dotnet\ShimLib.ImageBox.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

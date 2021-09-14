@@ -107,9 +107,9 @@ namespace BigImageViewer {
                     int xfrm2 = xfwd + frmW;
                     int yfrm = yfwd + ifrm * frmH;
                     id.DrawLine(Color.PowderBlue, xfrm1 - 0.5f, yfrm - 0.5f, xfrm2 - 0.5f, yfrm - 0.5f);
-                    if (frmH * pbxDraw.ZoomFactor < 20)
+                    if (frmH * pbxDraw.GetZoomFactor() < 20)
                         continue;
-                    id.DrawString($"fwd={ifwd}/frm={ifrm}", Fonts.Unicode_16x16_hex, Color.LightBlue, xfrm1 - 0.5f, yfrm - 0.5f);
+                    id.DrawString($"fwd={ifwd}/frm={ifrm}", pbxDraw.InfoFont, Color.LightBlue, xfrm1 - 0.5f, yfrm - 0.5f);
                 }
             }
         }
@@ -149,12 +149,12 @@ namespace BigImageViewer {
             float imgX2 = (float)Math.Floor(ptImg2.X);
             float imgY2 = (float)Math.Floor(ptImg2.Y);
 
-            double zoomFactor = pbxDraw.ZoomFactor;
+            double zoomFactor = pbxDraw.GetZoomFactor();
             skipDrawHoleInfo = zoomFactor < 0.5;
 
             Color lineColor = Color.Red;
             Color infoColor = Color.Yellow;
-            IFont infoFont = Fonts.Unicode_16x16_hex;
+            IFont infoFont = pbxDraw.InfoFont;
 
             float holePitch = 32.0f;
             bool holeDrawCircle = zoomFactor > (4.0 / holePitch);
@@ -318,30 +318,30 @@ namespace BigImageViewer {
             FreeImgBuf();
             AllocImgBuf();
             Log("End Alloc Buffer");
-            pbxDraw.SetImageBuffer(imgBuf, imgBW, imgBH, 1, false);
-            pbxDraw.Invalidate();
+            pbxDraw.SetImageBuffer(imgBuf, imgBW, imgBH, 8, imgBW, new BufferDrawer_8BppIndexed(null));
+            pbxDraw.Redraw();
         }
 
         private void btnLoadFwd_Click(object sender, EventArgs e) {
             LoadFwdImg(tbxFwdDir.Text, 0);
-            pbxDraw.Invalidate();
+            pbxDraw.Redraw();
         }
 
         private void btnClearLog_Click(object sender, EventArgs e) {
             tbxLog.Clear();
         }
 
-        IFont defFont = Fonts.Unicode_16x16_hex;
+        IFont defFont = Fonts.unifont_13_0_06_bdf;
         private void pbxDraw_Paint(object sender, PaintEventArgs e) {
         }
 
         private void chkDrawFrame_CheckedChanged(object sender, EventArgs e) {
-            pbxDraw.Invalidate();
+            pbxDraw.Redraw();
         }
 
         private void btnResetZoom_Click(object sender, EventArgs e) {
             pbxDraw.ResetZoom();
-            pbxDraw.Invalidate();
+            pbxDraw.Redraw();
         }
 
         private void btnInitHoles_Click(object sender, EventArgs e) {
@@ -370,7 +370,7 @@ namespace BigImageViewer {
             tree.AddHoles(holes);
             Log("End Add Holes");
 
-            pbxDraw.Invalidate();
+            pbxDraw.Redraw();
         }
 
         private void btnLoadSurf_Click(object sender, EventArgs e) {
@@ -383,16 +383,16 @@ namespace BigImageViewer {
                 string dir = tbxSurfDir.Text + "\\Fwd" + fwd.ToString();
                 LoadFwdImg(dir, fwd);
             }
-            pbxDraw.Invalidate();
+            pbxDraw.Redraw();
         }
 
         private void pbxDraw_MouseMove(object sender, MouseEventArgs e) {
             GetCursorHole();
-            pbxDraw.Invalidate();
+            pbxDraw.Redraw();
         }
 
         private void pbxDraw_PaintBackBuffer(object sender, IntPtr buf, int bw, int bh) {
-            var id = pbxDraw.GetImageDrawing(buf, bw, bh);
+            var id = new ImageDrawing(buf, bw, bh, pbxDraw.GetZoomFactor(), pbxDraw.SzPan);
             if (chkDrawHoles.Checked)
                 DrawHoles(id);
             if (chkDrawFrame.Checked)
